@@ -1,14 +1,14 @@
-use std::fs;
 use std::fmt;
-use std::path::Path;
+use std::fs;
 use std::io::Write;
+use std::path::Path;
 
-use clap::{Command, arg};
+use clap::{arg, Command};
 use include_dir::{include_dir, Dir};
-use yaml_rust::YamlEmitter;
-use yaml_rust::yaml;
-use yaml_rust::{Yaml, YamlLoader};
 use subprocess;
+use yaml_rust::yaml;
+use yaml_rust::YamlEmitter;
+use yaml_rust::{Yaml, YamlLoader};
 
 pub static LIB_NAME: &str = "SJML Paper";
 pub static LIB_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -31,7 +31,6 @@ impl fmt::Display for PaperError {
     }
 }
 
-
 fn cli() -> Command {
     Command::new("paper")
         .about("Shane’s little paper-{writing|managing|building} utility\n    <https://github.com/sjml/paper>")
@@ -49,7 +48,6 @@ fn cli() -> Command {
         )
 }
 
-
 fn load_yml_file(path: &Path) -> Result<Yaml, PaperError> {
     let file_contents = match fs::read_to_string(path) {
         Ok(contents) => contents,
@@ -59,7 +57,10 @@ fn load_yml_file(path: &Path) -> Result<Yaml, PaperError> {
         Ok(parsed) => parsed,
         Err(_) => return Err(PaperError::InvalidYaml),
     };
-    let yml = yml.into_iter().filter(|y| !y.is_null()).collect::<Vec<Yaml>>();
+    let yml = yml
+        .into_iter()
+        .filter(|y| !y.is_null())
+        .collect::<Vec<Yaml>>();
     if yml.len() != 1 {
         return Err(PaperError::InvalidYaml);
     }
@@ -100,14 +101,17 @@ fn merge_hash(target: &mut yaml::Hash, new_hash: &yaml::Hash) {
                 let local_value = v.clone();
                 match local_value.into_string() {
                     Some(val_str) => {
-                        if target.contains_key(k) && val_str.starts_with("") && val_str.ends_with("]") {
+                        if target.contains_key(k)
+                            && val_str.starts_with("")
+                            && val_str.ends_with("]")
+                        {
                             continue;
                         }
                         target[k] = Yaml::String(val_str);
-                    },
+                    }
                     None => {
                         target.insert(k.clone(), v.clone());
-                    },
+                    }
                 }
             }
         }
@@ -155,19 +159,25 @@ fn init_project() -> Result<(), PaperError> {
     subprocess::Exec::cmd("git")
         .arg("init")
         .stdout(subprocess::NullFile)
-        .join().unwrap();
+        .join()
+        .unwrap();
     subprocess::Exec::cmd("git")
         .args(&vec!["add", "."])
         .stdout(subprocess::NullFile)
-        .join().unwrap();
+        .join()
+        .unwrap();
     subprocess::Exec::cmd("git")
         .args(&vec![
             "commit",
             "-m",
-            &format!("Initial project creation\n---\n{}", get_paper_version_stamp())
+            &format!(
+                "Initial project creation\n---\n{}",
+                get_paper_version_stamp()
+            ),
         ])
         .stdout(subprocess::NullFile)
-        .join().unwrap();
+        .join()
+        .unwrap();
 
     Ok(())
 }
@@ -183,7 +193,7 @@ fn new_project(project_name: &str) -> Result<(), PaperError> {
     fs::create_dir(project_path).unwrap();
     std::env::set_current_dir(project_path).unwrap();
 
-    return init_project()
+    return init_project();
 }
 
 fn main() {
@@ -191,17 +201,19 @@ fn main() {
 
     match matches.subcommand() {
         Some(("new", sub_matches)) => {
-            match new_project(sub_matches.get_one::<String>("PROJECT_NAME").expect("required")) {
+            match new_project(
+                sub_matches
+                    .get_one::<String>("PROJECT_NAME")
+                    .expect("required"),
+            ) {
                 Ok(p) => p,
-                Err(_) => std::process::exit(1)
+                Err(_) => std::process::exit(1),
             };
-        },
-        Some(("init", _)) => {
-            match init_project() {
-                Ok(p) => p,
-                Err(_) => std::process::exit(1)
-            }
         }
+        Some(("init", _)) => match init_project() {
+            Ok(p) => p,
+            Err(_) => std::process::exit(1),
+        },
         _ => unreachable!(),
     }
 }

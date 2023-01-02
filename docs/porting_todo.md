@@ -1,4 +1,3 @@
-- make more organized setup, separate files for different purposes, etc.
 - maybe set up unit tests? lol
 
 

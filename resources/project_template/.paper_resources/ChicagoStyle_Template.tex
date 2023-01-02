@@ -1,0 +1,188 @@
+\documentclass[
+    12pt,
+    letterpaper,
+    oneside$if(ragged)$$else$,
+    noraggedright$endif$
+]{turabian-researchpaper}
+
+% condition usage
+\usepackage{ifthen}
+
+% Tempora is a clone of Times Roman that
+%   includes Greek and Cyrillic; should do
+%   for most STM needs, but may need a Hebrew
+%   solution some day.
+\usepackage{fontspec}
+\defaultfontfeatures{Scale=MatchLowercase}
+\defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+
+$if(base_font_override)$
+\setmainfont{$base_font_override$}
+$else$
+\setmainfont{Tempora}
+$endif$
+$if(mono_font_override)$
+\setmonofont{$mono_font_override$}
+$else$
+\setmonofont{Consolas}
+$endif$
+
+% font and typesetting niceties
+\usepackage{upquote}
+\usepackage{microtype}
+\setlength{\emergencystretch}{3em}
+
+
+$if(title)$
+\title{$title$}
+$endif$
+$if(subtitle)$
+\subtitle{$subtitle$}
+$endif$
+\author{$author$}
+
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[hyperfootnotes=false,hidelinks,unicode]{hyperref}
+\hypersetup{
+    $if(title)$pdftitle={$title$$if(subtitle)$: $subtitle$ $endif$},$endif$
+    pdfauthor={$author$},
+    pdflang={en-US},
+    pdfcreator={$library_name$ v$library_version$},
+    % pdfproducer={},
+}
+% for nicer linebreak placements in URLs
+\usepackage{xurl}
+% for underlines on links
+\usepackage{href-ul}
+
+% page numbers centered in footer
+\pagestyle{plain}
+
+% tables
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+
+% default tables are opulently tall
+\let\oldlongtable\longtable
+\def\longtable{\onehalfspacing \oldlongtable}
+
+% images
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+
+\graphicspath{{../content}} % image paths relative to content directory
+% image aspect ratios stay correct, able to use [caption](./image.png){width=2in}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+% captions
+\makeatletter
+%% figure captions (centered and italicized)
+\setlength\abovecaptionskip{\z@}
+\setlength\belowcaptionskip{-.5\baselineskip}
+\long\def\@makecaption#1#2{%
+	\vskip\abovecaptionskip
+	\center\small\emph{#1. #2}\par
+	\vskip\belowcaptionskip
+}
+%% table captions (why can't these be the same?!)
+\patchcmd{\LT@makecaption}%
+   {#1{#2: }#3}
+   {#1\small\emph{#2. #3}}{}{}
+\makeatother
+
+% lists should be single-spaced
+\let\oldenumerate\enumerate
+\def\enumerate{\oldenumerate \singlespacing}
+\let\olditemize\itemize
+\def\itemize{\olditemize \singlespacing}
+
+% tight list command required by pandoc output
+\makeatletter
+\providecommand{\tightlist}{%
+    \ifthenelse{\equal{\the\@listdepth}{1}}
+    {}
+    {\vspace{-\baselineskip}}
+}
+\makeatother
+
+% tighter footnote spacing
+\usepackage{footnote}
+\makesavenoteenv{figure}
+\makesavenoteenv{longtable}
+\DeclareRobustCommand{\href}[2]{#2\footnote{\url{#1}}}
+\setlength{\footnotesep}{16pt}
+
+% section headers are left-aligned and slightly larger font
+\let\oldsection=\section
+\renewcommand\section[1]{\oldsection{\texorpdfstring{\large\raggedright{#1}}{#1}}}
+\let\oldsubsection=\subsection
+\renewcommand\subsection[1]{\oldsubsection{\texorpdfstring{\large\raggedright\emph{#1}}{#1}}}
+\let\oldsubsubsection=\subsubsection
+\renewcommand\subsubsection[1]{\oldsubsubsection{\texorpdfstring{\raggedright\emph{#1}}{#1}}}
+
+% standard bibliography environment taken from default pandoc template
+%   except where noted
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit}
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2]
+ {
+\newpage % start on new page
+\centerline{\underline{Bibliography}} % label it
+ \setlength{\parindent}{0pt}
+ \singlespacing
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \setlength{\parskip}{1em}
+ }
+{
+}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+
+% where the magic happens
+\begin{document}
+    $if(no_title_page)$$else$
+        \begin{center}
+
+        \thispagestyle{empty}
+        \vspace*{1in}
+        \begin{singlespace}
+        $if(title)$
+        $title$$if(subtitle)$:\\
+        $subtitle$$endif$
+        $endif$
+        \end{singlespace}
+        \vspace{2in - \baselineskip}
+
+        by
+        \vspace{2in - \baselineskip}
+
+        $author$
+
+        \vspace{2in - \baselineskip}
+
+        \singlespace{
+            $if(professor)$$professor$ \\$endif$
+            $if(class_mnemonic)$$class_mnemonic$$endif$$if(class_mnemonic)$$if(class_name)$ --- $endif$$endif$$if(class_name)$$class_name$$endif$ \\
+            $if(date)$$date$$endif$
+        }
+        \end{center}
+        \newpage
+        \setcounter{page}{1}
+    $endif$
+
+$if(body)$$body$$else$\mbox{}$endif$
+
+\end{document}

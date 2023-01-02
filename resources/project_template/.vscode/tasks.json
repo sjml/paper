@@ -1,0 +1,46 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Paper Build",
+      "type": "shell",
+      "command": "paper build",
+      "presentation": {
+        "reveal": "silent",
+        "clear": false
+      },
+      "group": "build"
+    },
+    {
+      "label": "Paper Save",
+      "type": "shell",
+      "command": "paper save --message '${input:commitMessage}'",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "clear": false
+      }
+    },
+    {
+      "label": "Paper Push",
+      "type": "shell",
+      "command": "paper push",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "clear": true
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "commitMessage",
+      "description": "Commit message?",
+      "type": "promptString",
+      "default": "Saving progress."
+    }
+  ]
+}

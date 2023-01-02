@@ -2,8 +2,14 @@
 name = "rust-paper"
 version = "0.5.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["Shane Liesegang"]
+description = "Shane’s little paper-{writing|managing|building} utility"
+# readme = "README.md"
+readme = false
+repository = "https://github.com/sjml/rust-paper"
+license = "MIT"
+keywords = ["academic", "writing", "references", "markdown", "latex"]
+categories = ["command-line-utilities", "template-engine", ]
 
 [dependencies]
 clap = { version = "4.0.32", features = ["derive"] }

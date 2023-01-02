@@ -1,6 +1,6 @@
 [package]
 name = "rust-paper"
-version = "0.1.0"
+version = "0.5.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.0.32", features = ["derive"] }
 include_dir = "0.7.3"
+subprocess = "0.2.9"
+yaml-rust = "0.4.5"

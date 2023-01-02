@@ -43,6 +43,10 @@ fn cli() -> Command {
                 .arg(arg!(<PROJECT_NAME> "The name of the directory to create for the project."))
                 .arg_required_else_help(true),
         )
+        .subcommand(
+            Command::new("init")
+                .about("While in an empty directory, set it up for a project.\n(Called as part of the process for `new`.)")
+        )
 }
 
 
@@ -191,6 +195,12 @@ fn main() {
                 Ok(p) => p,
                 Err(_) => std::process::exit(1)
             };
+        },
+        Some(("init", _)) => {
+            match init_project() {
+                Ok(p) => p,
+                Err(_) => std::process::exit(1)
+            }
         }
         _ => unreachable!(),
     }

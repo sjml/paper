@@ -1,0 +1,22 @@
+rustup target add x86_64-apple-darwin
+rustup target add aarch64-apple-darwin
+
+cargo build --release --target=x86_64-apple-darwin
+cargo build --release --target=aarch64-apple-darwin
+
+mkdir -p target/universal-apple-darwin/release
+lipo -create -output target/universal-apple-darwin/release/rust-paper \
+    target/x86_64-apple-darwin/release/rust-paper \
+    target/aarch64-apple-darwin/release/rust-paper
+
+# annoying that the fat exe contains the full data section twice, but
+#    I don't know if there's a good way of unifying it. ah well.
+
+
+
+# for windows? who cares
+
+rustup target add x86_64-pc-windows-gnu
+cargo build --release --target=x86_64-pc-windows-gnu
+rustup target add x86_64-pc-windows-msvc
+cargo build --release --target=x86_64-pc-windows-msvc

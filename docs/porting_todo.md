@@ -7,6 +7,20 @@ paper internal
 * license, readme, etc
 * homebrew tap?
 * release script (github action?)
+* libraries?!
+  - oh noes!
+  - plotting
+    - options, in no particular order, based on cursory research:
+      - https://crates.io/crates/poloto
+      - https://crates.io/crates/plotlib
+      - https://crates.io/crates/plotters
+      - https://crates.io/crates/criterion-plot
+      - https://crates.io/crates/ferrischart
+  - docx parsing
+    - options, again in no particular order, based on cursory research:
+      - https://crates.io/crates/docx
+      - https://crates.io/crates/docx-rs
+      - https://crates.io/crates/docx-rust
 
 idiomatic rust
 * examine error enum, figure out better ways of handling
@@ -21,3 +35,6 @@ cli functionality burndown list
 * `fmt`
 * `web`
 
+handover
+* change old repo to `python-paper`
+* change current repo to `paper`, along with all project references

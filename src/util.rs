@@ -9,16 +9,20 @@ pub fn get_paper_version_stamp() -> String {
     return version;
 }
 
-// too many .clone() calls here, but I'm not sure how else to
+// NB: can't do a simple naive merge here because:
+//     - want to merge recursively if both values are also hashes
+//     - if they're both lists we want to extend, not overwrite
+//     - if it's a default value ("[SOMETHING]"), leave it alone
+// There are too many .clone() calls here, but I'm not sure how else to
 //    make the borrow checker happy. :(
-pub fn merge_hash(target: &mut yaml::Hash, new_hash: &yaml::Hash) {
+pub fn merge_yaml_hash(target: &mut yaml::Hash, new_hash: &yaml::Hash) {
     for (k, v) in new_hash {
         if target.contains_key(k) {
             let target_v = target.get_mut(k).unwrap();
 
             if target_v.as_hash().is_some() && v.as_hash().is_some() {
                 let mut new_v = target_v.as_hash().unwrap().clone();
-                merge_hash(&mut new_v, v.as_hash().unwrap());
+                merge_yaml_hash(&mut new_v, v.as_hash().unwrap());
                 target[k] = Yaml::Hash(new_v);
             } else if v.is_array() {
                 if target_v.is_array() {

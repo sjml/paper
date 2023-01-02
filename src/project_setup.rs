@@ -55,7 +55,7 @@ pub fn init_project() -> Result<(), PaperError> {
 
     let mut meta = yaml::Hash::new();
     for m in meta_chain {
-        util::merge_hash(&mut meta, &m.into_hash().unwrap());
+        util::merge_yaml_hash(&mut meta, &m.into_hash().unwrap());
     }
 
     let mut meta_str = String::new();

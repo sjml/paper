@@ -1,8 +1,8 @@
-functionality
+## functionality
 * maybe set up unit tests? lol
 * get_paper_version_stamp should handle a git revision
 
-paper internal
+## paper internal
 * move scripts over here
 * license, readme, etc
 * homebrew tap?
@@ -23,10 +23,9 @@ paper internal
       - https://crates.io/crates/docx-rust
   - pdf manipulation
 
-idiomatic rust
-* main function has repetitive boilerplate -- better way to do this? 
+## idiomatic rust
 
-cli functionality burndown list
+## cli functionality burndown list
 * `build`
 * `save`
 * `push`
@@ -35,6 +34,6 @@ cli functionality burndown list
 * `fmt`
 * `web`
 
-handover
+## handover
 * change old repo to `python-paper`
 * change current repo to `paper`, along with all project references

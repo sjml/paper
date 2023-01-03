@@ -1,3 +1,4 @@
+use anyhow::Result;
 use clap::{arg, Command};
 
 mod project_setup;
@@ -12,7 +13,6 @@ fn cli() -> Command {
             Command::new("new")
                 .about("Create the scaffolding for a new writing/research project.")
                 .arg(arg!(<PROJECT_NAME> "The name of the directory to create for the project."))
-                .arg_required_else_help(true),
         )
         .subcommand(
             Command::new("init")
@@ -20,30 +20,29 @@ fn cli() -> Command {
         )
 }
 
-fn main() {
+fn _main() -> Result<()> {
     let matches = cli().get_matches();
 
     match matches.subcommand() {
         Some(("new", sub_matches)) => {
-            match project_setup::new_project(
+            project_setup::new_project(
                 sub_matches
                     .get_one::<String>("PROJECT_NAME")
                     .expect("required"),
-            ) {
-                Ok(_) => {}
-                Err(e) => {
-                    eprintln!("{:?}", e);
-                    std::process::exit(1);
-                }
-            };
+            )?;
         }
-        Some(("init", _)) => match project_setup::init_project() {
-            Ok(_) => {}
-            Err(e) => {
-                eprintln!("{:?}", e);
-                std::process::exit(1);
-            }
-        },
+        Some(("init", _)) => {
+            project_setup::init_project()?;
+        }
         _ => unreachable!(),
+    }
+
+    Ok(())
+}
+
+fn main() {
+    if let Err(e) = _main() {
+        eprintln!("{:?}", e);
+        std::process::exit(1);
     }
 }

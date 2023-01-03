@@ -1,3 +1,6 @@
+use std::path;
+
+use anyhow::{bail, Context, Result};
 use yaml_rust::{yaml, Yaml};
 
 pub static LIB_NAME: &str = "SJML Paper";
@@ -53,4 +56,47 @@ pub fn merge_yaml_hash(target: &mut yaml::Hash, new_hash: &yaml::Hash) {
             }
         }
     }
+}
+
+pub fn ensure_paper_dir() -> Result<()> {
+    let files = vec![path::Path::new("./paper_meta.yml")];
+    let dirs = vec![
+        path::Path::new("./.paper_resources"),
+        path::Path::new("./content"),
+    ];
+
+    for f in files {
+        if !f.exists() {
+            bail!(
+                "Invalid paper directory; expected file {:?}, which does not exist.",
+                f
+            );
+        }
+        if !f.is_file() {
+            bail!("Invalid paper directory; {:?} is not a file.", f);
+        }
+    }
+
+    for d in dirs {
+        if !d.exists() {
+            bail!(
+                "Invalid paper directory; expected directory {:?}, which does not exist.",
+                d
+            );
+        }
+        if !d.is_dir() {
+            bail!("Invalid paper directory; {:?} is not a directory.", d);
+        }
+        let subpaths = d
+            .read_dir()
+            .with_context(|| format!("Could not read contents of {:?}", d))?
+            .filter_map(|e| e.ok())
+            .map(|e| e.path())
+            .collect::<Vec<_>>();
+        if subpaths.len() == 0 {
+            bail!("Invalid paper directory; {:?} contains no files.", d);
+        }
+    }
+
+    Ok(())
 }

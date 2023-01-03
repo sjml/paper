@@ -214,6 +214,7 @@ dependencies = [
  "clap",
  "include_dir",
  "subprocess",
+ "termcolor",
  "yaml-rust",
 ]
 

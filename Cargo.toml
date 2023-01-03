@@ -12,6 +12,7 @@ keywords = ["academic", "writing", "references", "markdown", "latex"]
 categories = ["command-line-utilities", "template-engine", ]
 
 [dependencies]
+anyhow = "1.0.68"
 clap = { version = "4.0.32", features = ["derive"] }
 include_dir = "0.7.3"
 subprocess = "0.2.9"

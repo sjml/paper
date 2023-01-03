@@ -1,6 +1,5 @@
 use clap::{arg, Command};
 
-mod errors;
 mod project_setup;
 mod util;
 
@@ -31,13 +30,19 @@ fn main() {
                     .get_one::<String>("PROJECT_NAME")
                     .expect("required"),
             ) {
-                Ok(p) => p,
-                Err(_) => std::process::exit(1),
+                Ok(_) => {}
+                Err(e) => {
+                    eprintln!("{:?}", e);
+                    std::process::exit(1);
+                }
             };
         }
         Some(("init", _)) => match project_setup::init_project() {
-            Ok(p) => p,
-            Err(_) => std::process::exit(1),
+            Ok(_) => {}
+            Err(e) => {
+                eprintln!("{:?}", e);
+                std::process::exit(1);
+            }
         },
         _ => unreachable!(),
     }

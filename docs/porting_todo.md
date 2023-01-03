@@ -24,8 +24,7 @@ paper internal
   - pdf manipulation
 
 idiomatic rust
-* examine error enum, figure out better ways of handling
-* look at all uses of `unwrap()` -- try to purge, switch to error matching
+* main function has repetitive boilerplate -- better way to do this? 
 
 cli functionality burndown list
 * `build`

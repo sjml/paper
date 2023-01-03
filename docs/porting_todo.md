@@ -21,6 +21,7 @@ paper internal
       - https://crates.io/crates/docx
       - https://crates.io/crates/docx-rs
       - https://crates.io/crates/docx-rust
+  - pdf manipulation
 
 idiomatic rust
 * examine error enum, figure out better ways of handling

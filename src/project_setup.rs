@@ -4,7 +4,7 @@ use std::path::Path;
 
 use include_dir::{include_dir, Dir};
 use subprocess;
-use yaml_rust::{yaml, Yaml, YamlLoader, YamlEmitter};
+use yaml_rust::{yaml, Yaml, YamlEmitter, YamlLoader};
 
 use crate::errors::PaperError;
 use crate::util;

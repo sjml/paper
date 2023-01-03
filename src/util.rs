@@ -13,44 +13,44 @@ pub fn get_paper_version_stamp() -> String {
 //     - want to merge recursively if both values are also hashes
 //     - if they're both lists we want to extend, not overwrite
 //     - if it's a default value ("[SOMETHING]"), leave it alone
-// There are too many .clone() calls here, but I'm not sure how else to
+// There are a lot of .clone() calls here, but I'm not sure how else to
 //    make the borrow checker happy. :(
 pub fn merge_yaml_hash(target: &mut yaml::Hash, new_hash: &yaml::Hash) {
     for (k, v) in new_hash {
-        if target.contains_key(k) {
-            let target_v = target.get_mut(k).unwrap();
-
-            if target_v.as_hash().is_some() && v.as_hash().is_some() {
-                let mut new_v = target_v.as_hash().unwrap().clone();
-                merge_yaml_hash(&mut new_v, v.as_hash().unwrap());
-                target[k] = Yaml::Hash(new_v);
-            } else if v.is_array() {
-                if target_v.is_array() {
-                    let mut new_v = target_v.as_vec().unwrap().clone();
-                    new_v.extend_from_slice(v.as_vec().unwrap().as_slice());
-                    target[k] = Yaml::Array(new_v);
-                } else {
-                    target[k] = v.clone();
-                }
-            } else {
-                let local_value = v.clone();
-                match local_value.into_string() {
-                    Some(val_str) => {
-                        if target.contains_key(k)
-                            && val_str.starts_with("")
-                            && val_str.ends_with("]")
-                        {
-                            continue;
-                        }
-                        target[k] = Yaml::String(val_str);
+        match target.get_mut(k) {
+            Some(target_v) => match v {
+                Yaml::Hash(vh) => match target_v {
+                    Yaml::Hash(tvh) => {
+                        let mut new_v = tvh.clone();
+                        merge_yaml_hash(&mut new_v, vh);
+                        target[k] = Yaml::Hash(new_v);
                     }
-                    None => {
-                        target.insert(k.clone(), v.clone());
+                    _ => {}
+                },
+                Yaml::Array(va) => match target_v {
+                    Yaml::Array(tva) => {
+                        let mut new_v = tva.clone();
+                        new_v.extend_from_slice(va);
+                        target[k] = Yaml::Array(new_v);
+                    }
+                    _ => {
+                        target[k] = v.clone();
+                    }
+                },
+                Yaml::String(vs) => {
+                    if vs.starts_with("[") && vs.ends_with("]") {
+                        continue;
+                    } else {
+                        target[k] = Yaml::String(vs.to_string());
                     }
                 }
+                _ => {
+                    target.insert(k.clone(), v.clone());
+                }
+            },
+            None => {
+                target.insert(k.clone(), v.clone());
             }
-        } else {
-            target.insert(k.clone(), v.clone());
         }
     }
 }

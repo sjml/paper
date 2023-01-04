@@ -42,8 +42,15 @@ fn cli() -> Command {
 fn _main() -> Result<()> {
     let matches = cli().get_matches();
 
+    let pandoc_features = [
+        "+bracketed_spans",  // let us put attributes on individual spans
+        "+raw_tex",          // allow raw TeX commands (like `\noindent{}`)
+        "-auto_identifiers", // don't try to link section headings
+    ];
+
     config::CONFIG.set(config::Configuration {
-        verbose: matches.get_flag("verbose")
+        verbose: matches.get_flag("verbose"),
+        pandoc_input_format: format!("markdown{}", pandoc_features.join("")),
     });
 
     match matches.subcommand() {

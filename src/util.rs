@@ -1,12 +1,11 @@
 use std::fs;
 use std::path;
 use std::path::Path;
-use std::time::UNIX_EPOCH;
 
 use anyhow::{bail, Context, Result};
-use subprocess;
-use walkdir;
 use yaml_rust::{yaml, Yaml, YamlLoader};
+
+use crate::metadata;
 
 pub static LIB_NAME: &str = "SJML Paper";
 pub static LIB_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -129,31 +128,17 @@ pub fn ensure_paper_dir() -> Result<()> {
     Ok(())
 }
 
-pub fn get_content_timestamp() -> Result<u64> {
-    // if there are no changes in the content directory, return the last commit time
-    let content_status = subprocess::Exec::cmd("git")
-        .args(&vec!["status", "./content", "--porcelain"])
-        .capture()
-        .context("Could not run git status for timestamp.")?;
-    if content_status.stdout.len() == 0 {
-        let git_commit_time = subprocess::Exec::cmd("git")
-            .args(&vec!["log", "-1", "--format=%ct"])
-            .capture()
-            .context("Could not run git log for timestamp.")?;
-        let git_commit_time_str = std::str::from_utf8(&git_commit_time.stdout).context("Invalid UTF-8 sequence in git log for timestamp.")?;
-        let commit_time: u64 = git_commit_time_str.trim().parse()?;
-        return Ok(commit_time);
+pub fn get_assignment() -> Result<String> {
+    let meta = metadata::PaperMeta::new()?;
+    match meta.get_string(&["assignment"]) {
+        Some(s) => Ok(s),
+        None => {
+            let cwd = std::env::current_dir().context("Current path is invalid.")?;
+            let base = cwd
+                .file_name()
+                .context("Couldn't get basename of current path.")?
+                .to_string_lossy();
+            Ok(base.to_string())
+        }
     }
-
-    // otherwise return the most recent mod time in the content directory
-    let mut most_recent: u64 = 0;
-    for entry in walkdir::WalkDir::new("./content") {
-        let entry = entry?;
-        let md = entry.metadata()
-            .with_context(|| format!("Could not get metadata for {:?}", entry.path()))?;
-        let modified = md.modified().unwrap().duration_since(UNIX_EPOCH)
-            .context("Invalid modification time or *very* old file.")?;
-        most_recent = std::cmp::max(most_recent, modified.as_secs());
-    }
-    Ok(most_recent)
 }

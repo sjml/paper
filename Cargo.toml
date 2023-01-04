@@ -15,6 +15,8 @@ categories = ["command-line-utilities", "template-engine", ]
 anyhow = "1.0.68"
 clap = { version = "4.0.32", features = ["derive"] }
 include_dir = "0.7.3"
+state = "0.5.3"
 subprocess = "0.2.9"
 termcolor = "1.1.3"
+walkdir = "2.3.2"
 yaml-rust = "0.4.5"

@@ -5,34 +5,11 @@ use std::path::Path;
 use anyhow::{bail, Context, Result};
 use include_dir::{include_dir, Dir};
 use subprocess;
-use yaml_rust::{yaml, Yaml, YamlEmitter, YamlLoader};
+use yaml_rust::{yaml, Yaml, YamlEmitter};
 
 use crate::util;
 
 static PROJECT_TEMPLATE: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/resources/project_template");
-
-fn load_yml_file(path: &Path) -> Result<Yaml> {
-    let file_contents =
-        fs::read_to_string(path).with_context(|| format!("Could not read file at {:?}", path))?;
-    let yml = YamlLoader::load_from_str(&file_contents)
-        .with_context(|| format!("Invalid YAML file at {:?}", path))?;
-
-    let yml = yml
-        .into_iter()
-        .filter(|y| !y.is_null())
-        .collect::<Vec<Yaml>>();
-
-    if yml.len() == 0 {
-        // is this possible?
-        bail!("YAML file at {:?} contains no documents.", path);
-    }
-    if yml.len() > 1 {
-        bail!("YAML file at {:?} contains too many documents.", path);
-    }
-    let doc = yml[0].clone();
-
-    Ok(doc)
-}
 
 pub fn init_project() -> Result<()> {
     let proj_path_buf = std::env::current_dir().context("Current path is invalid.")?;
@@ -53,7 +30,7 @@ pub fn init_project() -> Result<()> {
     while let Some(current_path) = current_path_option {
         let meta_path = current_path.join("paper_meta.yml");
         if meta_path.exists() {
-            match load_yml_file(&meta_path) {
+            match util::load_yml_file(&meta_path) {
                 Ok(meta_yml) => match meta_yml {
                     Yaml::Hash(_) => meta_chain.push(meta_yml),
                     _ => bail!("Non-hash YAML document found at {:?}", meta_path),

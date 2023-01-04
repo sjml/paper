@@ -3,6 +3,8 @@ use clap::{arg, value_parser, Command};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
 mod build;
+mod config;
+pub mod metadata;
 mod project_setup;
 mod util;
 
@@ -11,6 +13,7 @@ fn cli() -> Command {
         .about("Shane’s little paper-{writing|managing|building} utility\n    <https://github.com/sjml/paper>")
         .subcommand_required(true)
         .arg_required_else_help(true)
+        .arg(arg!(-v --verbose "Spam the output log").global(true))
         .subcommand(
             Command::new("new")
                 .about("Create the scaffolding for a new writing/research project.")
@@ -30,7 +33,7 @@ fn cli() -> Command {
                 )
                 .arg(
                     arg!(--"docx-revision" <NUM> "Revision number for docx output format; if unset or negative, will use the number of times the project was saved.")
-                    .value_parser(value_parser!(i128))
+                    .value_parser(value_parser!(i64))
                     .default_value("-1")
                 )
         )
@@ -38,6 +41,10 @@ fn cli() -> Command {
 
 fn _main() -> Result<()> {
     let matches = cli().get_matches();
+
+    config::CONFIG.set(config::Configuration {
+        verbose: matches.get_flag("verbose")
+    });
 
     match matches.subcommand() {
         Some(("new", sub_matches)) => {
@@ -56,7 +63,7 @@ fn _main() -> Result<()> {
                     .get_one::<String>("output-format")
                     .expect("required"),
                 *sub_matches
-                    .get_one::<i128>("docx-revision")
+                    .get_one::<i64>("docx-revision")
                     .expect("required"),
             )?;
         }
@@ -68,8 +75,8 @@ fn _main() -> Result<()> {
 
 fn main() {
     if let Err(e) = _main() {
-        //// more portable version of this, but using the already-included termcolor:
         // eprintln!("\x1B[0;31m\x1b[1merror\x1b[0m: {:?}", e);
+        //// more portable version of the above, using the already-included termcolor:
         let mut err_format = ColorSpec::new();
         err_format.set_fg(Some(Color::Red)).set_bold(true);
         let mut stderr = StandardStream::stderr(ColorChoice::Auto);

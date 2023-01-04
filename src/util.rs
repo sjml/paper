@@ -1,7 +1,12 @@
+use std::fs;
 use std::path;
+use std::path::Path;
+use std::time::UNIX_EPOCH;
 
 use anyhow::{bail, Context, Result};
-use yaml_rust::{yaml, Yaml};
+use subprocess;
+use walkdir;
+use yaml_rust::{yaml, Yaml, YamlLoader};
 
 pub static LIB_NAME: &str = "SJML Paper";
 pub static LIB_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -10,6 +15,29 @@ pub static LIB_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub fn get_paper_version_stamp() -> String {
     let version = format!("{} v{}", LIB_NAME, LIB_VERSION);
     return version;
+}
+
+pub fn load_yml_file(path: &Path) -> Result<Yaml> {
+    let file_contents =
+        fs::read_to_string(path).with_context(|| format!("Could not read file at {:?}", path))?;
+    let yml = YamlLoader::load_from_str(&file_contents)
+        .with_context(|| format!("Invalid YAML file at {:?}", path))?;
+
+    let yml = yml
+        .into_iter()
+        .filter(|y| !y.is_null())
+        .collect::<Vec<Yaml>>();
+
+    if yml.len() == 0 {
+        // is this possible?
+        bail!("YAML file at {:?} contains no documents.", path);
+    }
+    if yml.len() > 1 {
+        bail!("YAML file at {:?} contains too many documents.", path);
+    }
+    let doc = yml[0].clone();
+
+    Ok(doc)
 }
 
 // NB: can't do a simple naive merge here because:
@@ -99,4 +127,33 @@ pub fn ensure_paper_dir() -> Result<()> {
     }
 
     Ok(())
+}
+
+pub fn get_content_timestamp() -> Result<u64> {
+    // if there are no changes in the content directory, return the last commit time
+    let content_status = subprocess::Exec::cmd("git")
+        .args(&vec!["status", "./content", "--porcelain"])
+        .capture()
+        .context("Could not run git status for timestamp.")?;
+    if content_status.stdout.len() == 0 {
+        let git_commit_time = subprocess::Exec::cmd("git")
+            .args(&vec!["log", "-1", "--format=%ct"])
+            .capture()
+            .context("Could not run git log for timestamp.")?;
+        let git_commit_time_str = std::str::from_utf8(&git_commit_time.stdout).context("Invalid UTF-8 sequence in git log for timestamp.")?;
+        let commit_time: u64 = git_commit_time_str.trim().parse()?;
+        return Ok(commit_time);
+    }
+
+    // otherwise return the most recent mod time in the content directory
+    let mut most_recent: u64 = 0;
+    for entry in walkdir::WalkDir::new("./content") {
+        let entry = entry?;
+        let md = entry.metadata()
+            .with_context(|| format!("Could not get metadata for {:?}", entry.path()))?;
+        let modified = md.modified().unwrap().duration_since(UNIX_EPOCH)
+            .context("Invalid modification time or *very* old file.")?;
+        most_recent = std::cmp::max(most_recent, modified.as_secs());
+    }
+    Ok(most_recent)
 }

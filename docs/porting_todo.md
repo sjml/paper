@@ -24,9 +24,12 @@
   - pdf manipulation
 
 ## idiomatic rust
+- using `state` crate, but `once_cell` does something similar (if less ergonomically) and appears to be on its way to inclusion in the standard lib? think about swapping.
+- consider wrapping all the `if CONFIG.get().verbose` stuff into a logging system
 
 ## cli functionality burndown list
 * `build`
+  - pull "default_format" from meta
 * `save`
 * `push`
 * `dev`

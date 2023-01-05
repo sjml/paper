@@ -3,6 +3,8 @@
 * get_paper_version_stamp should handle a git revision
 * output format enums to display string
     - also can they be derived?
+* double check what the table manipulation that Python was doing in doc_handling.py:91
+    - sure it can't be fixed in the Word style?
 
 ## paper internal
 * move scripts over here
@@ -18,16 +20,6 @@
       - https://crates.io/crates/plotters
       - https://crates.io/crates/criterion-plot
       - https://crates.io/crates/ferrischart
-  - docx parsing
-    - options, again in no particular order, based on cursory research:
-      - https://crates.io/crates/docx
-      - https://crates.io/crates/docx-rs
-      - https://crates.io/crates/docx-rust
-    - oh no, all the options are bad! they are all missing functionality and/or don't round-trip cleanly.
-      - is this the end of the road? or do I want to deal with manipulating the raw XML?! 🙀
-      - FFI?! am I getting CRAZY?!
-        - https://github.com/amiremohamadi/DuckX
-        - https://github.com/unidoc/unioffice
   - pdf manipulation
 
 ## idiomatic rust

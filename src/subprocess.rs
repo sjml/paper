@@ -3,7 +3,7 @@
 
 use std::process;
 
-use anyhow::{Context, Result, bail};
+use anyhow::{bail, Context, Result};
 
 pub fn run_command<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::fmt::Debug>(
     cmd: &str,
@@ -19,9 +19,13 @@ pub fn run_command<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::f
     if output.status.success() {
         let output_str = String::from_utf8(output.stdout)?;
         Ok(output_str)
-    }
-    else {
+    } else {
         let output_str = String::from_utf8(output.stderr)?;
-        bail!("Failure of command: {} with args <{:?}>`:\n\n{}", cmd, args, output_str);
+        bail!(
+            "Failure of command: {} with args <{:?}>`:\n\n{}",
+            cmd,
+            args,
+            output_str
+        );
     }
 }

@@ -204,7 +204,7 @@ pub fn build(output_format: formats::OutputFormat, docx_revision: i64) -> Result
 
     subprocess::run_command("pandoc", pandoc_args.as_slice())?;
 
-    builder.finish_file(output_file_path.as_path())?;
+    builder.finish_file(output_file_path.as_path(), &meta)?;
 
     Ok(())
 }

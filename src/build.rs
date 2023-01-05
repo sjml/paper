@@ -90,10 +90,10 @@ pub fn build(output_format: formats::OutputFormat, docx_revision: i64) -> Result
     }
 
     #[rustfmt::skip]
-    let mut pandoc_args = vec![
-        "--from", &CONFIG.get().pandoc_input_format,
-        "--metadata-file", "./paper_meta.yml",
-        "--resource-path", "./content",
+    let mut pandoc_args: Vec<String> = vec![
+        "--from".to_string(), CONFIG.get().pandoc_input_format.clone(),
+        "--metadata-file".to_string(), "./paper_meta.yml".to_string(),
+        "--resource-path".to_string(), "./content".to_string(),
     ];
 
     let mut builder: Box<dyn formats::Builder>;
@@ -122,14 +122,87 @@ pub fn build(output_format: formats::OutputFormat, docx_revision: i64) -> Result
     };
     let output_file_path =
         out_path.join(format!("{}.{}", filename, builder.get_output_file_suffix()));
-    pandoc_args.extend(&[
-        "--output",
+    pandoc_args.push("--output".to_string());
+    pandoc_args.push(
         output_file_path
             .as_path()
             .to_str()
             .context("Can't unwrap output file path.")
-            .unwrap(),
-    ]);
+            .unwrap()
+            .to_string(),
+    );
+
+    let filter_dir = path::Path::new(".paper_resources").join("filters");
+    let lua_filters = fs::read_dir(&filter_dir)?
+        .filter_map(|lf| lf.ok())
+        .filter(|lf| {
+            lf.file_name()
+                .as_os_str()
+                .to_string_lossy()
+                .starts_with("filter-")
+        })
+        .collect::<Vec<fs::DirEntry>>();
+
+    for lf in lua_filters {
+        pandoc_args.push("--lua-filter".to_string());
+        pandoc_args.push(lf.path().to_string_lossy().to_string());
+    }
+
+    if let Some(bib_sources) = meta.get_vec_string(&["sources"]) {
+        if CONFIG.get().verbose {
+            println!("Processing citations...");
+        }
+        pandoc_args.push("--citeproc".to_string());
+        pandoc_args.push("--csl".to_string());
+        if !(meta.get_bool(&["use_ibid"]).unwrap_or_else(|| false)) {
+            pandoc_args.push(
+                "./.paper_resources/chicago-fullnote-bibliography-short-title-subsequent.csl"
+                    .to_string(),
+            );
+        } else {
+            pandoc_args
+                .push("./.paper_resources/chicago-fullnote-bibliography-with-ibid.csl".to_string());
+        }
+        for bs in bib_sources {
+            pandoc_args.push("--bibliography".to_string());
+
+            let mut source = bs.clone();
+            if source.starts_with("~") {
+                source = source.replacen("~", std::env::var("HOME")?.as_str(), 1);
+            }
+            pandoc_args.push(source);
+        }
+
+        let post_lua_filters = fs::read_dir(filter_dir)?
+            .filter_map(|lf| lf.ok())
+            .filter(|lf| {
+                lf.file_name()
+                    .as_os_str()
+                    .to_string_lossy()
+                    .starts_with("post-filter-")
+            })
+            .collect::<Vec<fs::DirEntry>>();
+
+        for lf in post_lua_filters {
+            pandoc_args.push("--lua-filter".to_string());
+            pandoc_args.push(lf.path().to_string_lossy().to_string());
+        }
+    } else if CONFIG.get().verbose {
+        println!("No citation processing.");
+    }
+
+    for content_file in builder.get_file_list() {
+        pandoc_args.push(content_file);
+    }
+
+    // println!("{:?}", pandoc_args);
+
+    if CONFIG.get().verbose {
+        println!("Invoking pandoc with:");
+        println!("\t{}", pandoc_args.join(" "));
+    }
+
+    subprocess::run_command("pandoc", pandoc_args.as_slice())?;
 
     Ok(())
 }

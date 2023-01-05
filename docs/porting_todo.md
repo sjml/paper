@@ -29,6 +29,7 @@
 - using `state` crate, but `once_cell` does something similar (if less ergonomically) and appears to be on its way to inclusion in the standard lib? think about swapping.
 - consider wrapping all the `if CONFIG.get().verbose` stuff into a logging system
 - need another pass of sweeping the `unwrap()`s
+- pandoc_args needing to be a `Vec<String>` makes a lot of code messy -- better way to handle a list of string-like objects?
 
 ## cli functionality burndown list
 * `build`

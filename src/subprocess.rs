@@ -3,9 +3,12 @@
 
 use std::process;
 
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, bail};
 
-pub fn run_command(cmd: &str, args: &[&str]) -> Result<String> {
+pub fn run_command<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::fmt::Debug>(
+    cmd: &str,
+    args: &[T],
+) -> Result<String> {
     let mut command = process::Command::new(cmd);
     command.args(args);
 
@@ -13,6 +16,12 @@ pub fn run_command(cmd: &str, args: &[&str]) -> Result<String> {
         return format!("Could not run command: {} with args <{:?}>", cmd, args);
     })?;
 
-    let output_str = String::from_utf8(output.stdout)?;
-    Ok(output_str)
+    if output.status.success() {
+        let output_str = String::from_utf8(output.stdout)?;
+        Ok(output_str)
+    }
+    else {
+        let output_str = String::from_utf8(output.stderr)?;
+        bail!("Failure of command: {} with args <{:?}>`:\n\n{}", cmd, args, output_str);
+    }
 }

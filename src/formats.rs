@@ -3,6 +3,7 @@ use std::path::Path;
 
 use anyhow::{Context, Result};
 use tempfile::{self, NamedTempFile};
+use walkdir;
 
 use crate::config::CONFIG;
 use crate::metadata::PaperMeta;
@@ -18,9 +19,10 @@ pub enum OutputFormat {
 }
 
 pub trait Builder {
-    fn prepare(&mut self, args: &mut Vec<&str>, meta: &PaperMeta) -> Result<()>;
+    fn prepare(&mut self, args: &mut Vec<String>, meta: &PaperMeta) -> Result<()>;
     fn get_file_list(&self) -> Vec<String>;
     fn get_output_file_suffix(&self) -> String;
+    fn finish_file(&self) -> Result<Vec<String>>;
 }
 
 pub struct DocXBuilder {
@@ -36,11 +38,15 @@ impl Default for DocXBuilder {
 }
 
 impl Builder for DocXBuilder {
-    fn prepare(&mut self, args: &mut Vec<&str>, meta: &PaperMeta) -> Result<()> {
+    fn get_output_file_suffix(&self) -> String {
+        "docx".to_string()
+    }
+
+    fn prepare(&mut self, args: &mut Vec<String>, meta: &PaperMeta) -> Result<()> {
         #[rustfmt::skip]
         let cmds = [
-            "--to=docx",
-            "--reference-doc", "./.paper_resources/ChicagoStyle_Template.docx",
+            "--to=docx".to_string(),
+            "--reference-doc".to_string(), "./.paper_resources/ChicagoStyle_Template.docx".to_string(),
         ];
         args.extend_from_slice(&cmds);
 
@@ -128,10 +134,27 @@ impl Builder for DocXBuilder {
     }
 
     fn get_file_list(&self) -> Vec<String> {
-        vec![]
+        let mut file_list = vec![];
+
+        file_list.extend(
+            self.tmp_prefix_files
+                .iter()
+                .map(|ntf| ntf.path().to_string_lossy().to_string()),
+        );
+
+        let mut content_files = walkdir::WalkDir::new("./content")
+            .into_iter()
+            .filter_map(|entry| entry.ok())
+            .filter(|entry| entry.path().is_file())
+            .map(|entry| entry.path().as_os_str().to_string_lossy().to_string())
+            .collect::<Vec<String>>();
+        content_files.sort();
+        file_list.extend(content_files);
+
+        return file_list;
     }
 
-    fn get_output_file_suffix(&self) -> String {
-        "docx".to_string()
+    fn finish_file(&self) -> Result<Vec<String>> {
+        Ok(vec![])
     }
 }

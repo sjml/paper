@@ -4,30 +4,20 @@ use std::time::UNIX_EPOCH;
 
 use anyhow::{Context, Result};
 use regex::Regex;
-use subprocess;
 use walkdir;
 
 use crate::config::CONFIG;
-use crate::metadata;
+use crate::formats::{self, OutputFormat};
 use crate::metadata::PaperMeta;
+use crate::subprocess;
 use crate::util;
-
-const OUTPUT_DIRECTORY_NAME: &str = "output";
 
 fn get_content_timestamp() -> Result<u64> {
     // if there are no changes in the content directory, return the last commit time
-    let content_status = subprocess::Exec::cmd("git")
-        .args(&vec!["status", "./content", "--porcelain"])
-        .capture()
-        .context("Could not run git status for timestamp.")?;
-    if content_status.stdout.len() == 0 {
-        let git_commit_time = subprocess::Exec::cmd("git")
-            .args(&vec!["log", "-1", "--format=%ct"])
-            .capture()
-            .context("Could not run git log for timestamp.")?;
-        let git_commit_time_str = std::str::from_utf8(&git_commit_time.stdout)
-            .context("Invalid UTF-8 sequence in git log for timestamp.")?;
-        let commit_time: u64 = git_commit_time_str.trim().parse()?;
+    let content_status = subprocess::run_command("git", &["status", "./content", "--porcelain"])?;
+    if content_status.len() == 0 {
+        let git_commit_time = subprocess::run_command("git", &["log", "-1", "--format=%ct"])?;
+        let commit_time: u64 = git_commit_time.trim().parse()?;
         return Ok(commit_time);
     }
 
@@ -61,7 +51,11 @@ fn generate_filename(meta: &PaperMeta) -> Result<String> {
     let author_label = authors.first().unwrap().split(" ").last().unwrap();
     match meta.get_string(&["data", "class_mnemonic"]) {
         Some(mnemonic) => {
-            filename = format!("{}_{}", author_label, whitespace_search.replace(&mnemonic, ""));
+            filename = format!(
+                "{}_{}",
+                author_label,
+                whitespace_search.replace(&mnemonic, "")
+            );
         }
         None => {
             filename = format!("{}", author_label);
@@ -75,17 +69,13 @@ fn generate_filename(meta: &PaperMeta) -> Result<String> {
     Ok(filename)
 }
 
-pub fn build(output_format: &str, docx_revision: i64) -> Result<()> {
+pub fn build(output_format: formats::OutputFormat, docx_revision: i64) -> Result<()> {
     util::ensure_paper_dir()?;
 
-    let mut meta = metadata::PaperMeta::new()?;
-
-    if output_format.contains("docx") {
-        meta.set_int(&["docx", "revision"], docx_revision)?;
-    }
+    let mut meta = PaperMeta::new()?;
 
     if CONFIG.get().verbose {
-        println!("Building for format {}.", output_format);
+        println!("Building for format {:?}.", output_format);
     }
 
     let content_timestamp = get_content_timestamp()?;
@@ -94,26 +84,52 @@ pub fn build(output_format: &str, docx_revision: i64) -> Result<()> {
     }
     std::env::set_var("SOURCE_DATE_EPOCH", content_timestamp.to_string());
 
-    let out_path = path::Path::new(OUTPUT_DIRECTORY_NAME);
+    let out_path = path::Path::new(&CONFIG.get().output_directory_name);
     if !out_path.exists() {
-        fs::create_dir(OUTPUT_DIRECTORY_NAME).context("Could not create ouptput directory.")?;
-    }
-
-    let fn_data_path = ["filename"];
-    if !meta.contains(&fn_data_path) {
-        let generated = generate_filename(&meta)?;
-        meta.set_string(&fn_data_path, &generated)?;
-        if CONFIG.get().verbose {
-            println!("No filename given; using generated \"{}\".", generated);
-        }
+        fs::create_dir(out_path).context("Could not create ouptput directory.")?;
     }
 
     #[rustfmt::skip]
-    let cmd = vec!["pandoc",
+    let mut pandoc_args = vec![
         "--from", &CONFIG.get().pandoc_input_format,
         "--metadata-file", "./paper_meta.yml",
         "--resource-path", "./content",
     ];
+
+    let mut builder: Box<dyn formats::Builder>;
+    match output_format {
+        OutputFormat::Docx | OutputFormat::DocxPdf => {
+            meta.set_int(&["docx", "revision"], docx_revision)?;
+            builder = Box::new(formats::DocXBuilder::default());
+        }
+        _ => {
+            // wrong, just leaving here now until the rest of the arms are filled
+            builder = Box::new(formats::DocXBuilder::default());
+        }
+    }
+
+    builder.prepare(&mut pandoc_args, &meta)?;
+
+    let filename = match meta.get_string(&["filename"]) {
+        Some(fname) => fname,
+        None => {
+            let generated = generate_filename(&meta)?;
+            if CONFIG.get().verbose {
+                println!("No filename given; using generated \"{}\".", generated);
+            }
+            generated
+        }
+    };
+    let output_file_path =
+        out_path.join(format!("{}.{}", filename, builder.get_output_file_suffix()));
+    pandoc_args.extend(&[
+        "--output",
+        output_file_path
+            .as_path()
+            .to_str()
+            .context("Can't unwrap output file path.")
+            .unwrap(),
+    ]);
 
     Ok(())
 }

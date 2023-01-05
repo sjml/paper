@@ -1,6 +1,8 @@
 ## functionality
 * maybe set up unit tests? lol
 * get_paper_version_stamp should handle a git revision
+* output format enums to display string
+    - also can they be derived?
 
 ## paper internal
 * move scripts over here
@@ -26,6 +28,7 @@
 ## idiomatic rust
 - using `state` crate, but `once_cell` does something similar (if less ergonomically) and appears to be on its way to inclusion in the standard lib? think about swapping.
 - consider wrapping all the `if CONFIG.get().verbose` stuff into a logging system
+- need another pass of sweeping the `unwrap()`s
 
 ## cli functionality burndown list
 * `build`

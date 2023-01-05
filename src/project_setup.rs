@@ -4,9 +4,9 @@ use std::path::Path;
 
 use anyhow::{bail, Context, Result};
 use include_dir::{include_dir, Dir};
-use subprocess;
 use yaml_rust::{yaml, Yaml, YamlEmitter};
 
+use crate::subprocess;
 use crate::util;
 
 static PROJECT_TEMPLATE: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/resources/project_template");
@@ -62,28 +62,19 @@ pub fn init_project() -> Result<()> {
 
     fs::create_dir("research").context("Could not write research directory.")?;
 
-    subprocess::Exec::cmd("git")
-        .arg("init")
-        .stdout(subprocess::NullFile)
-        .join()
-        .context("Could not run `git init`")?;
-    subprocess::Exec::cmd("git")
-        .args(&vec!["add", "."])
-        .stdout(subprocess::NullFile)
-        .join()
-        .context("Could not run `git add .`")?;
-    subprocess::Exec::cmd("git")
-        .args(&vec![
+    subprocess::run_command("git", &["init"])?;
+    subprocess::run_command("git", &["add", "."])?;
+    subprocess::run_command(
+        "git",
+        &[
             "commit",
             "-m",
             &format!(
                 "Initial project creation\n---\n{}",
                 util::get_paper_version_stamp()
             ),
-        ])
-        .stdout(subprocess::NullFile)
-        .join()
-        .context("Could not run `git commit` for initial project creation")?;
+        ],
+    )?;
 
     Ok(())
 }

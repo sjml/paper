@@ -1,11 +1,13 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use clap::{arg, value_parser, Command};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
 mod build;
 mod config;
+mod formats;
 pub mod metadata;
 mod project_setup;
+mod subprocess;
 mod util;
 
 fn cli() -> Command {
@@ -51,6 +53,7 @@ fn _main() -> Result<()> {
     config::CONFIG.set(config::Configuration {
         verbose: matches.get_flag("verbose"),
         pandoc_input_format: format!("markdown{}", pandoc_features.join("")),
+        output_directory_name: "output".to_string(),
     });
 
     match matches.subcommand() {
@@ -65,10 +68,22 @@ fn _main() -> Result<()> {
             project_setup::init_project()?;
         }
         Some(("build", sub_matches)) => {
+            let output_format: formats::OutputFormat = match sub_matches
+                .get_one::<String>("output-format")
+                .expect("required")
+                .as_str()
+            {
+                // TODO: can this be auto-mapped or derived via clap somehow?
+                "docx" => formats::OutputFormat::Docx,
+                "docx+pdf" => formats::OutputFormat::DocxPdf,
+                "latex" => formats::OutputFormat::LaTeX,
+                "latex+pdf" => formats::OutputFormat::LaTeXPdf,
+                "json" => formats::OutputFormat::Json,
+                _ => bail!("Invalid output format."),
+            };
+
             build::build(
-                sub_matches
-                    .get_one::<String>("output-format")
-                    .expect("required"),
+                output_format,
                 *sub_matches
                     .get_one::<i64>("docx-revision")
                     .expect("required"),

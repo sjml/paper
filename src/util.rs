@@ -3,6 +3,7 @@ use std::path;
 use std::path::Path;
 
 use anyhow::{bail, Context, Result};
+use time;
 use yaml_rust::{yaml, Yaml, YamlLoader};
 
 use crate::metadata;
@@ -14,6 +15,31 @@ pub static LIB_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub fn get_paper_version_stamp() -> String {
     let version = format!("{} v{}", LIB_NAME, LIB_VERSION);
     return version;
+}
+
+pub fn get_date_string(meta: &metadata::PaperMeta) -> Result<String> {
+    let date: time::Date;
+    match meta.get_string(&["data", "date"]) {
+        None => match time::OffsetDateTime::now_local() {
+            Ok(now) => date = now.date(),
+            Err(_) => date = time::OffsetDateTime::now_utc().date(),
+        },
+        Some(date_string) => {
+            let format = time::macros::format_description!("[year]-[month]-[day]");
+            date = time::Date::parse(&date_string, format)?;
+        }
+    }
+
+    // because one of my example documents has a due date of 33 AD, and what's
+    //  the point of making your own system if you can't have a little Easter egg?
+    //  :D
+    let mut year_str = date.year().to_string();
+    if year_str == "33" {
+        year_str = "A.U.C. 786".to_string();
+    }
+    let out_format = time::macros::format_description!("[month repr:long] [day padding:none]");
+    let out_string = format!("{}, {}", date.format(out_format)?, year_str);
+    Ok(out_string)
 }
 
 pub fn load_yml_file(path: &Path) -> Result<Yaml> {

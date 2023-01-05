@@ -1,3 +1,4 @@
+use std::fs;
 use std::io::Write;
 use std::path::Path;
 
@@ -22,7 +23,7 @@ pub trait Builder {
     fn prepare(&mut self, args: &mut Vec<String>, meta: &PaperMeta) -> Result<()>;
     fn get_file_list(&self) -> Vec<String>;
     fn get_output_file_suffix(&self) -> String;
-    fn finish_file(&self) -> Result<Vec<String>>;
+    fn finish_file(&self, output_file_path: &Path) -> Result<Vec<String>>;
 }
 
 pub struct DocXBuilder {
@@ -98,7 +99,7 @@ impl Builder for DocXBuilder {
             }
             title_string_coll.push(":::\n".to_string());
 
-            title_string_coll.push("::: {{custom-style=\"Author\"}}\n".to_string());
+            title_string_coll.push("::: {custom-style=\"Author\"}\n".to_string());
 
             meta.get_string(&["data", "professor"])
                 .map(|prof_str| title_string_coll.push(format!("{}\\\n", prof_str)));
@@ -154,7 +155,14 @@ impl Builder for DocXBuilder {
         return file_list;
     }
 
-    fn finish_file(&self) -> Result<Vec<String>> {
+    fn finish_file(&self, output_file_path: &Path) -> Result<Vec<String>> {
+        if CONFIG.get().verbose {
+            println!("Packinging docx...");
+        }
+
+        // let docx_buffer = fs::read(output_file_path)?;
+
+
         Ok(vec![])
     }
 }

@@ -23,6 +23,8 @@
       - https://crates.io/crates/docx
       - https://crates.io/crates/docx-rs
       - https://crates.io/crates/docx-rust
+    - oh no, all the options are bad! they are all missing functionality and/or don't round-trip cleanly.
+      - is this the end of the road? or do I want to deal with manipulating the raw XML?! 🙀
   - pdf manipulation
 
 ## idiomatic rust

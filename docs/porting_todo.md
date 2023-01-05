@@ -25,6 +25,9 @@
       - https://crates.io/crates/docx-rust
     - oh no, all the options are bad! they are all missing functionality and/or don't round-trip cleanly.
       - is this the end of the road? or do I want to deal with manipulating the raw XML?! 🙀
+      - FFI?! am I getting CRAZY?!
+        - https://github.com/amiremohamadi/DuckX
+        - https://github.com/unidoc/unioffice
   - pdf manipulation
 
 ## idiomatic rust

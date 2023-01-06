@@ -74,6 +74,8 @@ impl Builder for DocXBuilder {
 
             let mut title_string_coll: Vec<String> = vec![];
 
+            title_string_coll.push("::: title-page\n\n".to_string());
+
             let title = meta.get_string(&["data", "title"]);
             let subtitle = meta.get_string(&["data", "subtitle"]);
 
@@ -131,6 +133,8 @@ impl Builder for DocXBuilder {
 
             title_string_coll.push("\\\n".to_string());
             title_string_coll.push(util::get_date_string(&meta)?);
+
+            title_string_coll.push("\n:::\n".to_string());
 
             title_string_coll.push("\n:::\n".to_string());
 
@@ -219,48 +223,33 @@ impl Builder for DocXBuilder {
 
         // change fonts (if needed) in Normal and Verbatim Char styles
         if meta.contains(&["base_font_override"]) || meta.contains(&["mono_font_override"]) {
-            let styles_pkg = self.get_file_root(&output_path.to_path_buf(), "word/styles.xml")?;
-            let styles_doc = styles_pkg.as_document();
-            let root = styles_doc.root();
-
-            let ascii_att_name =
-                sxd_document::QName::with_namespace_uri(Some(DOCX_SCHEMA), "ascii");
-            let ansi_att_name = sxd_document::QName::with_namespace_uri(Some(DOCX_SCHEMA), "hAnsi");
+            // I wanted to do this more cleverly with XML, but
+            //  sxd-document doesn't fully round-trip and MS Word chokes on the
+            //  result even though it's semantically identical. (Unused xmlns attributes
+            //  get trimmed, which Word expects for some reason.)
+            // Anyway, the XML-based solution is still in the git history
+            //  if this makes you sad, as it does me.
+            let styles_path = output_path.join("word/styles.xml");
+            let mut styles_datums = String::new();
+            {
+                let mut styles_file = fs::File::open(&styles_path)?;
+                styles_file.read_to_string(&mut styles_datums)?;
+            }
 
             if let Some(base_override) = meta.get_string(&["base_font_override"]) {
                 if CONFIG.get().verbose {
                     println!("Changing base font to {}...", base_override);
                 }
-                let style_vc_xpath =
-                    self.get_xpath(&factory, "//w:style[@w:styleId='Normal']//w:rFonts")?;
-                let style_vc_val = style_vc_xpath.evaluate(&context, root)?;
-                if let Nodeset(style_ns) = style_vc_val {
-                    if let Some(style_node) = style_ns.document_order_first() {
-                        if let Some(style_el) = style_node.element() {
-                            style_el.set_attribute_value(ascii_att_name, &base_override);
-                            style_el.set_attribute_value(ansi_att_name, &base_override);
-                        }
-                    }
-                }
+                styles_datums = styles_datums.replace("Times New Roman", &base_override);
             }
             if let Some(mono_override) = meta.get_string(&["mono_font_override"]) {
                 if CONFIG.get().verbose {
                     println!("Changing mono font to {}...", mono_override);
                 }
-                let style_vc_xpath =
-                    self.get_xpath(&factory, "//w:style[@w:styleId='VerbatimChar']//w:rFonts")?;
-                let style_vc_val = style_vc_xpath.evaluate(&context, root)?;
-                if let Nodeset(style_ns) = style_vc_val {
-                    if let Some(style_node) = style_ns.document_order_first() {
-                        if let Some(style_el) = style_node.element() {
-                            style_el.set_attribute_value(ascii_att_name, &mono_override);
-                            style_el.set_attribute_value(ansi_att_name, &mono_override);
-                        }
-                    }
-                }
+                styles_datums = styles_datums.replace("Consolas", &mono_override);
             }
 
-            self.write_document(&styles_doc, &output_path.to_path_buf(), "word/styles.xml")?;
+            fs::write(&styles_path, styles_datums)?;
         }
 
         if CONFIG.get().verbose {
@@ -350,7 +339,10 @@ impl DocXBuilder {
         let mut file = fs::File::create(&path)
             .with_context(|| format!("Could not create file {:?}.", pstr))?;
 
-        sxd_document::writer::format_document(&doc, &mut file)
+
+        let writer = sxd_document::writer::Writer::new()
+            .set_single_quotes(false);
+        writer.format_document(&doc, &mut file)
             .context("Unable to output XML document.")?;
         Ok(())
     }

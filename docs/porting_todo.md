@@ -5,6 +5,7 @@
     - also can they be derived?
 * double check what the table manipulation that Python was doing in doc_handling.py:91
     - sure it can't be fixed in the Word style?
+* docx font override will break if there's interaction between the two
 
 ## paper internal
 * move scripts over here
@@ -27,10 +28,12 @@
 - consider wrapping all the `if CONFIG.get().verbose` stuff into a logging system
 - need another pass of sweeping the `unwrap()`s
 - pandoc_args needing to be a `Vec<String>` makes a lot of code messy -- better way to handle a list of string-like objects?
+- the independent impl for DocxBuilder is kinda yucky
 
 ## cli functionality burndown list
 * `build`
-  - pull "default_format" from meta
+  - let the metadata set a default format
+  - _record_build_data
 * `save`
 * `push`
 * `dev`

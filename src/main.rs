@@ -9,6 +9,7 @@ pub mod metadata;
 mod project_setup;
 mod subprocess;
 mod util;
+mod wc;
 
 fn cli() -> Command {
     Command::new("paper")
@@ -38,6 +39,11 @@ fn cli() -> Command {
                     .value_parser(value_parser!(i64))
                     .default_value("-1")
                 )
+        )
+        .subcommand(
+            Command::new("wc")
+                .about("Print word count metrics for the project, stripping out metadata, citations, and footnotes.")
+                .arg(arg!(--full "Show full pre-stripped word count of each file as well."))
         )
 }
 
@@ -88,6 +94,9 @@ fn _main() -> Result<()> {
                     .get_one::<i64>("docx-revision")
                     .expect("required"),
             )?;
+        }
+        Some(("wc", sub_matches)) => {
+            wc::wc(sub_matches.get_flag("full"))?;
         }
         _ => unreachable!(),
     }

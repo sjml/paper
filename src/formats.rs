@@ -339,10 +339,9 @@ impl DocXBuilder {
         let mut file = fs::File::create(&path)
             .with_context(|| format!("Could not create file {:?}.", pstr))?;
 
-
-        let writer = sxd_document::writer::Writer::new()
-            .set_single_quotes(false);
-        writer.format_document(&doc, &mut file)
+        let writer = sxd_document::writer::Writer::new().set_single_quotes(false);
+        writer
+            .format_document(&doc, &mut file)
             .context("Unable to output XML document.")?;
         Ok(())
     }

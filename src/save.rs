@@ -76,11 +76,15 @@ pub fn push() -> Result<()> {
     if remote.is_empty() {
         let meta = PaperMeta::new()?;
         // default_repo = f"{meta['data']['class_mnemonic'].replace(' ', '')} {get_assignment()}"
-        let mnemonic = meta.get_string(&["data", "class_mnemonic"]).unwrap_or_default();
+        let mnemonic = meta
+            .get_string(&["data", "class_mnemonic"])
+            .unwrap_or_default();
         let default_name = format!("{} {}", mnemonic, util::get_assignment()?);
         let default_name = default_name.trim();
 
-        println!("(Note that GitHub will do some mild renaming, so it may not be this exact string.)");
+        println!(
+            "(Note that GitHub will do some mild renaming, so it may not be this exact string.)"
+        );
         let repo_name: String = dialoguer::Input::new()
             .with_prompt("What should be the repository name?")
             .default(default_name.into())
@@ -95,8 +99,7 @@ pub fn push() -> Result<()> {
             args.push("--private");
         }
         subprocess::run_command("gh", &args)?;
-    }
-    else {
+    } else {
         subprocess::run_command("git", &["push"])?;
     }
 

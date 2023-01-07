@@ -4,6 +4,7 @@ use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
 mod build;
 mod config;
+mod fmt;
 mod formats;
 pub mod metadata;
 mod project_setup;
@@ -62,6 +63,13 @@ fn cli() -> Command {
             Command::new("wc")
                 .about("Print word count metrics for the project, stripping out metadata, citations, and footnotes.")
                 .arg(arg!(--full "Show full pre-stripped word count of each file as well."))
+        )
+        .subcommand(
+            Command::new("fmt")
+                .about("Run an automated formatter on all the local Markdown files.")
+                .arg(arg!(--"no-wrap" "Do not add linebreaks to wrap the Markdown text."))
+                .arg(arg!(--columns <NUM> "The number of characters that can be in each line before wrapping.")
+                    .value_parser(value_parser!(u32)).default_value("80"))
         )
 }
 
@@ -127,6 +135,12 @@ fn _main() -> Result<()> {
         }
         Some(("wc", sub_matches)) => {
             wc::wc(sub_matches.get_flag("full"))?;
+        }
+        Some(("fmt", sub_matches)) => {
+            fmt::fmt(
+                !sub_matches.get_flag("no-wrap"),
+                *sub_matches.get_one::<u32>("columns").expect("required"),
+            )?;
         }
         _ => unreachable!(),
     }

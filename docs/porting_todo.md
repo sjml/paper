@@ -9,7 +9,7 @@
 * dev command for windows and release mode? (and confirmation prompt?)
 
 ## paper internal
-* move scripts and examples over here
+* move scripts and examples over here, make build scripts
 * license, readme, etc
 * homebrew tap?
 * release script (github action?)
@@ -40,7 +40,6 @@
   - other builders (docx+pdf, latex, latex+pdf)
 * `save`
   - progress image, tho
-* `fmt`
 
 ## handover
 * change old repo to `python-paper`

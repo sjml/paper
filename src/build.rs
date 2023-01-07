@@ -15,7 +15,7 @@ use crate::util;
 fn get_content_timestamp() -> Result<u64> {
     // if there are no changes in the content directory, return the last commit time
     let content_status = subprocess::run_command("git", &["status", "./content", "--porcelain"])?;
-    if content_status.len() == 0 {
+    if content_status.is_empty() {
         let git_commit_time = subprocess::run_command("git", &["log", "-1", "--format=%ct"])?;
         let commit_time: u64 = git_commit_time.trim().parse()?;
         return Ok(commit_time);

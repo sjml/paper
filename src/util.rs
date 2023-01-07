@@ -66,7 +66,7 @@ pub fn load_yml_file(path: &Path) -> Result<Yaml> {
         .filter(|y| !y.is_null())
         .collect::<Vec<Yaml>>();
 
-    if yml.len() == 0 {
+    if yml.is_empty() {
         // is this possible?
         bail!("YAML file at {:?} contains no documents.", path);
     }
@@ -159,7 +159,7 @@ pub fn ensure_paper_dir() -> Result<()> {
             .filter_map(|e| e.ok())
             .map(|e| e.path())
             .collect::<Vec<_>>();
-        if subpaths.len() == 0 {
+        if subpaths.is_empty() {
             bail!("Invalid paper directory; {:?} contains no files.", d);
         }
     }

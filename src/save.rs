@@ -1,7 +1,7 @@
 use std::fs;
 use std::io::Write;
 
-use anyhow::Result;
+use anyhow::{bail, Result};
 use dialoguer;
 
 use crate::metadata::PaperMeta;
@@ -65,6 +65,60 @@ pub fn save() -> Result<()> {
 
     subprocess::run_command("git", &["add", "."])?;
     subprocess::run_command("git", &["commit", "-m", &message])?;
+
+    Ok(())
+}
+
+pub fn push() -> Result<()> {
+    util::ensure_paper_dir()?;
+
+    let remote = subprocess::run_command("git", &["remote", "-v"])?;
+    if remote.is_empty() {
+        let meta = PaperMeta::new()?;
+        // default_repo = f"{meta['data']['class_mnemonic'].replace(' ', '')} {get_assignment()}"
+        let mnemonic = meta.get_string(&["data", "class_mnemonic"]).unwrap_or_default();
+        let default_name = format!("{} {}", mnemonic, util::get_assignment()?);
+        let default_name = default_name.trim();
+
+        println!("(Note that GitHub will do some mild renaming, so it may not be this exact string.)");
+        let repo_name: String = dialoguer::Input::new()
+            .with_prompt("What should be the repository name?")
+            .default(default_name.into())
+            .interact_text()?;
+        let is_private = dialoguer::Confirm::new()
+            .with_prompt("Private repository?")
+            .default(true)
+            .interact()?;
+
+        let mut args = vec!["repo", "create", &repo_name, "--source=.", "--push"];
+        if is_private {
+            args.push("--private");
+        }
+        subprocess::run_command("gh", &args)?;
+    }
+    else {
+        subprocess::run_command("git", &["push"])?;
+    }
+
+    Ok(())
+}
+
+pub fn web() -> Result<()> {
+    util::ensure_paper_dir()?;
+
+    let remote = subprocess::run_command("git", &["remote", "-v"])?;
+    if remote.is_empty() {
+        bail!("No remote repository set up.")
+    }
+
+    let origin_url = subprocess::run_command("git", &["remote", "get-url", "origin"])?;
+    if !origin_url.contains("github.com") {
+        // not entirely reliable as you could have a different remote repository containing a string
+        //   referencing "github.com" but this is already error-check-y enough for my purposes.
+        bail!("This repository is not on GitHub.");
+    }
+
+    subprocess::run_command("gh", &["repo", "view", "--web"])?;
 
     Ok(())
 }

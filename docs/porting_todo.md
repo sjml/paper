@@ -40,9 +40,7 @@
   - other builders (docx+pdf, latex, latex+pdf)
 * `save`
   - progress image, tho
-* `push`
 * `fmt`
-* `web`
 
 ## handover
 * change old repo to `python-paper`

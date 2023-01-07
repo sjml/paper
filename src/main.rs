@@ -51,6 +51,14 @@ fn cli() -> Command {
                 .about("Make a git commit with some extra tracking data.")
         )
         .subcommand(
+            Command::new("push")
+                .about("Push local git changes to the remote repository, creating one if necessary.")
+        )
+        .subcommand(
+            Command::new("web")
+                .about("Open the remote repository’s GitHub site.")
+        )
+        .subcommand(
             Command::new("wc")
                 .about("Print word count metrics for the project, stripping out metadata, citations, and footnotes.")
                 .arg(arg!(--full "Show full pre-stripped word count of each file as well."))
@@ -110,6 +118,12 @@ fn _main() -> Result<()> {
         }
         Some(("save", _)) => {
             save::save()?;
+        }
+        Some(("push", _)) => {
+            save::push()?;
+        }
+        Some(("web", _)) => {
+            save::web()?;
         }
         Some(("wc", sub_matches)) => {
             wc::wc(sub_matches.get_flag("full"))?;

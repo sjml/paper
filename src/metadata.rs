@@ -30,7 +30,7 @@ impl PaperMeta {
     }
 
     fn fetch_node(&self, keychain: &[&str]) -> Option<Yaml> {
-        if keychain.len() == 0 {
+        if keychain.is_empty() {
             return Some(self._root.clone());
         }
         let mut curr = self._root.as_hash().unwrap();
@@ -117,7 +117,7 @@ impl PaperMeta {
     }
 
     fn set_node(&mut self, keychain: &[&str], value: Yaml) -> Result<()> {
-        if keychain.len() == 0 {
+        if keychain.is_empty() {
             bail!("Cannot set value without at least one key.")
         }
 

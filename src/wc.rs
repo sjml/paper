@@ -2,6 +2,7 @@ use std::fs;
 use std::io::{Read, Write};
 
 use anyhow::{ensure, Result};
+use serde_json;
 use tempfile;
 use walkdir;
 
@@ -78,6 +79,32 @@ fn wc_data() -> Result<Vec<(String, usize, usize)>> {
     counts.sort();
 
     Ok(counts)
+}
+
+pub fn wc_json() -> Result<String> {
+    let wcd = wc_data()?;
+
+    let mut wc_map = serde_json::Map::new();
+    let mut sizes = vec![];
+    for (file, _, wcs) in wcd {
+        wc_map.insert(
+            file,
+            serde_json::Value::Number(serde_json::Number::from(wcs)),
+        );
+        sizes.push(wcs);
+    }
+    let totals: usize = sizes.iter().sum();
+
+    let mut full_map = serde_json::Map::new();
+    full_map.insert(
+        "total".to_string(),
+        serde_json::Value::Number(serde_json::Number::from(totals)),
+    );
+    full_map.insert("breakdown".to_string(), serde_json::Value::Object(wc_map));
+
+    let full_map_json = serde_json::to_string(&serde_json::Value::Object(full_map))?;
+
+    Ok(full_map_json)
 }
 
 pub fn wc_string(show_full: bool) -> Result<String> {

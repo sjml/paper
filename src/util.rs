@@ -1,4 +1,5 @@
 use std::fs;
+use std::io::Write;
 use std::path;
 use std::path::Path;
 
@@ -15,6 +16,18 @@ pub static LIB_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub fn get_paper_version_stamp() -> String {
     let version = format!("{} v{}", LIB_NAME, LIB_VERSION);
     return version;
+}
+
+pub fn stamp_local_dir() -> Result<()> {
+    let data_path = std::env::current_dir()?.join(".paper_data");
+    if !data_path.exists() {
+        fs::create_dir_all(&data_path)?;
+    }
+    let vers = get_paper_version_stamp();
+    let mut stamp = fs::File::create(data_path.join("last_paper_version.txt"))?;
+    writeln!(stamp, "{}", vers)?;
+
+    Ok(())
 }
 
 pub fn get_date_string(meta: &metadata::PaperMeta) -> Result<String> {

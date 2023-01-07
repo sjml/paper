@@ -7,6 +7,7 @@ mod config;
 mod formats;
 pub mod metadata;
 mod project_setup;
+mod save;
 mod subprocess;
 mod util;
 mod wc;
@@ -44,6 +45,10 @@ fn cli() -> Command {
                     .value_parser(value_parser!(i64))
                     .default_value("-1")
                 )
+        )
+        .subcommand(
+            Command::new("save")
+                .about("Make a git commit with some extra tracking data.")
         )
         .subcommand(
             Command::new("wc")
@@ -102,6 +107,9 @@ fn _main() -> Result<()> {
                     .get_one::<i64>("docx-revision")
                     .expect("required"),
             )?;
+        }
+        Some(("save", _)) => {
+            save::save()?;
         }
         Some(("wc", sub_matches)) => {
             wc::wc(sub_matches.get_flag("full"))?;

@@ -115,13 +115,11 @@ pub fn dev() -> Result<()> {
 
         if cfg!(windows) {
             bail!("Not supported on Windows, sorry. ¯\\_(ツ)_/¯");
-        }
-        else {
+        } else {
             fs::remove_dir_all(dst_path)?;
             std::os::unix::fs::symlink(src_path, dst_path)?;
         }
-    }
-    else {
+    } else {
         bail!("Not supported in release mode, sorry. ¯\\_(ツ)_/¯");
     }
 

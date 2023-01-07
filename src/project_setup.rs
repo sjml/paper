@@ -3,6 +3,7 @@ use std::io::Write;
 use std::path::Path;
 
 use anyhow::{bail, Context, Result};
+use dialoguer;
 use include_dir::{include_dir, Dir};
 use yaml_rust::{yaml, Yaml, YamlEmitter};
 
@@ -116,8 +117,20 @@ pub fn dev() -> Result<()> {
         if cfg!(windows) {
             bail!("Not supported on Windows, sorry. ¯\\_(ツ)_/¯");
         } else {
-            fs::remove_dir_all(dst_path)?;
-            std::os::unix::fs::symlink(src_path, dst_path)?;
+            println!("This symlinks the package resource directory to this local one, deleting the local version.");
+            println!("It’s meant for development on paper itself.");
+            println!("");
+            let do_it = dialoguer::Confirm::new()
+                .with_prompt("Is that what you’re up to?")
+                .default(false)
+                .interact()?;
+            if do_it {
+                fs::remove_dir_all(dst_path)?;
+                std::os::unix::fs::symlink(src_path, dst_path)?;
+            }
+            else {
+                println!("No worries.")
+            }
         }
     } else {
         bail!("Not supported in release mode, sorry. ¯\\_(ツ)_/¯");

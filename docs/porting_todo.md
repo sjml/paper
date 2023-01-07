@@ -6,7 +6,7 @@
 * double check what the table manipulation that Python was doing in doc_handling.py:91
     - sure it can't be fixed in the Word style?
 * docx font override will break if there's interaction between the two
-* dev command for windows and release mode? (and confirmation prompt?)
+* dev command for windows and release mode?
 
 ## paper internal
 * move scripts and examples over here, make build scripts

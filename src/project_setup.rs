@@ -93,3 +93,37 @@ pub fn new_project(project_name: &str) -> Result<()> {
 
     return init_project();
 }
+
+pub fn dev() -> Result<()> {
+    util::ensure_paper_dir()?;
+
+    if cfg!(debug_assertions) {
+        let src_path = Path::new(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/resources/project_template/.paper_resources"
+        ));
+        let dst_path_buf = std::env::current_dir()?.join(".paper_resources");
+        let dst_path = dst_path_buf.as_path();
+
+        if dst_path.is_symlink() {
+            let linked = dst_path.read_link()?.canonicalize()?;
+            let src_canon = src_path.canonicalize()?;
+            if linked == src_canon {
+                bail!("Looks like this project is already set up for dev!")
+            }
+        }
+
+        if cfg!(windows) {
+            bail!("Not supported on Windows, sorry. ¯\\_(ツ)_/¯");
+        }
+        else {
+            fs::remove_dir_all(dst_path)?;
+            std::os::unix::fs::symlink(src_path, dst_path)?;
+        }
+    }
+    else {
+        bail!("Not supported in release mode, sorry. ¯\\_(ツ)_/¯");
+    }
+
+    Ok(())
+}

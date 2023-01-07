@@ -27,6 +27,11 @@ fn cli() -> Command {
                 .about("While in an empty directory, set it up for a project.\n(Called as part of the process for `new`.)")
         )
         .subcommand(
+            Command::new("dev")
+                .about("Set up a project for development work on paper itself.\nDeletes the local `.paper_resources` directory and symlinks the template’s version, so changes here affect the actual program.")
+                .hide(true)
+        )
+        .subcommand(
             Command::new("build")
                 .about("Generate versions of the paper ready for submission.")
                 .arg(
@@ -72,6 +77,9 @@ fn _main() -> Result<()> {
         }
         Some(("init", _)) => {
             project_setup::init_project()?;
+        }
+        Some(("dev", _)) => {
+            project_setup::dev()?;
         }
         Some(("build", sub_matches)) => {
             let output_format: formats::OutputFormat = match sub_matches

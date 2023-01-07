@@ -36,7 +36,7 @@
 * `build`
   - let the metadata set a default format
   - _record_build_data
-* `wc`
+  - other builders (docx+pdf, latex, latex+pdf)
 * `save`
 * `push`
 * `dev`

@@ -19,7 +19,8 @@ fn count_words_in(s: &String) -> usize {
     return s.split_whitespace().collect::<Vec<&str>>().len();
 }
 
-fn wc_data() -> Result<Vec<(String, usize, usize)>> {
+// returns tuples of (filename, full_count, stripped_count)
+pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
     let mut counts = vec![];
 
     let mut strip_script = tempfile::NamedTempFile::new()?;

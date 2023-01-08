@@ -20,19 +20,15 @@ pub fn fmt(wrap: bool, columns: u32) -> Result<()> {
     let col_str = columns.to_string();
     for cf in content_files {
         let mut args = vec![
-            "--from", &CONFIG.get().pandoc_input_format,
-            "--to", &CONFIG.get().pandoc_input_format,
+            "--from",
+            &CONFIG.get().pandoc_input_format,
+            "--to",
+            &CONFIG.get().pandoc_input_format,
         ];
         if wrap {
-            args.extend_from_slice(&[
-                "--wrap", "auto",
-                "--columns", &col_str,
-            ]);
-        }
-        else {
-            args.extend_from_slice(&[
-                "--wrap", "preserve",
-            ])
+            args.extend_from_slice(&["--wrap", "auto", "--columns", &col_str]);
+        } else {
+            args.extend_from_slice(&["--wrap", "preserve"])
         }
         args.push(&cf);
         let md_out = subprocess::run_command("pandoc", &args)?;

@@ -127,8 +127,7 @@ pub fn dev() -> Result<()> {
             if do_it {
                 fs::remove_dir_all(dst_path)?;
                 std::os::unix::fs::symlink(src_path, dst_path)?;
-            }
-            else {
+            } else {
                 println!("No worries.")
             }
         }

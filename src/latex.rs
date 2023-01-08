@@ -1,12 +1,15 @@
 use std::path::Path;
 
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
+use tempfile;
 
 use crate::config::CONFIG;
 use crate::formats::Builder;
 use crate::metadata::PaperMeta;
 use crate::subprocess;
 use crate::util;
+
+const TEX_ENGINE: &str = "xelatex";
 
 pub struct LatexBuilder {}
 
@@ -120,6 +123,80 @@ impl Builder for LatexBuilder {
         }
 
         // no-op
+        Ok(vec![])
+    }
+}
+
+pub struct LatexPdfBuilder {
+    delegate: LatexBuilder,
+}
+
+impl Default for LatexPdfBuilder {
+    fn default() -> Self {
+        LatexPdfBuilder {
+            delegate: LatexBuilder::default(),
+        }
+    }
+}
+
+impl Builder for LatexPdfBuilder {
+    fn get_output_file_suffix(&self) -> String {
+        self.delegate.get_output_file_suffix()
+    }
+
+    fn prepare(&mut self, args: &mut Vec<String>, meta: &PaperMeta) -> Result<()> {
+        self.delegate.prepare(args, meta)
+    }
+
+    fn get_file_list(&self) -> Vec<String> {
+        self.delegate.get_file_list()
+    }
+
+    fn finish_file(&self, output_file_path: &Path, meta: &PaperMeta) -> Result<Vec<String>> {
+        let current = std::env::current_dir()?;
+        let output_path = output_file_path.parent().unwrap();
+        std::env::set_current_dir(output_path)?;
+        let tmpdir = tempfile::TempDir::new()?;
+        let tmppath = tmpdir.path();
+        let tmppath_str = tmppath.as_os_str().to_string_lossy().to_string();
+
+        let filename = meta.get_string(&["filename"]).unwrap();
+
+        let args = &[
+            "--halt-on-error",
+            "--interaction",
+            "nonstopmode",
+            "--output-directory",
+            &tmppath_str,
+            "--jobname",
+            &filename,
+            &output_file_path
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .to_string(),
+        ];
+
+        if CONFIG.get().verbose {
+            println!("Running LaTeX build command:");
+            println!("\t{}", args.join(" "));
+        }
+        // LaTex needs to be run twice to do the pagination stuff
+        for _ in 0..2 {
+            let output = subprocess::run_command(TEX_ENGINE, args, None)?;
+            if CONFIG.get().verbose {
+                println!("{}", output);
+            }
+        }
+        std::env::set_current_dir(current)?;
+
+        let pdf_filename = format!("{}.pdf", filename);
+        let final_pdf_path = output_path.join(&pdf_filename);
+        if final_pdf_path.exists() {
+            std::fs::remove_file(&final_pdf_path)?;
+        }
+        std::fs::rename(tmppath.join(&pdf_filename), &final_pdf_path).context("nuh uh")?;
+
         Ok(vec![])
     }
 }

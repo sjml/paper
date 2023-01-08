@@ -1,4 +1,6 @@
-use anyhow::{bail, Result};
+use std::str::FromStr;
+
+use anyhow::Result;
 use clap::{arg, value_parser, Command};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
@@ -40,7 +42,7 @@ fn cli() -> Command {
                 .about("Generate versions of the paper ready for submission.")
                 .arg(
                     arg!(-t --"output-format" <FORMAT> "The desired format of the output file")
-                    .value_parser(["docx", "docx+pdf", "latex", "latex+pdf", "json"])
+                    .value_parser(["docx", "latex", "latex+pdf", "json"])
                     .default_value("docx")
                 )
                 .arg(
@@ -105,19 +107,11 @@ fn _main() -> Result<()> {
             project_setup::dev()?;
         }
         Some(("build", sub_matches)) => {
-            let output_format: formats::OutputFormat = match sub_matches
-                .get_one::<String>("output-format")
-                .expect("required")
-                .as_str()
-            {
-                // TODO: can this be auto-mapped or derived via clap somehow?
-                "docx" => formats::OutputFormat::Docx,
-                "docx+pdf" => formats::OutputFormat::DocxPdf,
-                "latex" => formats::OutputFormat::LaTeX,
-                "latex+pdf" => formats::OutputFormat::LaTeXPdf,
-                "json" => formats::OutputFormat::Json,
-                _ => bail!("Invalid output format."),
-            };
+            let output_format = formats::OutputFormat::from_str(
+                sub_matches
+                    .get_one::<String>("output-format")
+                    .expect("required"),
+            )?;
 
             build::build(
                 output_format,

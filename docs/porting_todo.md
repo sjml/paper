@@ -29,7 +29,6 @@
 ## cli functionality burndown list
 * `build`
   - let the metadata set a default format
-  - other builders (docx+pdf, latex+pdf)
   - _record_build_data
 
 ## handover

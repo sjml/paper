@@ -103,12 +103,15 @@ pub fn build(output_format: formats::OutputFormat, docx_revision: i64) -> Result
 
     let mut builder: Box<dyn formats::Builder>;
     match output_format {
-        OutputFormat::Docx | OutputFormat::DocxPdf => {
+        OutputFormat::Docx => {
             meta.set_int(&["docx", "revision"], docx_revision)?;
             builder = Box::new(docx::DocxBuilder::default());
         }
-        OutputFormat::LaTeX | OutputFormat::LaTeXPdf => {
+        OutputFormat::LaTeX => {
             builder = Box::new(latex::LatexBuilder::default());
+        }
+        OutputFormat::LaTeXPdf => {
+            builder = Box::new(latex::LatexPdfBuilder::default());
         }
         _ => {
             // wrong, just leaving here now until the rest of the arms are filled
@@ -125,6 +128,7 @@ pub fn build(output_format: formats::OutputFormat, docx_revision: i64) -> Result
             if CONFIG.get().verbose {
                 println!("No filename given; using generated \"{}\".", generated);
             }
+            meta.set_string(&["filename"], &generated)?;
             generated
         }
     };

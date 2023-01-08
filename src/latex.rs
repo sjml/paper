@@ -3,6 +3,7 @@ use std::path::Path;
 use anyhow::{bail, Context, Result};
 use tempfile;
 
+use crate::build;
 use crate::config::CONFIG;
 use crate::formats::Builder;
 use crate::metadata::PaperMeta;
@@ -106,15 +107,7 @@ impl Builder for LatexBuilder {
     }
 
     fn get_file_list(&self) -> Vec<String> {
-        let mut content_files = walkdir::WalkDir::new("./content")
-            .into_iter()
-            .filter_map(|entry| entry.ok())
-            .filter(|entry| entry.path().is_file())
-            .map(|entry| entry.path().as_os_str().to_string_lossy().to_string())
-            .collect::<Vec<String>>();
-        content_files.sort();
-
-        content_files
+        build::get_content_file_list()
     }
 
     fn finish_file(&self, _output_file_path: &Path, _meta: &PaperMeta) -> Result<Vec<String>> {
@@ -197,6 +190,22 @@ impl Builder for LatexPdfBuilder {
         }
         std::fs::rename(tmppath.join(&pdf_filename), &final_pdf_path).context("nuh uh")?;
 
-        Ok(vec![])
+        let mut log_lines = vec![];
+        let engine_data = subprocess::run_command(TEX_ENGINE, &["--version"], None)?;
+        log_lines.extend(engine_data.split("\n").map(|s| s.to_string()));
+        log_lines.push("-----".to_string());
+
+        let log_file = tmppath.join(format!("{}.log", filename));
+        let log_data = std::fs::read_to_string(log_file)?;
+        let package_data = log_data.split("\n")
+            .filter_map(|s|
+                s.strip_prefix("Package: ")
+            )
+            .map(|s| s.to_string())
+            .collect::<Vec<String>>()
+        ;
+        log_lines.extend(package_data);
+
+        Ok(log_lines)
     }
 }

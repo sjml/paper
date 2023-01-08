@@ -1,10 +1,9 @@
 -- a custom writer that just spits out the citation keys for everything used
 --   in the given document
 
+local system = require "pandoc.system"
 local utils = dofile(pandoc.path.join({
-  pandoc.path.directory(PANDOC_SCRIPT_FILE),
-  "..",
-  "project_template",
+  system.get_working_directory(),
   ".paper_resources",
   "filters",
   "util.lua",

@@ -1,5 +1,4 @@
 use std::fs;
-use std::io::Write;
 use std::path;
 use std::path::Path;
 
@@ -8,13 +7,27 @@ use chrono::prelude::*;
 use yaml_rust::{yaml, Yaml, YamlLoader};
 
 use crate::metadata;
+use crate::subprocess;
 
 pub static LIB_NAME: &str = "SJML Paper";
 pub static LIB_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-// TODO: have this process the git rev
 pub fn get_paper_version_stamp() -> String {
-    let version = format!("{} v{}", LIB_NAME, LIB_VERSION);
+    let mut version = format!("{} v{}", LIB_NAME, LIB_VERSION);
+    let git_rev = env!("PAPER_GIT_REV");
+    if !git_rev.is_empty() {
+        version = format!("{}\n{}", version, git_rev);
+    }
+    let now = Local::now();
+    version = format!("{}\nBuilt {}", version, now.to_rfc3339());
+
+    let cmd = std::env::var_os("RUSTC").unwrap_or_else(|| std::ffi::OsString::from("rustc"));
+    if let Ok(rustc_info) = subprocess::run_command(cmd.to_str().unwrap(), &["--version"], None) {
+        version = format!("{}\nby {}", version, rustc_info);
+    } else {
+        version = format!("{}\nby <<unknown rustc>>", version);
+    }
+
     return version;
 }
 
@@ -24,8 +37,7 @@ pub fn stamp_local_dir() -> Result<()> {
         fs::create_dir_all(&data_path)?;
     }
     let vers = get_paper_version_stamp();
-    let mut stamp = fs::File::create(data_path.join("last_paper_version.txt"))?;
-    writeln!(stamp, "{}", vers)?;
+    fs::write(data_path.join("last_paper_version.txt"), vers)?;
 
     Ok(())
 }

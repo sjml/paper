@@ -11,6 +11,9 @@ license = "MIT"
 keywords = ["academic", "writing", "references", "markdown", "latex"]
 categories = ["command-line-utilities", "template-engine", ]
 
+[build-dependencies]
+anyhow = "1.0.68"
+
 [dependencies]
 anyhow = "1.0.68"
 chrono = "0.4.23"

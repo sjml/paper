@@ -4,17 +4,18 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{bail, Context, Result};
 use filetime;
+use sxd_document;
+use sxd_xpath;
+use sxd_xpath::Value::Nodeset;
 use tempfile::{self, NamedTempFile};
 use walkdir;
 use zip::{self, ZipArchive};
 
+use crate::build;
 use crate::config::CONFIG;
 use crate::formats::Builder;
 use crate::metadata::PaperMeta;
 use crate::util;
-use sxd_document;
-use sxd_xpath;
-use sxd_xpath::Value::Nodeset;
 
 const DOCX_SCHEMA: &str = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 const PROP_SCHEMA: &str = "http://schemas.openxmlformats.org/package/2006/metadata/core-properties";
@@ -141,14 +142,7 @@ impl Builder for DocxBuilder {
                 .map(|ntf| ntf.path().to_string_lossy().to_string()),
         );
 
-        let mut content_files = walkdir::WalkDir::new("./content")
-            .into_iter()
-            .filter_map(|entry| entry.ok())
-            .filter(|entry| entry.path().is_file())
-            .map(|entry| entry.path().as_os_str().to_string_lossy().to_string())
-            .collect::<Vec<String>>();
-        content_files.sort();
-        file_list.extend(content_files);
+        file_list.extend(build::get_content_file_list());
 
         file_list
     }

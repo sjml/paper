@@ -1,11 +1,14 @@
 use std::fs;
+use std::io::Write;
 use std::path;
 use std::time::UNIX_EPOCH;
 
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use regex::Regex;
+use serde_json;
 use walkdir;
 
+use crate::build;
 use crate::config::CONFIG;
 use crate::docx;
 use crate::formats::{self, OutputFormat};
@@ -13,6 +16,18 @@ use crate::latex;
 use crate::metadata::PaperMeta;
 use crate::subprocess;
 use crate::util;
+
+pub fn get_content_file_list() -> Vec<String> {
+    let mut content_files = walkdir::WalkDir::new("./content")
+        .into_iter()
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| entry.path().is_file())
+        .map(|entry| entry.path().as_os_str().to_string_lossy().to_string())
+        .collect::<Vec<String>>();
+    content_files.sort();
+
+    content_files
+}
 
 fn get_content_timestamp() -> Result<u64> {
     // if there are no changes in the content directory, return the last commit time
@@ -207,8 +222,6 @@ pub fn build(output_format: formats::OutputFormat, docx_revision: i64) -> Result
         pandoc_args.push(content_file);
     }
 
-    // println!("{:?}", pandoc_args);
-
     if CONFIG.get().verbose {
         println!("Invoking pandoc with:");
         println!("\t{}", pandoc_args.join(" "));
@@ -216,7 +229,124 @@ pub fn build(output_format: formats::OutputFormat, docx_revision: i64) -> Result
 
     subprocess::run_command("pandoc", pandoc_args.as_slice(), None)?;
 
-    builder.finish_file(output_file_path.as_path(), &meta)?;
+    let logs = builder.finish_file(output_file_path.as_path(), &meta)?;
+
+    record_build_data(&logs, &meta)?;
+
+    Ok(())
+}
+
+static REF_WRITER_LUA_SCRIPT: &'static [u8] = include_bytes!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/resources/scripts/ref_list.lua"
+));
+
+fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
+    util::stamp_local_dir()?;
+
+    if let Some(bib_paths) = meta.get_vec_string(&["sources"]) {
+        let mut cited_refence_keys = vec![];
+
+        let mut ref_writer_file = tempfile::Builder::new()
+            .prefix("bib-writer")
+            .suffix(".lua")
+            .tempfile()?;
+        ref_writer_file.write(REF_WRITER_LUA_SCRIPT)?;
+        let lua_path = ref_writer_file.into_temp_path();
+        let lua_path_str = lua_path.as_os_str().clone();
+
+        let mut args = vec![
+            "--to".to_string(),
+            lua_path_str.to_string_lossy().to_string(),
+            "--metadata-file".to_string(),
+            "./paper_meta.yml".to_string(),
+            "--citeproc".to_string(),
+        ];
+
+        let mut bpp_strings = vec![];
+        for bp in bib_paths {
+            let mut bp_local = bp.clone();
+            if bp.starts_with("~") {
+                bp_local = format!("{}{}", env!("HOME"), &bp_local[1..]);
+            }
+            bpp_strings.push(bp_local.clone());
+            let bpp = path::Path::new(&bp_local);
+            if ! bpp.exists() {
+                bail!("No such file for bibliography source: {}", bp);
+            }
+            args.extend_from_slice(&["--bibliography".to_string(), bp_local]);
+        }
+        args.extend_from_slice(&build::get_content_file_list());
+
+        let ref_str = subprocess::run_command("pandoc", &args, None)?;
+        let ref_str = ref_str.trim();
+        cited_refence_keys.extend(
+            ref_str.split("\n")
+            .map(|s| s.to_string())
+        );
+
+        let mut refs: Vec<serde_json::Value> = vec![];
+        for bpps in bpp_strings {
+            let bpp = path::Path::new(&bpps);
+            let mut csl_args = vec![
+                "--to", "csljson",
+            ];
+            if bpp.extension().unwrap_or(std::ffi::OsStr::new("")) == "json" {
+                csl_args.extend_from_slice(&["--from", "csljson"]);
+            }
+            csl_args.push(&bpps);
+            let source_data_text = subprocess::run_command("pandoc", &csl_args, None)?;
+            fs::write("csl.json", &source_data_text)?;
+            let source_data: serde_json::Value = serde_json::from_str(&source_data_text)?;
+            match source_data {
+                serde_json::Value::Array(source_list) => {
+                    for entry in source_list {
+                        match entry {
+                            serde_json::Value::Object(entry_obj) => {
+                                if let Some(id_val) = entry_obj.get("id") {
+                                    match id_val {
+                                        serde_json::Value::String(id_str) => {
+                                            if cited_refence_keys.contains(id_str) {
+                                                refs.push(serde_json::Value::Object(entry_obj));
+                                            }
+                                        }
+                                        _ => bail!("Invalid CSL JSON in {}", bpps),
+                                    }
+                                }
+                                else {
+                                    bail!("Invalid CSL JSON in {}", bpps);
+                                }
+                            },
+                            _ => bail!("Invalid CSL JSON in {}", bpps),
+                        }
+                    }
+                },
+                _ => bail!("Invalid CSL JSON in {}", bpps),
+            }
+        }
+        if !refs.is_empty() {
+            let refs_val = serde_json::Value::Array(refs);
+            let refs_str = serde_json::to_string_pretty(&refs_val)?;
+            let csl_out_path = std::env::current_dir()?.join(".paper_data").join("cited_references.json");
+            fs::write(csl_out_path, &refs_str)?;
+        }
+    }
+
+    let mut out_file = fs::File::create(std::env::current_dir()?.join(".paper_data").join("build_environment.txt"))?;
+
+    let separator = str::repeat("#", 60);
+
+    writeln!(out_file, "{}", util::get_paper_version_stamp())?;
+    writeln!(out_file, "{}", separator)?;
+
+    let dep_str = env!("PAPER_RUST_DEPS")
+        .split("||||||")
+        .collect::<Vec<&str>>()
+        .join("\n");
+    writeln!(out_file, "{}", dep_str)?;
+    writeln!(out_file, "{}", separator)?;
+
+    write!(out_file, "{}", log_lines.join("\n"))?;
 
     Ok(())
 }

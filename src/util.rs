@@ -4,7 +4,7 @@ use std::path;
 use std::path::Path;
 
 use anyhow::{bail, Context, Result};
-use time;
+use chrono::prelude::*;
 use yaml_rust::{yaml, Yaml, YamlLoader};
 
 use crate::metadata;
@@ -31,17 +31,18 @@ pub fn stamp_local_dir() -> Result<()> {
 }
 
 pub fn get_date_string(meta: &metadata::PaperMeta) -> Result<String> {
-    let date: time::Date;
-    match meta.get_string(&["data", "date"]) {
-        None => match time::OffsetDateTime::now_local() {
-            Ok(now) => date = now.date(),
-            Err(_) => date = time::OffsetDateTime::now_utc().date(),
-        },
+    let date: DateTime<Local> = match meta.get_string(&["data", "date"]) {
+        None => Local::now(),
         Some(date_string) => {
-            let format = time::macros::format_description!("[year]-[month]-[day]");
-            date = time::Date::parse(&date_string, format)?;
+            let due = NaiveDate::parse_from_str(&date_string, "%Y-%m-%d")?;
+            let due = due.and_time(NaiveTime::from_hms_opt(0, 1, 0).unwrap());
+            let due = match Local.from_local_datetime(&due) {
+                chrono::LocalResult::Single(s) => s,
+                _ => Local::now(),
+            };
+            due
         }
-    }
+    };
 
     // because one of my example documents has a due date of 33 AD, and what's
     //  the point of making your own system if you can't have a little Easter egg?
@@ -50,8 +51,7 @@ pub fn get_date_string(meta: &metadata::PaperMeta) -> Result<String> {
     if year_str == "33" {
         year_str = "A.U.C. 786".to_string();
     }
-    let out_format = time::macros::format_description!("[month repr:long] [day padding:none]");
-    let out_string = format!("{}, {}", date.format(out_format)?, year_str);
+    let out_string = format!("{}, {}", date.format("%B %-d") , year_str);
     Ok(out_string)
 }
 

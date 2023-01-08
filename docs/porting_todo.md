@@ -7,7 +7,6 @@
     - sure it can't be fixed in the Word style?
 * docx font override will break if there's interaction between the two
 * dev command for windows and release mode?
-* swap time for chrono (plotters pulls in the latter anyway)
 * progress image should use timezone (meta set?)
 
 ## paper internal

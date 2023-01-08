@@ -51,7 +51,7 @@ pub fn get_date_string(meta: &metadata::PaperMeta) -> Result<String> {
     if year_str == "33" {
         year_str = "A.U.C. 786".to_string();
     }
-    let out_string = format!("{}, {}", date.format("%B %-d") , year_str);
+    let out_string = format!("{}, {}", date.format("%B %-d"), year_str);
     Ok(out_string)
 }
 

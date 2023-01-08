@@ -4,8 +4,10 @@ use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
 mod build;
 mod config;
+mod docx;
 mod fmt;
 mod formats;
+mod latex;
 pub mod metadata;
 mod project_setup;
 mod save;

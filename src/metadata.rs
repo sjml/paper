@@ -96,6 +96,32 @@ impl PaperMeta {
         }
     }
 
+    // HACKHACK
+    pub fn get_data_pairs(&self, keychain: &[&str]) -> Option<Vec<(String, String)>> {
+        match self.fetch_node(keychain) {
+            None => None,
+            Some(node) => match node {
+                Yaml::Hash(nh) => {
+                    let mut vec = Vec::new();
+                    for (key, val) in nh {
+                        match key.into_string() {
+                            None => {}
+                            Some(k) => match val.into_string() {
+                                None => {}
+                                Some(v) => {
+                                    let el = (k, v);
+                                    vec.push(el);
+                                }
+                            },
+                        }
+                    }
+                    Some(vec)
+                }
+                _ => None,
+            },
+        }
+    }
+
     // dives through nested HashMaps following a chain of string keys
     //   returns the end of the chain so something can be inserted to it,
     //   creating new nested maps along the way as needed.

@@ -63,8 +63,8 @@ pub fn init_project() -> Result<()> {
 
     fs::create_dir("research").context("Could not write research directory.")?;
 
-    subprocess::run_command("git", &["init"])?;
-    subprocess::run_command("git", &["add", "."])?;
+    subprocess::run_command("git", &["init"], None)?;
+    subprocess::run_command("git", &["add", "."], None)?;
     subprocess::run_command(
         "git",
         &[
@@ -75,6 +75,7 @@ pub fn init_project() -> Result<()> {
                 util::get_paper_version_stamp()
             ),
         ],
+        None,
     )?;
 
     Ok(())

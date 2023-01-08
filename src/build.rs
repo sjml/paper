@@ -7,16 +7,19 @@ use regex::Regex;
 use walkdir;
 
 use crate::config::CONFIG;
+use crate::docx;
 use crate::formats::{self, OutputFormat};
+use crate::latex;
 use crate::metadata::PaperMeta;
 use crate::subprocess;
 use crate::util;
 
 fn get_content_timestamp() -> Result<u64> {
     // if there are no changes in the content directory, return the last commit time
-    let content_status = subprocess::run_command("git", &["status", "./content", "--porcelain"])?;
+    let content_status =
+        subprocess::run_command("git", &["status", "./content", "--porcelain"], None)?;
     if content_status.is_empty() {
-        let git_commit_time = subprocess::run_command("git", &["log", "-1", "--format=%ct"])?;
+        let git_commit_time = subprocess::run_command("git", &["log", "-1", "--format=%ct"], None)?;
         let commit_time: u64 = git_commit_time.trim().parse()?;
         return Ok(commit_time);
     }
@@ -89,22 +92,27 @@ pub fn build(output_format: formats::OutputFormat, docx_revision: i64) -> Result
         fs::create_dir(out_path).context("Could not create ouptput directory.")?;
     }
 
-    #[rustfmt::skip]
     let mut pandoc_args: Vec<String> = vec![
-        "--from".to_string(), CONFIG.get().pandoc_input_format.clone(),
-        "--metadata-file".to_string(), "./paper_meta.yml".to_string(),
-        "--resource-path".to_string(), "./content".to_string(),
+        "--from".to_string(),
+        CONFIG.get().pandoc_input_format.clone(),
+        "--metadata-file".to_string(),
+        "./paper_meta.yml".to_string(),
+        "--resource-path".to_string(),
+        "./content".to_string(),
     ];
 
     let mut builder: Box<dyn formats::Builder>;
     match output_format {
         OutputFormat::Docx | OutputFormat::DocxPdf => {
             meta.set_int(&["docx", "revision"], docx_revision)?;
-            builder = Box::new(formats::DocXBuilder::default());
+            builder = Box::new(docx::DocxBuilder::default());
+        }
+        OutputFormat::LaTeX | OutputFormat::LaTeXPdf => {
+            builder = Box::new(latex::LatexBuilder::default());
         }
         _ => {
             // wrong, just leaving here now until the rest of the arms are filled
-            builder = Box::new(formats::DocXBuilder::default());
+            builder = Box::new(latex::LatexBuilder::default());
         }
     }
 
@@ -202,7 +210,7 @@ pub fn build(output_format: formats::OutputFormat, docx_revision: i64) -> Result
         println!("\t{}", pandoc_args.join(" "));
     }
 
-    subprocess::run_command("pandoc", pandoc_args.as_slice())?;
+    subprocess::run_command("pandoc", pandoc_args.as_slice(), None)?;
 
     builder.finish_file(output_file_path.as_path(), &meta)?;
 

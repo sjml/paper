@@ -31,7 +31,7 @@ pub fn fmt(wrap: bool, columns: u32) -> Result<()> {
             args.extend_from_slice(&["--wrap", "preserve"])
         }
         args.push(&cf);
-        let md_out = subprocess::run_command("pandoc", &args)?;
+        let md_out = subprocess::run_command("pandoc", &args, None)?;
         let md_curr = fs::read_to_string(&cf)?;
         let md_curr = md_curr.trim();
         if md_out.trim() != md_curr.trim() {

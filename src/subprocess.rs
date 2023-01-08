@@ -1,31 +1,49 @@
 // because the popular subprocess crate was causing IOErrors during debugging sessions,
 //   and my needs are modest.
 
-use std::process;
+use std::{io::Write, process};
 
 use anyhow::{bail, Context, Result};
 
 pub fn run_command<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::fmt::Debug>(
     cmd: &str,
     args: &[T],
+    stdin_str: Option<&str>,
 ) -> Result<String> {
     let mut command = process::Command::new(cmd);
     command.args(args);
 
-    let output = command.output().with_context(|| {
-        return format!("Could not run command: {} with args <{:?}>", cmd, args);
-    })?;
+    let mut running: std::process::Child;
 
-    if output.status.success() {
-        let output_str = String::from_utf8(output.stdout)?;
-        Ok(output_str)
+    if let Some(stdin_str) = stdin_str {
+        let stdin_str_copy = stdin_str.to_owned();
+        command.stdin(process::Stdio::piped());
+        command.stdout(process::Stdio::piped());
+        running = command.spawn()?;
+
+        let stdin = running.stdin.as_mut().expect("Couldn't get stdin.");
+        stdin
+            .write_all(stdin_str_copy.as_bytes())
+            .expect("Couldn't write to stdin.");
+
+        let output = running.wait_with_output().expect("Couldn't read stdout");
+        return Ok(String::from_utf8_lossy(&output.stdout).to_string());
     } else {
-        let output_str = String::from_utf8(output.stderr)?;
-        bail!(
-            "Failure of command: {} with args <{:?}>`:\n\n{}",
-            cmd,
-            args,
-            output_str
-        );
+        let output = command.output().with_context(|| {
+            return format!("Could not run command: {} with args <{:?}>", cmd, args);
+        })?;
+
+        if output.status.success() {
+            let output_str = String::from_utf8(output.stdout)?;
+            Ok(output_str)
+        } else {
+            let output_str = String::from_utf8(output.stderr)?;
+            bail!(
+                "Failure of command: {} with args <{:?}>`:\n\n{}",
+                cmd,
+                args,
+                output_str
+            );
+        }
     }
 }

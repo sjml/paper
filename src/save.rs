@@ -73,8 +73,8 @@ pub fn save() -> Result<()> {
 
     let message = format!("{}\n\nPAPER_DATA\n{}", message, wc::wc_json()?);
 
-    subprocess::run_command("git", &["add", "."])?;
-    subprocess::run_command("git", &["commit", "-m", &message])?;
+    subprocess::run_command("git", &["add", "."], None)?;
+    subprocess::run_command("git", &["commit", "-m", &message], None)?;
 
     Ok(())
 }
@@ -82,7 +82,7 @@ pub fn save() -> Result<()> {
 pub fn push() -> Result<()> {
     util::ensure_paper_dir()?;
 
-    let remote = subprocess::run_command("git", &["remote", "-v"])?;
+    let remote = subprocess::run_command("git", &["remote", "-v"], None)?;
     if remote.is_empty() {
         let meta = PaperMeta::new()?;
         // default_repo = f"{meta['data']['class_mnemonic'].replace(' ', '')} {get_assignment()}"
@@ -108,9 +108,9 @@ pub fn push() -> Result<()> {
         if is_private {
             args.push("--private");
         }
-        subprocess::run_command("gh", &args)?;
+        subprocess::run_command("gh", &args, None)?;
     } else {
-        subprocess::run_command("git", &["push"])?;
+        subprocess::run_command("git", &["push"], None)?;
     }
 
     Ok(())
@@ -119,19 +119,19 @@ pub fn push() -> Result<()> {
 pub fn web() -> Result<()> {
     util::ensure_paper_dir()?;
 
-    let remote = subprocess::run_command("git", &["remote", "-v"])?;
+    let remote = subprocess::run_command("git", &["remote", "-v"], None)?;
     if remote.is_empty() {
         bail!("No remote repository set up.")
     }
 
-    let origin_url = subprocess::run_command("git", &["remote", "get-url", "origin"])?;
+    let origin_url = subprocess::run_command("git", &["remote", "get-url", "origin"], None)?;
     if !origin_url.contains("github.com") {
         // not entirely reliable as you could have a different remote repository containing a string
         //   referencing "github.com" but this is already error-check-y enough for my purposes.
         bail!("This repository is not on GitHub.");
     }
 
-    subprocess::run_command("gh", &["repo", "view", "--web"])?;
+    subprocess::run_command("gh", &["repo", "view", "--web"], None)?;
 
     Ok(())
 }
@@ -239,7 +239,7 @@ fn get_progress_image_str(meta: &PaperMeta) -> Result<String> {
 }
 
 fn get_commit_data() -> Result<Vec<(String, i64, String, usize)>> {
-    let log = subprocess::run_command("git", &["log", "--format=%P|||%ct|||%B||-30-||"])?;
+    let log = subprocess::run_command("git", &["log", "--format=%P|||%ct|||%B||-30-||"], None)?;
     let commits_raw: Vec<String> = log
         .split("||-30-||")
         .filter_map(|c| {

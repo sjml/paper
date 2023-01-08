@@ -1,6 +1,7 @@
 use std::fs;
 use std::io::Write;
 use std::path;
+use std::str::FromStr;
 use std::time::UNIX_EPOCH;
 
 use anyhow::{bail, Context, Result};
@@ -87,13 +88,21 @@ fn generate_filename(meta: &PaperMeta) -> Result<String> {
     Ok(filename)
 }
 
-pub fn build(output_format: formats::OutputFormat, docx_revision: i64) -> Result<()> {
+pub fn build(output_format: formats::OutputFormat, of_specified: bool, docx_revision: i64) -> Result<()> {
     util::ensure_paper_dir()?;
 
     let mut meta = PaperMeta::new()?;
 
+    let mut of = output_format;
+    if !of_specified {
+        of = match meta.get_string(&["default_format"]) {
+            Some(df) => formats::OutputFormat::from_str(&df)?,
+            None => of
+        };
+    }
+
     if CONFIG.get().verbose {
-        println!("Building for format {:?}.", output_format);
+        println!("Building for format {:?}.", of);
     }
 
     let content_timestamp = get_content_timestamp()?;
@@ -117,7 +126,7 @@ pub fn build(output_format: formats::OutputFormat, docx_revision: i64) -> Result
     ];
 
     let mut builder: Box<dyn formats::Builder>;
-    match output_format {
+    match of {
         OutputFormat::Docx => {
             meta.set_int(&["docx", "revision"], docx_revision)?;
             builder = Box::new(docx::DocxBuilder::default());

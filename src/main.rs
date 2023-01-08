@@ -112,9 +112,14 @@ fn _main() -> Result<()> {
                     .get_one::<String>("output-format")
                     .expect("required"),
             )?;
+            let of_specified = match sub_matches.value_source("output-format").expect("required") {
+                clap::parser::ValueSource::DefaultValue => false,
+                _ => true,
+            };
 
             build::build(
                 output_format,
+                of_specified,
                 *sub_matches
                     .get_one::<i64>("docx-revision")
                     .expect("required"),

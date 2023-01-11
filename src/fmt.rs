@@ -1,7 +1,6 @@
 use std::fs;
 
 use anyhow::{Context, Result};
-use walkdir;
 
 use crate::build;
 use crate::config::CONFIG;

@@ -16,6 +16,7 @@ mod project_setup;
 mod save;
 mod subprocess;
 mod util;
+mod watcher;
 mod wc;
 
 fn cli() -> Command {
@@ -68,6 +69,22 @@ fn cli() -> Command {
             Command::new("wc")
                 .about("Print word count metrics for the project, stripping out metadata, citations, and footnotes.")
                 .arg(arg!(--full "Show full pre-stripped word count of each file as well."))
+            )
+            .subcommand(
+                Command::new("watch")
+                .about("Watches the content directory and emits new wordcount data on each change.")
+                .arg(arg!(--full "Show full pre-stripped word count of each file as well."))
+                .arg(arg!(--build "Rebuild the project before showing word count"))
+                .arg(
+                    arg!(-t --"output-format" <FORMAT> "The desired format of the output file")
+                    .value_parser(["docx", "latex", "latex+pdf", "json"])
+                    .default_value("docx")
+                )
+                .arg(
+                    arg!(--"docx-revision" <NUM> "Revision number for docx output format; if unset or negative, will use the number of times the project was saved.")
+                    .value_parser(value_parser!(i64))
+                    .default_value("-1")
+                )
         )
         .subcommand(
             Command::new("fmt")
@@ -126,7 +143,7 @@ fn _main() -> Result<()> {
             };
 
             build::build(
-                output_format,
+                &output_format,
                 of_specified,
                 *sub_matches
                     .get_one::<i64>("docx-revision")
@@ -143,7 +160,28 @@ fn _main() -> Result<()> {
             save::web()?;
         }
         Some(("wc", sub_matches)) => {
-            wc::wc(sub_matches.get_flag("full")).expect("required");
+            wc::wc(sub_matches.get_flag("full"))?;
+        }
+        Some(("watch", sub_matches)) => {
+            let output_format = formats::OutputFormat::from_str(
+                sub_matches
+                    .get_one::<String>("output-format")
+                    .expect("required"),
+            )?;
+            let of_specified = match sub_matches.value_source("output-format").expect("required") {
+                clap::parser::ValueSource::DefaultValue => false,
+                _ => true,
+            };
+
+            watcher::watch(
+                sub_matches.get_flag("full"),
+                sub_matches.get_flag("build"),
+                output_format,
+                of_specified,
+                *sub_matches
+                    .get_one::<i64>("docx-revision")
+                    .expect("required"),
+            )?;
         }
         Some(("fmt", sub_matches)) => {
             fmt::fmt(

@@ -5,7 +5,7 @@ use anyhow::Result;
 
 use crate::metadata::PaperMeta;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum OutputFormat {
     Docx,
     LaTeX,

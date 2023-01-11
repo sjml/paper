@@ -32,8 +32,15 @@ pub fn get_content_file_list() -> Vec<String> {
 
 fn get_content_timestamp() -> Result<u64> {
     // if there are no changes in the content directory, return the last commit time
-    let content_status =
-        subprocess::run_command("git", &["status", &CONFIG.get().content_directory_name, "--porcelain"], None)?;
+    let content_status = subprocess::run_command(
+        "git",
+        &[
+            "status",
+            &CONFIG.get().content_directory_name,
+            "--porcelain",
+        ],
+        None,
+    )?;
     if content_status.is_empty() {
         let git_commit_time = subprocess::run_command("git", &["log", "-1", "--format=%ct"], None)?;
         let commit_time: u64 = git_commit_time
@@ -92,7 +99,7 @@ fn generate_filename(meta: &PaperMeta) -> Result<String> {
 }
 
 pub fn build(
-    output_format: formats::OutputFormat,
+    output_format: &formats::OutputFormat,
     of_specified: bool,
     docx_revision: i64,
 ) -> Result<()> {
@@ -100,7 +107,7 @@ pub fn build(
 
     let mut meta = PaperMeta::new()?;
 
-    let mut of = output_format;
+    let mut of = output_format.clone();
     if !of_specified {
         of = match meta.get_string(&["default_format"]) {
             Some(df) => formats::OutputFormat::from_str(&df)?,

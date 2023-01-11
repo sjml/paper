@@ -1,5 +1,4 @@
 ## burndown
-* watcher functionality
 * have docx pagination get fixed if no title page
 * make sure missing cite keys print warnings
 * set progress image to use timezone? (meta override?)

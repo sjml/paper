@@ -19,7 +19,9 @@ pub fn run_command<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::f
         let stdin_str_copy = stdin_str.to_owned();
         command.stdin(process::Stdio::piped());
         command.stdout(process::Stdio::piped());
-        running = command.spawn()?;
+        running = command
+            .spawn()
+            .with_context(|| format!("Could not spawn command: {}", cmd))?;
 
         let stdin = running.stdin.as_mut().expect("Couldn't get stdin.");
         stdin
@@ -29,15 +31,16 @@ pub fn run_command<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::f
         let output = running.wait_with_output().expect("Couldn't read stdout");
         return Ok(String::from_utf8_lossy(&output.stdout).to_string());
     } else {
-        let output = command.output().with_context(|| {
-            return format!("Could not run command: {} with args <{:?}>", cmd, args);
-        })?;
+        let output = command
+            .output()
+            .with_context(|| format!("Could not run command: {} with args <{:?}>", cmd, args))?;
 
-        let output_str = String::from_utf8(output.stdout)?;
+        let output_str = String::from_utf8(output.stdout).context("Could not convert string")?;
         if output.status.success() {
             Ok(output_str)
         } else {
-            let output_stderr = String::from_utf8(output.stderr)?;
+            let output_stderr =
+                String::from_utf8(output.stderr).context("Could not convert string")?;
             bail!(
                 "Failure of command: {} with args <{:?}>`:\n\nstdout: {}\n\nstderr: {}\n",
                 cmd,

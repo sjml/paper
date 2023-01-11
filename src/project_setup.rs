@@ -104,12 +104,15 @@ pub fn dev() -> Result<()> {
             env!("CARGO_MANIFEST_DIR"),
             "/resources/project_template/.paper_resources"
         ));
-        let dst_path_buf = std::env::current_dir()?.join(".paper_resources");
+        let dst_path_buf = std::env::current_dir()
+            .context("Could not get current directory")?.join(".paper_resources");
         let dst_path = dst_path_buf.as_path();
 
         if dst_path.is_symlink() {
-            let linked = dst_path.read_link()?.canonicalize()?;
-            let src_canon = src_path.canonicalize()?;
+            let linked = dst_path.read_link()
+                .with_context(|| format!("Could not read link {:?}", dst_path))?
+                .canonicalize().context("Could not canonicalize dst path")?;
+            let src_canon = src_path.canonicalize().context("Could not canonicalize src path")?;
             if linked == src_canon {
                 bail!("Looks like this project is already set up for dev!")
             }
@@ -126,8 +129,9 @@ pub fn dev() -> Result<()> {
                 .default(false)
                 .interact()?;
             if do_it {
-                fs::remove_dir_all(dst_path)?;
-                std::os::unix::fs::symlink(src_path, dst_path)?;
+                fs::remove_dir_all(dst_path).context("Could not remove dst path")?;
+                std::os::unix::fs::symlink(src_path, dst_path)
+                    .context("Could not create symlink")?;
             } else {
                 println!("No worries.")
             }

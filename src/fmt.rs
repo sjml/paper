@@ -1,6 +1,6 @@
 use std::fs;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use walkdir;
 
 use crate::config::CONFIG;
@@ -32,13 +32,13 @@ pub fn fmt(wrap: bool, columns: u32) -> Result<()> {
         }
         args.push(&cf);
         let md_out = subprocess::run_command("pandoc", &args, None)?;
-        let md_curr = fs::read_to_string(&cf)?;
+        let md_curr = fs::read_to_string(&cf).context("Couldn't read file to string")?;
         let md_curr = md_curr.trim();
         if md_out.trim() != md_curr.trim() {
             if CONFIG.get().verbose {
                 println!("Reformatting {}...", cf);
             }
-            fs::write(cf, md_out)?;
+            fs::write(cf, md_out).context("Couldn't write file")?;
         }
     }
 

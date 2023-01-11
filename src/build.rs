@@ -36,14 +36,17 @@ fn get_content_timestamp() -> Result<u64> {
         subprocess::run_command("git", &["status", "./content", "--porcelain"], None)?;
     if content_status.is_empty() {
         let git_commit_time = subprocess::run_command("git", &["log", "-1", "--format=%ct"], None)?;
-        let commit_time: u64 = git_commit_time.trim().parse()?;
+        let commit_time: u64 = git_commit_time
+            .trim()
+            .parse()
+            .context("Could not convert git commit time to u64")?;
         return Ok(commit_time);
     }
 
     // otherwise return the most recent mod time in the content directory
     let mut most_recent: u64 = 0;
     for entry in walkdir::WalkDir::new("./content") {
-        let entry = entry?;
+        let entry = entry.context("Invalid directory entry in walkdir")?;
         let md = entry
             .metadata()
             .with_context(|| format!("Could not get metadata for {:?}", entry.path()))?;
@@ -60,7 +63,7 @@ fn get_content_timestamp() -> Result<u64> {
 fn generate_filename(meta: &PaperMeta) -> Result<String> {
     let mut filename;
 
-    let whitespace_search = Regex::new(r"\s")?;
+    let whitespace_search = Regex::new(r"\s").context("Could not compile regex")?;
 
     // pull the first (or only) author's last name
     let author_splits = meta
@@ -88,7 +91,11 @@ fn generate_filename(meta: &PaperMeta) -> Result<String> {
     Ok(filename)
 }
 
-pub fn build(output_format: formats::OutputFormat, of_specified: bool, docx_revision: i64) -> Result<()> {
+pub fn build(
+    output_format: formats::OutputFormat,
+    of_specified: bool,
+    docx_revision: i64,
+) -> Result<()> {
     util::ensure_paper_dir()?;
 
     let mut meta = PaperMeta::new()?;
@@ -97,7 +104,7 @@ pub fn build(output_format: formats::OutputFormat, of_specified: bool, docx_revi
     if !of_specified {
         of = match meta.get_string(&["default_format"]) {
             Some(df) => formats::OutputFormat::from_str(&df)?,
-            None => of
+            None => of,
         };
     }
 
@@ -169,7 +176,8 @@ pub fn build(output_format: formats::OutputFormat, of_specified: bool, docx_revi
     );
 
     let filter_dir = path::Path::new(".paper_resources").join("filters");
-    let lua_filters = fs::read_dir(&filter_dir)?
+    let lua_filters = fs::read_dir(&filter_dir)
+        .with_context(|| format!("Could not read {:?}", &filter_dir))?
         .filter_map(|lf| lf.ok())
         .filter(|lf| {
             lf.file_name()
@@ -204,12 +212,19 @@ pub fn build(output_format: formats::OutputFormat, of_specified: bool, docx_revi
 
             let mut source = bs.clone();
             if source.starts_with("~") {
-                source = source.replacen("~", std::env::var("HOME")?.as_str(), 1);
+                source = source.replacen(
+                    "~",
+                    std::env::var("HOME")
+                        .context("Could not get $HOME env var")?
+                        .as_str(),
+                    1,
+                );
             }
             pandoc_args.push(source);
         }
 
-        let post_lua_filters = fs::read_dir(filter_dir)?
+        let post_lua_filters = fs::read_dir(&filter_dir)
+            .with_context(|| format!("Could not read {:?}", &filter_dir))?
             .filter_map(|lf| lf.ok())
             .filter(|lf| {
                 lf.file_name()
@@ -259,8 +274,11 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
         let mut ref_writer_file = tempfile::Builder::new()
             .prefix("bib-writer")
             .suffix(".lua")
-            .tempfile()?;
-        ref_writer_file.write(REF_WRITER_LUA_SCRIPT)?;
+            .tempfile()
+            .context("Could not create temp file for REF_WRITER_LUA_SCRIPT")?;
+        ref_writer_file
+            .write(REF_WRITER_LUA_SCRIPT)
+            .context("Could not write to REF_WRITER_LUA_SCRIPT temp file")?;
         let lua_path = ref_writer_file.into_temp_path();
         let lua_path_str = lua_path.as_os_str().clone();
 
@@ -280,7 +298,7 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
             }
             bpp_strings.push(bp_local.clone());
             let bpp = path::Path::new(&bp_local);
-            if ! bpp.exists() {
+            if !bpp.exists() {
                 bail!("No such file for bibliography source: {}", bp);
             }
             args.extend_from_slice(&["--bibliography".to_string(), bp_local]);
@@ -289,24 +307,20 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
 
         let ref_str = subprocess::run_command("pandoc", &args, None)?;
         let ref_str = ref_str.trim();
-        cited_refence_keys.extend(
-            ref_str.split("\n")
-            .map(|s| s.to_string())
-        );
+        cited_refence_keys.extend(ref_str.split("\n").map(|s| s.to_string()));
 
         let mut refs: Vec<serde_json::Value> = vec![];
         for bpps in bpp_strings {
             let bpp = path::Path::new(&bpps);
-            let mut csl_args = vec![
-                "--to", "csljson",
-            ];
+            let mut csl_args = vec!["--to", "csljson"];
             if bpp.extension().unwrap_or(std::ffi::OsStr::new("")) == "json" {
                 csl_args.extend_from_slice(&["--from", "csljson"]);
             }
             csl_args.push(&bpps);
             let source_data_text = subprocess::run_command("pandoc", &csl_args, None)?;
-            fs::write("csl.json", &source_data_text)?;
-            let source_data: serde_json::Value = serde_json::from_str(&source_data_text)?;
+            fs::write("csl.json", &source_data_text).context("Could not write csl.json file")?;
+            let source_data: serde_json::Value = serde_json::from_str(&source_data_text)
+                .context("Could not parse JSON from sources data")?;
             match source_data {
                 serde_json::Value::Array(source_list) => {
                     for entry in source_list {
@@ -321,41 +335,59 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
                                         }
                                         _ => bail!("Invalid CSL JSON in {}", bpps),
                                     }
-                                }
-                                else {
+                                } else {
                                     bail!("Invalid CSL JSON in {}", bpps);
                                 }
-                            },
+                            }
                             _ => bail!("Invalid CSL JSON in {}", bpps),
                         }
                     }
-                },
+                }
                 _ => bail!("Invalid CSL JSON in {}", bpps),
             }
         }
         if !refs.is_empty() {
             let refs_val = serde_json::Value::Array(refs);
-            let refs_str = serde_json::to_string_pretty(&refs_val)?;
-            let csl_out_path = std::env::current_dir()?.join(".paper_data").join("cited_references.json");
+            let refs_str = serde_json::to_string_pretty(&refs_val).with_context(|| {
+                format!("Could not make pretty string from JSON {:?}", &refs_val)
+            })?;
+            let csl_out_path = std::env::current_dir()
+                .context("Could not get current directory")?
+                .join(".paper_data")
+                .join("cited_references.json");
             fs::write(csl_out_path, &refs_str)?;
         }
     }
 
-    let mut out_file = fs::File::create(std::env::current_dir()?.join(".paper_data").join("build_environment.txt"))?;
+    let mut out_file = fs::File::create(
+        std::env::current_dir()
+            .context("Could not get current directory")?
+            .join(".paper_data")
+            .join("build_environment.txt"),
+    )
+    .context("Could not create build data output file")?;
 
     let separator = str::repeat("#", 60);
 
-    writeln!(out_file, "{}", util::get_paper_version_stamp())?;
-    writeln!(out_file, "{}", separator)?;
+    writeln!(out_file, "{}", util::get_paper_version_stamp())
+        .context("Could not write to build data output file")?;
+    writeln!(out_file, "{}", separator).context("Could not write to build data output file")?;
 
     let dep_str = env!("PAPER_RUST_DEPS")
         .split("||||||")
         .collect::<Vec<&str>>()
         .join("\n");
-    writeln!(out_file, "{}", dep_str)?;
-    writeln!(out_file, "{}", separator)?;
+    writeln!(out_file, "{}", dep_str).context("Could not write to build data output file")?;
+    writeln!(out_file, "{}", separator).context("Could not write to build data output file")?;
 
-    write!(out_file, "{}", log_lines.join("\n"))?;
+    let pandoc_vers = subprocess::run_command("pandoc", &["--version"], None)
+        .context("Could not get pandoc version string")?;
+    writeln!(out_file, "{}", pandoc_vers).context("Could not write to build data output file")?;
+
+    writeln!(out_file, "{}", separator).context("Could not write to build data output file")?;
+
+    write!(out_file, "{}", log_lines.join("\n"))
+        .context("Could not write to build data output file")?;
 
     Ok(())
 }

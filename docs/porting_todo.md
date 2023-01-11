@@ -1,3 +1,5 @@
+find and fix "My Great Title"
+
 ## functionality
 * maybe set up unit tests? lol
 * double check what the table manipulation that Python was doing in doc_handling.py:91
@@ -13,13 +15,11 @@
 * release script (github action?)
 * move content directory to config
 * single-file tex build?
+* parallelize the pandoc variable expansion?
 
 ## idiomatic rust
 - consider wrapping all the `if CONFIG.get().verbose` stuff into a logging system
 - need another pass of sweeping the `unwrap()`s
-    - also look for use of `?` without setting a context
-    - expects, too
-- pandoc_args needing to be a `Vec<String>` makes a lot of code messy -- better way to handle a list of string-like objects?
 
 ## handover
 * change old repo to `python-paper`

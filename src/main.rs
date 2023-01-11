@@ -135,7 +135,7 @@ fn _main() -> Result<()> {
             save::web()?;
         }
         Some(("wc", sub_matches)) => {
-            wc::wc(sub_matches.get_flag("full"))?;
+            wc::wc(sub_matches.get_flag("full")).expect("required");
         }
         Some(("fmt", sub_matches)) => {
             fmt::fmt(

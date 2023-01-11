@@ -146,10 +146,10 @@ impl Builder for LatexPdfBuilder {
     }
 
     fn finish_file(&self, output_file_path: &Path, meta: &PaperMeta) -> Result<Vec<String>> {
-        let current = std::env::current_dir()?;
+        let current = std::env::current_dir().context("Couldn't get current directory")?;
         let output_path = output_file_path.parent().unwrap();
-        std::env::set_current_dir(output_path)?;
-        let tmpdir = tempfile::TempDir::new()?;
+        std::env::set_current_dir(output_path).context("Couldn't set current directory")?;
+        let tmpdir = tempfile::TempDir::new().context("Couldn't create temp directory")?;
         let tmppath = tmpdir.path();
         let tmppath_str = tmppath.as_os_str().to_string_lossy().to_string();
 
@@ -181,12 +181,13 @@ impl Builder for LatexPdfBuilder {
                 println!("{}", output);
             }
         }
-        std::env::set_current_dir(current)?;
+        std::env::set_current_dir(current).context("Couldn't set current directory")?;
 
         let pdf_filename = format!("{}.pdf", filename);
         let final_pdf_path = output_path.join(&pdf_filename);
         if final_pdf_path.exists() {
-            std::fs::remove_file(&final_pdf_path)?;
+            std::fs::remove_file(&final_pdf_path)
+                .with_context(|| format!("Couldnt't remove file {:?}", final_pdf_path))?;
         }
         std::fs::rename(tmppath.join(&pdf_filename), &final_pdf_path).context("nuh uh")?;
 
@@ -196,14 +197,13 @@ impl Builder for LatexPdfBuilder {
         log_lines.push("-----".to_string());
 
         let log_file = tmppath.join(format!("{}.log", filename));
-        let log_data = std::fs::read_to_string(log_file)?;
-        let package_data = log_data.split("\n")
-            .filter_map(|s|
-                s.strip_prefix("Package: ")
-            )
+        let log_data = std::fs::read_to_string(&log_file)
+            .with_context(|| format!("Couldnt't read file {:?}", &log_file))?;
+        let package_data = log_data
+            .split("\n")
+            .filter_map(|s| s.strip_prefix("Package: "))
             .map(|s| s.to_string())
-            .collect::<Vec<String>>()
-        ;
+            .collect::<Vec<String>>();
         log_lines.extend(package_data);
 
         Ok(log_lines)

@@ -32,12 +32,13 @@ pub fn get_paper_version_stamp() -> String {
 }
 
 pub fn stamp_local_dir() -> Result<()> {
-    let data_path = std::env::current_dir()?.join(".paper_data");
+    let data_path = std::env::current_dir().context("Could not get current directory")?.join(".paper_data");
     if !data_path.exists() {
-        fs::create_dir_all(&data_path)?;
+        fs::create_dir_all(&data_path).with_context(|| format!("Could not create directory path {:?}", &data_path))?;
     }
     let vers = get_paper_version_stamp();
-    fs::write(data_path.join("last_paper_version.txt"), vers)?;
+    fs::write(data_path.join("last_paper_version.txt"), vers)
+        .context("Could not stamp local dir")?;
 
     Ok(())
 }
@@ -46,7 +47,8 @@ pub fn get_date_string(meta: &metadata::PaperMeta) -> Result<String> {
     let date: DateTime<Local> = match meta.get_string(&["data", "date"]) {
         None => Local::now(),
         Some(date_string) => {
-            let due = NaiveDate::parse_from_str(&date_string, "%Y-%m-%d")?;
+            let due = NaiveDate::parse_from_str(&date_string, "%Y-%m-%d")
+                .with_context(|| format!("Could not parse NaiveDate from {}", &date_string))?;
             let due = due.and_time(NaiveTime::from_hms_opt(0, 1, 0).unwrap());
             let due = match Local.from_local_datetime(&due) {
                 chrono::LocalResult::Single(s) => s,

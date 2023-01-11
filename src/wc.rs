@@ -1,7 +1,7 @@
 use std::fs;
 use std::io::{Read, Write};
 
-use anyhow::{ensure, Result};
+use anyhow::{ensure, Context, Result};
 use serde_json;
 use tempfile;
 use walkdir;
@@ -24,12 +24,12 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
     let mut counts = vec![];
 
     let mut strip_script = tempfile::NamedTempFile::new()?;
-    strip_script.write(WC_LUA_SCRIPT)?;
+    strip_script.write(WC_LUA_SCRIPT).context("Could not write temp file for WC_LUA_SCRIPT")?;
     let lua_path = strip_script.into_temp_path();
     let lua_path_str = lua_path.as_os_str().clone();
 
     for entry in walkdir::WalkDir::new("./content") {
-        let entry = entry?;
+        let entry = entry.context("Invalid directory entry in walkdir")?;
         if !entry.path().is_file() {
             continue;
         }
@@ -38,7 +38,7 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
                 continue;
             }
         }
-        let trunc = entry.path().strip_prefix("./content")?;
+        let trunc = entry.path().strip_prefix("./content").context("Could not strip prefix from entry path")?;
 
         let full_pstr = entry.path().as_os_str().to_string_lossy().to_string();
         let trunc_pstr = trunc.as_os_str().to_string_lossy().to_string();
@@ -46,9 +46,11 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
             continue;
         }
 
-        let mut content_file = fs::File::open(entry.path())?;
+        let mut content_file = fs::File::open(entry.path())
+            .with_context(|| format!("Could not open {:?}", &entry))?;
         let mut content_string = String::new();
-        content_file.read_to_string(&mut content_string)?;
+        content_file.read_to_string(&mut content_string)
+            .with_context(|| format!("Could not read {:?} to string", &content_file))?;
 
         // pandoc \
         //  --from markdown+bracketed_spans+raw_tex-auto_identifiers \
@@ -76,7 +78,7 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
         ));
     }
 
-    lua_path.close()?;
+    lua_path.close().context("Could not close lua path")?;
 
     counts.sort();
 
@@ -104,7 +106,8 @@ pub fn wc_json() -> Result<String> {
     );
     full_map.insert("breakdown".to_string(), serde_json::Value::Object(wc_map));
 
-    let full_map_json = serde_json::to_string(&serde_json::Value::Object(full_map))?;
+    let full_map_json = serde_json::to_string(&serde_json::Value::Object(full_map))
+        .context("Could not convert full_map to JSON string")?;
 
     Ok(full_map_json)
 }

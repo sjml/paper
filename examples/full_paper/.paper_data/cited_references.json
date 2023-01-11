@@ -1,0 +1,124 @@
+[
+  {
+    "ISBN": "978-0-19-515853-3 978-0-19-509183-0",
+    "author": [
+      {
+        "family": "Aquinas",
+        "given": "Thomas"
+      }
+    ],
+    "call-number": "BJ1400 .T4813 2003",
+    "citation-key": "aquinasEvil2003",
+    "editor": [
+      {
+        "family": "Davies",
+        "given": "Brian"
+      }
+    ],
+    "event-place": "New York",
+    "id": "aquinasEvil2003",
+    "issued": {
+      "date-parts": [
+        [
+          2003
+        ]
+      ]
+    },
+    "keyword": "",
+    "language": "en",
+    "number-of-pages": "540",
+    "publisher": "Oxford University Press",
+    "publisher-place": "New York",
+    "source": "Library of Congress ISBN",
+    "title": "On evil",
+    "translator": [
+      {
+        "family": "Regan",
+        "given": "Richard J."
+      }
+    ],
+    "type": "book"
+  },
+  {
+    "URL": "https://www.newadvent.org/summa/",
+    "author": [
+      {
+        "family": "Aquinas",
+        "given": "Thomas"
+      }
+    ],
+    "citation-key": "aquinasSumma",
+    "edition": "Second and Revised Edition",
+    "id": "aquinasSumma",
+    "issued": {
+      "date-parts": [
+        [
+          1920
+        ]
+      ]
+    },
+    "keyword": "",
+    "publisher": "New Advent",
+    "title": "Summa theologica",
+    "title-short": "ST",
+    "translator": [
+      {
+        "literal": "Fathers of the English Dominican Province"
+      }
+    ],
+    "type": "book"
+  },
+  {
+    "URL": "https://www.vatican.va/content/francesco/en/encyclicals/documents/papa-francesco_20150524_enciclica-laudato-si.html",
+    "archive": "at The Holy See",
+    "author": [
+      {
+        "literal": "Pope Francis"
+      }
+    ],
+    "citation-key": "francisLaudatoSi2015",
+    "id": "francisLaudatoSi2015",
+    "issued": {
+      "date-parts": [
+        [
+          2015,
+          5,
+          24
+        ]
+      ]
+    },
+    "keyword": "Papal Encyclical",
+    "language": "en",
+    "title": "Encyclical on care for our common home <i>laudato si’</i>",
+    "title-short": "<i>Laudato si’</i>",
+    "type": "report"
+  },
+  {
+    "ISBN": "978-1-57455-517-2",
+    "author": [
+      {
+        "literal": "United States Conference of Catholic Bishops"
+      }
+    ],
+    "call-number": "BX905 .C37 2006",
+    "citation-key": "usccbPPF52006",
+    "edition": "5th",
+    "event-place": "Washington, D.C",
+    "id": "usccbPPF52006",
+    "issued": {
+      "date-parts": [
+        [
+          2006
+        ]
+      ]
+    },
+    "keyword": "",
+    "number-of-pages": "143",
+    "oclc": "ocm72448834",
+    "publisher": "United States Conference of Catholic Bishops",
+    "publisher-place": "Washington, D.C",
+    "source": "Library of Congress ISBN",
+    "title": "Program of priestly formation",
+    "type": "book"
+  }
+]

@@ -1,0 +1,142 @@
+[
+  {
+    "URL": "https://www.newadvent.org/summa/",
+    "author": [
+      {
+        "family": "Aquinas",
+        "given": "Thomas"
+      }
+    ],
+    "citation-key": "aquinasSumma",
+    "edition": "Second and Revised Edition",
+    "id": "aquinasSumma",
+    "issued": {
+      "date-parts": [
+        [
+          1920
+        ]
+      ]
+    },
+    "keyword": "",
+    "publisher": "New Advent",
+    "title": "Summa theologica",
+    "title-short": "ST",
+    "translator": [
+      {
+        "literal": "Fathers of the English Dominican Province"
+      }
+    ],
+    "type": "book"
+  },
+  {
+    "ISBN": "978-1-60137-649-7",
+    "abstract": "A compendium of Catholic doctrine regarding faith and morals, revised in accordance with the official Latin text promulgated by Pope John Paul II in 1997, with a glossary of terms, analytical index, index of citations, abbreviations of biblical and Church documents, and other reference tools.",
+    "citation-key": "CCC.2017",
+    "edition": "2nd",
+    "event-place": "Vatican City; Washington, D.C.",
+    "id": "CCC.2017",
+    "issued": {
+      "date-parts": [
+        [
+          2019
+        ]
+      ]
+    },
+    "keyword": "",
+    "language": "English",
+    "oclc": "1135325373",
+    "publisher": "Libreria Editrice Vaticana",
+    "publisher-place": "Vatican City; Washington, D.C.",
+    "source": "Open WorldCat",
+    "title": "Catechism of the Catholic Church",
+    "title-short": "CCC",
+    "type": "book"
+  },
+  {
+    "ISBN": "978-3-438-05303-9",
+    "call-number": "BS75 1994",
+    "citation-key": "fischerBibliaSacraIuxta1994",
+    "edition": "Ed. quartam emendatam",
+    "editor": [
+      {
+        "family": "Fischer",
+        "given": "Bonifatius"
+      },
+      {
+        "family": "Weber",
+        "given": "Robert"
+      }
+    ],
+    "event-place": "Stuttgart",
+    "id": "fischerBibliaSacraIuxta1994",
+    "issued": {
+      "date-parts": [
+        [
+          1994
+        ]
+      ]
+    },
+    "keyword": "",
+    "number-of-pages": "1980",
+    "oclc": "ocm33143919",
+    "publisher": "Deutsche Bibelgesellschaft",
+    "publisher-place": "Stuttgart",
+    "source": "Library of Congress ISBN",
+    "title": "Biblia sacra: iuxta Vulgatam versionem",
+    "title-short": "Biblia sacra",
+    "type": "book"
+  },
+  {
+    "URL": "https://www.vatican.va/content/francesco/en/encyclicals/documents/papa-francesco_20201003_enciclica-fratelli-tutti.html",
+    "archive": "at The Holy See",
+    "author": [
+      {
+        "literal": "Pope Francis"
+      }
+    ],
+    "citation-key": "francisFratelliTutti2020",
+    "id": "francisFratelliTutti2020",
+    "issued": {
+      "date-parts": [
+        [
+          2020,
+          10,
+          3
+        ]
+      ]
+    },
+    "keyword": "Papal Encyclical",
+    "language": "en",
+    "title": "Encyclical on fraternity and social friendship <i>fratelli tutti</i>",
+    "title-short": "<i>Fratelli tutti</i>",
+    "type": "report"
+  },
+  {
+    "ISBN": "978-1-57455-517-2",
+    "author": [
+      {
+        "literal": "United States Conference of Catholic Bishops"
+      }
+    ],
+    "call-number": "BX905 .C37 2006",
+    "citation-key": "usccbPPF52006",
+    "edition": "5th",
+    "event-place": "Washington, D.C",
+    "id": "usccbPPF52006",
+    "issued": {
+      "date-parts": [
+        [
+          2006
+        ]
+      ]
+    },
+    "keyword": "",
+    "number-of-pages": "143",
+    "oclc": "ocm72448834",
+    "publisher": "United States Conference of Catholic Bishops",
+    "publisher-place": "Washington, D.C",
+    "source": "Library of Congress ISBN",
+    "title": "Program of priestly formation",
+    "type": "book"
+  }
+]

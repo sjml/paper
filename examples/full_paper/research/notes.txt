@@ -1,0 +1,5 @@
+These are notes I compile as I write the paper.
+
+This directory might also have PDFs, images, whatever other files matter to me. It's totally freeform; the `paper` system doesn't look in here at all.
+
+Note that by default this is excluded from git, so either don't put things here you need to track in source control *or* remove the relevant line from the `.gitignore` file.

@@ -1,0 +1,261 @@
+\documentclass[
+    12pt,
+    letterpaper,
+    oneside,
+    noraggedright
+]{turabian-researchpaper}
+
+% condition usage
+\usepackage{ifthen}
+
+
+\usepackage{fontspec}
+\defaultfontfeatures{Scale=MatchLowercase}
+\defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+
+% Tempora is a clone of Times Roman that
+%   includes Greek and Cyrillic; should do
+%   for most STM needs, but may need a Hebrew
+%   solution some day.
+\usepackage{tempora}
+\setmainfont{Tempora-Regular.otf}[
+    BoldFont       = Tempora-Bold.otf,
+    ItalicFont     = Tempora-Italic.otf,
+    BoldItalicFont = Tempora-BoldItalic.otf
+]
+\usepackage{sourcecodepro}
+\setmonofont{SourceCodePro-Regular.otf}[
+    BoldFont       = SourceCodePro-Bold.otf,
+    ItalicFont     = SourceCodePro-RegularIt.otf,
+    BoldItalicFont = SourceCodePro-BoldIt.otf
+]
+
+% font and typesetting niceties
+\usepackage{upquote}
+\usepackage{microtype}
+\setlength{\emergencystretch}{3em}
+
+
+\title{{\textbf{Iesus Nazarenus}, Rex Iudaeorum}}
+\subtitle{{\emph{τι εστιν αληθεια?}}}
+\author{{Πόντιος Πιλᾶτος}}
+
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[hyperfootnotes=false,hidelinks,unicode]{hyperref}
+\hypersetup{
+    pdftitle={{\textbf{Iesus Nazarenus}, Rex Iudaeorum}: {\emph{τι εστιν αληθεια?}} },
+    pdfauthor={{Πόντιος Πιλᾶτος}},
+    pdflang={en-US},
+    pdfcreator={SJML Paper v0.5.0},
+    % pdfproducer={},
+}
+% for nicer linebreak placements in URLs
+\usepackage{xurl}
+% for underlines on links
+\usepackage{href-ul}
+
+% page numbers centered in footer
+\pagestyle{plain}
+
+% tables
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+
+% default tables are opulently tall
+\let\oldlongtable\longtable
+\def\longtable{\onehalfspacing \oldlongtable}
+
+% images
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+
+\graphicspath{{../content}} % image paths relative to content directory
+% image aspect ratios stay correct, able to use [caption](./image.png){width=2in}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+% captions
+\makeatletter
+%% figure captions (centered and italicized)
+\setlength\abovecaptionskip{\z@}
+\setlength\belowcaptionskip{-.5\baselineskip}
+\long\def\@makecaption#1#2{%
+	\vskip\abovecaptionskip
+	\center\small\emph{#1. #2}\par
+	\vskip\belowcaptionskip
+}
+%% table captions (why can't these be the same?!)
+\patchcmd{\LT@makecaption}%
+   {#1{#2: }#3}
+   {#1\small\emph{#2. #3}}{}{}
+\makeatother
+
+% lists should be single-spaced
+\let\oldenumerate\enumerate
+\def\enumerate{\oldenumerate \singlespacing}
+\let\olditemize\itemize
+\def\itemize{\olditemize \singlespacing}
+
+% tight list command required by pandoc output
+\makeatletter
+\providecommand{\tightlist}{%
+    \ifthenelse{\equal{\the\@listdepth}{1}}
+    {}
+    {\vspace{-\baselineskip}}
+}
+\makeatother
+
+% tighter footnote spacing
+\usepackage{footnote}
+\makesavenoteenv{figure}
+\makesavenoteenv{longtable}
+\DeclareRobustCommand{\href}[2]{#2\footnote{\url{#1}}}
+\setlength{\footnotesep}{16pt}
+
+% section headers are left-aligned and slightly larger font
+\let\oldsection=\section
+\renewcommand\section[1]{\oldsection{\texorpdfstring{\large\raggedright{#1}}{#1}}}
+\let\oldsubsection=\subsection
+\renewcommand\subsection[1]{\oldsubsection{\texorpdfstring{\large\raggedright\emph{#1}}{#1}}}
+\let\oldsubsubsection=\subsubsection
+\renewcommand\subsubsection[1]{\oldsubsubsection{\texorpdfstring{\raggedright\emph{#1}}{#1}}}
+
+% standard bibliography environment taken from default pandoc template
+%   except where noted
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit}
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2]
+ {
+\newpage % start on new page
+\centerline{\underline{Bibliography}} % label it
+ \setlength{\parindent}{0pt}
+ \singlespacing
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \setlength{\parskip}{1em}
+ }
+{
+}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+
+% where the magic happens
+\begin{document}
+    
+        \begin{center}
+
+        \pagenumbering{gobble}
+        \thispagestyle{empty}
+        \vspace*{1in}
+        \begin{singlespace}
+                {\textbf{Iesus Nazarenus}, Rex Iudaeorum}:\\
+        {\emph{τι εστιν αληθεια?}}
+                \end{singlespace}
+        \vspace{2in - \baselineskip}
+
+        by
+        \vspace{2in - \baselineskip}
+
+        {Πόντιος Πιλᾶτος}
+
+        \vspace{2in - \baselineskip}
+
+        \singlespace{
+            {Imperator Caesar \emph{Divi filius} Augustus} \\
+            {SPQR CI} --- {Lex Iniusta} \\
+            {April 3, A.U.C. 786}
+        }
+        \end{center}
+        \newpage
+        \pagenumbering{arabic}
+    
+
+Citing the Vulgate the first time produces a footnote, as in ``In
+principio erat Verbum, et Verbum erat apud Deum, et Deus erat Verbum.''
+{(John 1:1)\footnote{Bonifatius Fischer and Robert Weber, eds.,
+  \emph{Biblia Sacra: Iuxta Vulgatam Versionem}, Ed. quartam emendatam
+  (Stuttgart: Deutsche Bibelgesellschaft, 1994).}} But a second citation
+becomes parenthetical with an italicized attribution as in ``Qui non
+diligit, non novit Deum: quoniam Deus caritas est.'' {(1 John 4:8{
+\emph{Vulgatam}})}
+
+The first time the Catechism gets cited, it's the full deal.\footnote{\emph{Catechism
+  of the Catholic Church}, 2nd ed. (Vatican City; Washington, D.C.:
+  Libreria Editrice Vaticana, 2019), p45.} But what does Tommy
+Quine-Quine have to say about the same subject?\footnote{Thomas Aquinas,
+  \emph{Summa Theologica}, trans. Fathers of the English Dominican
+  Province, Second and Revised Edition (New Advent, 1920), p48,
+  \url{https://www.newadvent.org/summa/}.} CCC with a stirring
+rebuttal!\footnote{\emph{CCC}, 49.} (Notice that it just becomes ``CCC''
+on subsequents.)
+
+That one was easy, because the
+\href{https://citationstyles.org/}{Citation Style Language} (note URLs
+for links go in footnotes, but only in LaTeX) has ready support for
+short titles, and since the Catechism doesn't have an \emph{author} to
+list, it works out. What's trickier is the USCCB, which wants to get
+referenced by its full name the first time,\footnote{United States
+  Conference of Catholic Bishops, \emph{Program of Priestly Formation},
+  5th ed. (Washington, D.C: United States Conference of Catholic
+  Bishops, 2006).} but then afterwards gets ``institutionally
+abbreviated.''\footnote{USCCB, \emph{Program of Priestly Formation}.}
+(Support for author short names is supposed to come in CSL 1.1, but
+there's no timetable on that, so gotta use
+\href{https://github.com/sjml/paper/tree/main/paper/resources/project_template/.paper_resources/filters}{my
+little Lua filters} to get it done.) It works with multiple citations,
+too.\footnote{\emph{CCC}, p45; USCCB, \emph{Program of Priestly
+  Formation}, §17.}
+
+For Papal Encyclicals, we need to make sure the capitalization of the
+Latin name stays consistent, so this cite\footnote{Pope Francis,
+  {Encyclical on Fraternity and Social Friendship \emph{Fratelli
+  tutti},} October 3, 2020, §42, at The Holy See,
+  \url{https://www.vatican.va/content/francesco/en/encyclicals/documents/papa-francesco_20201003_enciclica-fratelli-tutti.html}.}
+should mention ``\emph{Fratelli tutti}'' but not in title case. Should
+also happen for its second mention\footnote{{\emph{Fratelli tutti},}
+  §56.} where it only goes by the Latin name. No quotes around any of it
+in the citation.
+
+In the end, we give Tommy the final word,\footnote{\emph{ST} I-II, Q.
+  12.} and note the author drop from his subsequent citation.
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-aquinasSumma}{}}%
+Aquinas, Thomas. \emph{Summa Theologica}. Translated by Fathers of the
+English Dominican Province. Second and Revised Edition. New Advent,
+1920. \url{https://www.newadvent.org/summa/}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-CCC.2017}{}}%
+\emph{Catechism of the Catholic Church}. 2nd ed. Vatican City;
+Washington, D.C.: Libreria Editrice Vaticana, 2019.
+
+\leavevmode\vadjust pre{\hypertarget{ref-fischerBibliaSacraIuxta1994}{}}%
+Fischer, Bonifatius, and Robert Weber, eds. \emph{Biblia Sacra: Iuxta
+Vulgatam Versionem}. Ed. quartam emendatam. Stuttgart: Deutsche
+Bibelgesellschaft, 1994.
+
+\leavevmode\vadjust pre{\hypertarget{ref-francisFratelliTutti2020}{}}%
+Pope Francis. {Encyclical on Fraternity and Social Friendship
+\emph{Fratelli tutti},} October 3, 2020. at The Holy See.
+\url{https://www.vatican.va/content/francesco/en/encyclicals/documents/papa-francesco_20201003_enciclica-fratelli-tutti.html}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-usccbPPF52006}{}}%
+United States Conference of Catholic Bishops. \emph{Program of Priestly
+Formation}. 5th ed. Washington, D.C: United States Conference of
+Catholic Bishops, 2006.
+
+\end{CSLReferences}
+
+\end{document}

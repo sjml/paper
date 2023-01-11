@@ -67,6 +67,7 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
                 &entry.path().as_os_str().to_string_lossy(),
             ],
             None,
+            false,
         )?;
 
         counts.push((

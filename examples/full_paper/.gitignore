@@ -1,0 +1,5 @@
+# Normally /output and /research are excluded from the git tracking.
+#    But for this example repository, here they are.
+
+# /output
+# /research

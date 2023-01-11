@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 use anyhow::{bail, Context, Result};
 use filetime;
 use sxd_document;
+use sxd_document::QName;
 use sxd_xpath;
 use sxd_xpath::Value::Nodeset;
 use tempfile::{self, NamedTempFile};
@@ -225,6 +226,37 @@ impl Builder for DocxBuilder {
         context.set_namespace("dc", DCMD_SCHEMA);
         let factory = sxd_xpath::Factory::new();
 
+        // the pandoc writer doesn't check the "total row" box for tables unless
+        //   they explicitly have a footer, and we use that to do the spacing since
+        //   Word doesn't have a good way to add spacing after the *whole* table
+        if CONFIG.get().verbose {
+            println!("Fixing docx table styles...");
+        }
+        let doc_doc = self
+            .get_file_root(&output_path.to_path_buf(), "word/document.xml")
+            .with_context(|| format!("Could not get file root for {:?}", &output_path))?;
+        let doc_doc = doc_doc.as_document();
+        let root = doc_doc.root();
+
+        let xpath = self.get_xpath(&factory, "//w:tblLook")?;
+        let val = xpath
+            .evaluate(&context, root)
+            .context("Could not evaluate xpath")?;
+        if let Nodeset(ns) = val {
+            for node in ns {
+                if let Some(el) = node.element() {
+                    let name = QName::with_namespace_uri(Some("http://schemas.openxmlformats.org/wordprocessingml/2006/main"), "lastRow");
+                    el.set_attribute_value(name, "1");
+                }
+            }
+        }
+        else {
+            bail!("XPath did not return Nodeset");
+        }
+
+        self.write_document(&doc_doc, &output_path.to_path_buf(), "word/document.xml")?;
+
+
         // change fonts (if needed) in Normal and Verbatim Char styles
         if meta.contains(&["base_font_override"]) || meta.contains(&["mono_font_override"]) {
             // I wanted to do this more cleverly with XML, but
@@ -279,7 +311,7 @@ impl Builder for DocxBuilder {
         let mut rev = meta.get_int(&["docx", "revision"]).unwrap_or(-1);
         if rev <= 0 {
             let git_rev_output =
-                subprocess::run_command("git", &["rev-list", "--all", "--count"], None)?;
+                subprocess::run_command("git", &["rev-list", "--all", "--count"], None, false)?;
             let git_rev = git_rev_output
                 .trim()
                 .parse::<i64>()

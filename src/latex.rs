@@ -67,6 +67,7 @@ impl Builder for LatexBuilder {
                         "latex".to_string(),
                     ],
                     Some(&v),
+                    false,
                 )?;
 
                 args.extend_from_slice(&[
@@ -150,7 +151,7 @@ impl Builder for LatexPdfBuilder {
             println!("\t{}", args.join(" "));
         }
 
-        let output = subprocess::run_command("tectonic", args, None);
+        let output = subprocess::run_command("tectonic", args, None, true);
         match output {
             Ok(stdout) => Ok(stdout.split("\n").map(|s| s.to_string()).collect()),
             Err(e) => match e {

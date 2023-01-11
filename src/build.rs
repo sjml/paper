@@ -23,6 +23,8 @@ pub fn get_content_file_list() -> Vec<String> {
         .into_iter()
         .filter_map(|entry| entry.ok())
         .filter(|entry| entry.path().is_file())
+        .filter(|entry| entry.path().file_name().unwrap() != ".DS_Store")
+        .filter(|entry| entry.path().extension().unwrap_or(std::ffi::OsStr::new("")) == "md")
         .map(|entry| entry.path().as_os_str().to_string_lossy().to_string())
         .collect::<Vec<String>>();
     content_files.sort();
@@ -40,9 +42,10 @@ fn get_content_timestamp() -> Result<u64> {
             "--porcelain",
         ],
         None,
+        false
     )?;
     if content_status.is_empty() {
-        let git_commit_time = subprocess::run_command("git", &["log", "-1", "--format=%ct"], None)?;
+        let git_commit_time = subprocess::run_command("git", &["log", "-1", "--format=%ct"], None, false)?;
         let commit_time: u64 = git_commit_time
             .trim()
             .parse()
@@ -258,7 +261,10 @@ pub fn build(
         println!("\t{}", pandoc_args.join(" "));
     }
 
-    subprocess::run_command("pandoc", pandoc_args.as_slice(), None)?;
+    let output = subprocess::run_command("pandoc", pandoc_args.as_slice(), None, CONFIG.get().verbose)?;
+    if CONFIG.get().verbose {
+        println!("{}", output);
+    }
 
     let logs = builder.finish_file(output_file_path.as_path(), &meta)?;
 
@@ -302,7 +308,7 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
         }
         args.extend_from_slice(&build::get_content_file_list());
 
-        let ref_str = subprocess::run_command("pandoc", &args, None)?;
+        let ref_str = subprocess::run_command("pandoc", &args, None, false)?;
         let ref_str = ref_str.trim();
         cited_refence_keys.extend(ref_str.split("\n").map(|s| s.to_string()));
 
@@ -314,7 +320,7 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
                 csl_args.extend_from_slice(&["--from", "csljson"]);
             }
             csl_args.push(&bpps);
-            let source_data_text = subprocess::run_command("pandoc", &csl_args, None)?;
+            let source_data_text = subprocess::run_command("pandoc", &csl_args, None, false)?;
             fs::write("csl.json", &source_data_text).context("Could not write csl.json file")?;
             let source_data: serde_json::Value = serde_json::from_str(&source_data_text)
                 .context("Could not parse JSON from sources data")?;
@@ -377,7 +383,7 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
     writeln!(out_file, "{}", dep_str).context("Could not write to build data output file")?;
     writeln!(out_file, "{}", separator).context("Could not write to build data output file")?;
 
-    let pandoc_vers = subprocess::run_command("pandoc", &["--version"], None)
+    let pandoc_vers = subprocess::run_command("pandoc", &["--version"], None, false)
         .context("Could not get pandoc version string")?;
     writeln!(out_file, "{}", pandoc_vers).context("Could not write to build data output file")?;
 

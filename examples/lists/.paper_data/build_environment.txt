@@ -1,0 +1,223 @@
+SJML Paper v0.5.0
+2213e5a98ada5d9c126e66d637e2be3a4f6d3cd5+dev
+Built 2023-01-11T15:36:18.986373-05:00
+by rustc 1.66.0 (69f9c33d7 2022-12-12)
+
+############################################################
+rust-paper v0.5.0 (/Users/shane/Projects/rust-paper)
+├── anyhow v1.0.68
+├── chrono v0.4.23
+│   ├── iana-time-zone v0.1.53
+│   │   └── core-foundation-sys v0.8.3
+│   ├── num-integer v0.1.45
+│   │   └── num-traits v0.2.15
+│   │       [build-dependencies]
+│   │       └── autocfg v1.1.0
+│   │   [build-dependencies]
+│   │   └── autocfg v1.1.0
+│   ├── num-traits v0.2.15 (*)
+│   └── time v0.1.45
+│       └── libc v0.2.139
+├── clap v4.0.32
+│   ├── bitflags v1.3.2
+│   ├── clap_derive v4.0.21 (proc-macro)
+│   │   ├── heck v0.4.0
+│   │   ├── proc-macro-error v1.0.4
+│   │   │   ├── proc-macro-error-attr v1.0.4 (proc-macro)
+│   │   │   │   ├── proc-macro2 v1.0.49
+│   │   │   │   │   └── unicode-ident v1.0.6
+│   │   │   │   └── quote v1.0.23
+│   │   │   │       └── proc-macro2 v1.0.49 (*)
+│   │   │   │   [build-dependencies]
+│   │   │   │   └── version_check v0.9.4
+│   │   │   ├── proc-macro2 v1.0.49 (*)
+│   │   │   ├── quote v1.0.23 (*)
+│   │   │   └── syn v1.0.107
+│   │   │       ├── proc-macro2 v1.0.49 (*)
+│   │   │       ├── quote v1.0.23 (*)
+│   │   │       └── unicode-ident v1.0.6
+│   │   │   [build-dependencies]
+│   │   │   └── version_check v0.9.4
+│   │   ├── proc-macro2 v1.0.49 (*)
+│   │   ├── quote v1.0.23 (*)
+│   │   └── syn v1.0.107 (*)
+│   ├── clap_lex v0.3.0
+│   │   └── os_str_bytes v6.4.1
+│   ├── is-terminal v0.4.2
+│   │   ├── io-lifetimes v1.0.3
+│   │   │   └── libc v0.2.139
+│   │   └── rustix v0.36.6
+│   │       ├── bitflags v1.3.2
+│   │       ├── errno v0.2.8
+│   │       │   └── libc v0.2.139
+│   │       ├── io-lifetimes v1.0.3 (*)
+│   │       └── libc v0.2.139
+│   ├── once_cell v1.17.0
+│   ├── strsim v0.10.0
+│   └── termcolor v1.1.3
+├── dialoguer v0.10.2
+│   ├── console v0.15.4
+│   │   ├── lazy_static v1.4.0
+│   │   ├── libc v0.2.139
+│   │   └── unicode-width v0.1.10
+│   ├── tempfile v3.3.0
+│   │   ├── cfg-if v1.0.0
+│   │   ├── fastrand v1.8.0
+│   │   ├── libc v0.2.139
+│   │   └── remove_dir_all v0.5.3
+│   └── zeroize v1.5.7
+├── filetime v0.2.19
+│   ├── cfg-if v1.0.0
+│   └── libc v0.2.139
+├── include_dir v0.7.3
+│   └── include_dir_macros v0.7.3 (proc-macro)
+│       ├── proc-macro2 v1.0.49 (*)
+│       └── quote v1.0.23 (*)
+├── notify v5.0.0
+│   ├── bitflags v1.3.2
+│   ├── crossbeam-channel v0.5.6
+│   │   ├── cfg-if v1.0.0
+│   │   └── crossbeam-utils v0.8.14
+│   │       └── cfg-if v1.0.0
+│   ├── filetime v0.2.19 (*)
+│   ├── fsevent-sys v4.1.0
+│   │   └── libc v0.2.139
+│   ├── libc v0.2.139
+│   └── walkdir v2.3.2
+│       └── same-file v1.0.6
+├── plotters v0.3.4
+│   ├── chrono v0.4.23 (*)
+│   ├── font-kit v0.11.0
+│   │   ├── bitflags v1.3.2
+│   │   ├── byteorder v1.4.3
+│   │   ├── core-foundation v0.9.3
+│   │   │   ├── core-foundation-sys v0.8.3
+│   │   │   └── libc v0.2.139
+│   │   ├── core-graphics v0.22.3
+│   │   │   ├── bitflags v1.3.2
+│   │   │   ├── core-foundation v0.9.3 (*)
+│   │   │   ├── core-graphics-types v0.1.1
+│   │   │   │   ├── bitflags v1.3.2
+│   │   │   │   ├── core-foundation v0.9.3 (*)
+│   │   │   │   ├── foreign-types v0.3.2
+│   │   │   │   │   └── foreign-types-shared v0.1.1
+│   │   │   │   └── libc v0.2.139
+│   │   │   ├── foreign-types v0.3.2 (*)
+│   │   │   └── libc v0.2.139
+│   │   ├── core-text v19.2.0
+│   │   │   ├── core-foundation v0.9.3 (*)
+│   │   │   ├── core-graphics v0.22.3 (*)
+│   │   │   ├── foreign-types v0.3.2 (*)
+│   │   │   └── libc v0.2.139
+│   │   ├── dirs-next v2.0.0
+│   │   │   ├── cfg-if v1.0.0
+│   │   │   └── dirs-sys-next v0.1.2
+│   │   │       └── libc v0.2.139
+│   │   ├── float-ord v0.2.0
+│   │   ├── lazy_static v1.4.0
+│   │   ├── libc v0.2.139
+│   │   ├── log v0.4.17
+│   │   │   └── cfg-if v1.0.0
+│   │   ├── pathfinder_geometry v0.5.1
+│   │   │   ├── log v0.4.17 (*)
+│   │   │   └── pathfinder_simd v0.5.1
+│   │   │       [build-dependencies]
+│   │   │       └── rustc_version v0.3.3
+│   │   │           └── semver v0.11.0
+│   │   │               └── semver-parser v0.10.2
+│   │   │                   └── pest v2.5.2
+│   │   │                       ├── thiserror v1.0.38
+│   │   │                       │   └── thiserror-impl v1.0.38 (proc-macro)
+│   │   │                       │       ├── proc-macro2 v1.0.49 (*)
+│   │   │                       │       ├── quote v1.0.23 (*)
+│   │   │                       │       └── syn v1.0.107 (*)
+│   │   │                       └── ucd-trie v0.1.5
+│   │   ├── pathfinder_simd v0.5.1 (*)
+│   │   └── walkdir v2.3.2 (*)
+│   ├── image v0.24.5
+│   │   ├── bytemuck v1.12.3
+│   │   ├── byteorder v1.4.3
+│   │   ├── color_quant v1.1.0
+│   │   ├── jpeg-decoder v0.3.0
+│   │   ├── num-rational v0.4.1
+│   │   │   ├── num-integer v0.1.45 (*)
+│   │   │   └── num-traits v0.2.15 (*)
+│   │   │   [build-dependencies]
+│   │   │   └── autocfg v1.1.0
+│   │   ├── num-traits v0.2.15 (*)
+│   │   └── png v0.17.7
+│   │       ├── bitflags v1.3.2
+│   │       ├── crc32fast v1.3.2
+│   │       │   └── cfg-if v1.0.0
+│   │       ├── flate2 v1.0.25
+│   │       │   ├── crc32fast v1.3.2 (*)
+│   │       │   └── miniz_oxide v0.6.2
+│   │       │       └── adler v1.0.2
+│   │       └── miniz_oxide v0.6.2 (*)
+│   ├── lazy_static v1.4.0
+│   ├── num-traits v0.2.15 (*)
+│   ├── pathfinder_geometry v0.5.1 (*)
+│   ├── plotters-backend v0.3.4
+│   ├── plotters-bitmap v0.3.2
+│   │   ├── gif v0.11.4
+│   │   │   ├── color_quant v1.1.0
+│   │   │   └── weezl v0.1.7
+│   │   ├── image v0.24.5 (*)
+│   │   └── plotters-backend v0.3.4
+│   ├── plotters-svg v0.3.3
+│   │   └── plotters-backend v0.3.4
+│   └── ttf-parser v0.15.2
+├── regex v1.7.0
+│   ├── aho-corasick v0.7.20
+│   │   └── memchr v2.5.0
+│   ├── memchr v2.5.0
+│   └── regex-syntax v0.6.28
+├── serde_json v1.0.91
+│   ├── itoa v1.0.5
+│   ├── ryu v1.0.12
+│   └── serde v1.0.152
+├── state v0.5.3
+├── sxd-document v0.3.2
+│   ├── peresil v0.3.0
+│   └── typed-arena v1.7.0
+├── sxd-xpath v0.4.2
+│   ├── peresil v0.3.0
+│   ├── quick-error v1.2.3
+│   └── sxd-document v0.3.2 (*)
+├── tempfile v3.3.0 (*)
+├── termcolor v1.1.3
+├── walkdir v2.3.2 (*)
+├── yaml-rust v0.4.5
+│   └── linked-hash-map v0.5.6
+└── zip v0.6.3
+    ├── byteorder v1.4.3
+    ├── constant_time_eq v0.1.5
+    ├── crc32fast v1.3.2 (*)
+    ├── flate2 v1.0.25 (*)
+    └── time v0.3.17
+        ├── itoa v1.0.5
+        ├── time-core v0.1.0
+        └── time-macros v0.2.6 (proc-macro)
+            └── time-core v0.1.0
+[build-dependencies]
+├── anyhow v1.0.68
+├── clap v4.0.32 (*)
+└── clap_complete v4.0.7
+    └── clap v4.0.32 (*)
+
+############################################################
+pandoc 2.19.2
+Compiled with pandoc-types 1.22.2.1, texmath 0.12.5.2, skylighting 0.13,
+citeproc 0.8.0.1, ipynb 0.2, hslua 2.2.1
+Scripting engine: Lua 5.4
+User data directory: /Users/shane/.local/share/pandoc
+Copyright (C) 2006-2022 John MacFarlane. Web:  https://pandoc.org
+This is free software; see the source for copying conditions. There is no
+warranty, not even for merchantability or fitness for a particular purpose.
+
+############################################################
+note: Running TeX ...
+note: Rerunning TeX because "[AUTHOR]_[MNEMONIC]_lists.aux" changed ...
+note: Running xdvipdfmx ...
+note: Writing `output/[AUTHOR]_[MNEMONIC]_lists.pdf` (10.73 KiB)
+note: Skipped writing 2 intermediate files (use --keep-intermediates to keep them)

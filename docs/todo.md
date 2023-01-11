@@ -1,16 +1,13 @@
 ## burndown
-* set progress image to use timezone? (meta override?)
-* move examples over here, add scripts to update
-  * test reproducible builds with tectonic
+* test reproducible builds with tectonic
 * change old repo name, change current repo name
 * release script (github build action?)
 * create homebrew formula, add it to tap
   * update README with install instructions
 
 ## functionality
+* set progress image to use timezone? (meta override?)
 * maybe set up unit tests? lol
-* double check what the table manipulation that Python was doing in doc_handling.py:91
-    - sure it can't be fixed in the Word style?
 * built-in github action that creates PDF on push?
   - problem: defaults to private repo, would use people's minutes
   - problem: what to do with artifacts? 

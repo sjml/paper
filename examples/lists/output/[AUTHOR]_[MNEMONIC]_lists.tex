@@ -1,8 +1,8 @@
 \documentclass[
     12pt,
     letterpaper,
-    oneside$if(ragged)$$else$,
-    noraggedright$endif$
+    oneside,
+    noraggedright
 ]{turabian-researchpaper}
 
 % condition usage
@@ -13,9 +13,6 @@
 \defaultfontfeatures{Scale=MatchLowercase}
 \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 
-$if(base_font_override)$
-\setmainfont{$base_font_override$}
-$else$
 % Tempora is a clone of Times Roman that
 %   includes Greek and Cyrillic; should do
 %   for most STM needs, but may need a Hebrew
@@ -26,17 +23,12 @@ $else$
     ItalicFont     = Tempora-Italic.otf,
     BoldItalicFont = Tempora-BoldItalic.otf
 ]
-$endif$
-$if(mono_font_override)$
-\setmonofont{$mono_font_override$}
-$else$
 \usepackage{sourcecodepro}
 \setmonofont{SourceCodePro-Regular.otf}[
     BoldFont       = SourceCodePro-Bold.otf,
     ItalicFont     = SourceCodePro-RegularIt.otf,
     BoldItalicFont = SourceCodePro-BoldIt.otf
 ]
-$endif$
 
 % font and typesetting niceties
 \usepackage{upquote}
@@ -44,21 +36,16 @@ $endif$
 \setlength{\emergencystretch}{3em}
 
 
-$if(title)$
-\title{$title$}
-$endif$
-$if(subtitle)$
-\subtitle{$subtitle$}
-$endif$
-\author{$author$}
+\title{{{[}TITLE{]}}}
+\author{{{[}AUTHOR{]}}}
 
 \PassOptionsToPackage{hyphens}{url}
 \usepackage[hyperfootnotes=false,hidelinks,unicode]{hyperref}
 \hypersetup{
-    $if(title)$pdftitle={$title$$if(subtitle)$: $subtitle$ $endif$},$endif$
-    pdfauthor={$author$},
+    pdftitle={{{[}TITLE{]}}},
+    pdfauthor={{{[}AUTHOR{]}}},
     pdflang={en-US},
-    pdfcreator={$library_name$ v$library_version$},
+    pdfcreator={SJML Paper v0.5.0},
     % pdfproducer={},
 }
 % for nicer linebreak placements in URLs
@@ -164,37 +151,122 @@ $endif$
 
 % where the magic happens
 \begin{document}
-    $if(no_title_page)$$else$
+    
         \begin{center}
 
         \pagenumbering{gobble}
         \thispagestyle{empty}
         \vspace*{1in}
         \begin{singlespace}
-        $if(title)$
-        $title$$if(subtitle)$:\\
-        $subtitle$$endif$
-        $endif$
-        \end{singlespace}
+                {{[}TITLE{]}}
+                \end{singlespace}
         \vspace{2in - \baselineskip}
 
         by
         \vspace{2in - \baselineskip}
 
-        $author$
+        {{[}AUTHOR{]}}
 
         \vspace{2in - \baselineskip}
 
         \singlespace{
-            $if(professor)$$professor$ \\$endif$
-            $if(class_mnemonic)$$class_mnemonic$$endif$$if(class_mnemonic)$$if(class_name)$ --- $endif$$endif$$if(class_name)$$class_name$$endif$ \\
-            $if(date)$$date$$endif$
+            {{[}PROFESSOR{]}} \\
+            {{[}MNEMONIC{]}} --- {{[}CLASS\_NAME{]}} \\
+            
         }
         \end{center}
         \newpage
         \pagenumbering{arabic}
-    $endif$
+    
 
-$if(body)$$body$$else$\mbox{}$endif$
+Nested lists!
+
+\begin{itemize}
+\tightlist
+\item
+  Level 1 Item 1
+\item
+  Level 1 Item 2
+\item
+  Level 1 Item 3
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Level 2 Item 1
+  \item
+    Level 2 Item 2
+
+    \begin{itemize}
+    \tightlist
+    \item
+      Level 3 Item 1
+    \end{itemize}
+  \item
+    Level 2 Item 3
+  \item
+    Level 2 Item 4
+  \end{itemize}
+\item
+  Level 1 Item 4
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Level 2 Item 1
+  \end{itemize}
+\end{itemize}
+
+Then here is the following paragraph. Id irure irure ea dolor ex fugiat
+deserunt mollit in cillum esse. Fugiat labore labore elit dolor
+exercitation reprehenderit. Aute esse ullamco dolore commodo magna
+reprehenderit. Mollit velit consequat aliquip dolor esse culpa ullamco
+id reprehenderit enim adipisicing id reprehenderit et.
+
+And once more, for fun, a smaller list, also in the middle of a
+paragraph. Veniam pariatur duis officia sint mollit sunt Lorem sint
+amet. Duis esse elit anim pariatur cupidatat enim:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Item 1
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Sub-item
+  \end{itemize}
+\item
+  Item 2
+\item
+  Item 3
+\end{enumerate}
+
+\noindent{}And what comes after. Enim adipisicing velit cupidatat
+aliquip incididunt voluptate.
+
+Finally, some lists with longer items.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Nulla voluptate voluptate ut cupidatat et ad do velit et id magna.
+  Duis est dolore anim ex. Quis esse ut aliquip sint aliquip. Culpa enim
+  nisi reprehenderit veniam cupidatat elit occaecat cupidatat aute sint
+  ut. Ipsum consequat sunt aute excepteur sit culpa non esse nostrud
+  veniam magna eiusmod. Ullamco est amet fugiat proident ullamco
+  adipisicing aute id sit exercitation fugiat. Cupidatat voluptate
+  proident in do consequat velit nulla ex consectetur. Pariatur magna in
+  reprehenderit est ad reprehenderit dolor nulla culpa ex deserunt
+  pariatur nisi.
+\item
+  Ex aliqua non ullamco eiusmod et veniam nulla quis voluptate. Ex duis
+  irure deserunt adipisicing veniam officia ea quis. Sunt nisi in mollit
+  ipsum est nulla. Nulla aliquip qui do irure dolor culpa aliqua
+  deserunt.
+\end{enumerate}
 
 \end{document}

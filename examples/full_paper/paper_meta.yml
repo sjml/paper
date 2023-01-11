@@ -1,0 +1,13 @@
+---
+data:
+  date: '2063-04-05'
+  author: 'Zefram Cochrane'
+  title: 'What Does God Need with a Starship?'
+  class_mnemonic: 'THEO 8063'
+  class_name: 'Theoretical Subspace Fixtures'
+  professor: 'Professor Richard Daystrom'
+target_word_count: 3500
+use_ibid: false
+sources:
+- ../bibliography.csl.json
+---

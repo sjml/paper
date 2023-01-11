@@ -23,7 +23,7 @@ pub fn get_paper_version_stamp() -> String {
     version = format!("{}\nBuilt {}", version, now.to_rfc3339());
 
     let cmd = std::env::var_os("RUSTC").unwrap_or_else(|| std::ffi::OsString::from("rustc"));
-    if let Ok(rustc_info) = subprocess::run_command(cmd.to_str().unwrap(), &["--version"], None) {
+    if let Ok(rustc_info) = subprocess::run_command(cmd.to_str().unwrap(), &["--version"], None, false) {
         version = format!("{}\nby {}", version, rustc_info);
     } else {
         version = format!("{}\nby <<unknown rustc>>", version);

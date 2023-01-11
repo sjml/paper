@@ -11,7 +11,7 @@ use tempfile::{self, NamedTempFile};
 use walkdir;
 use zip::{self, ZipArchive};
 
-use crate::build;
+use crate::{build, subprocess};
 use crate::config::CONFIG;
 use crate::formats::Builder;
 use crate::metadata::PaperMeta;
@@ -243,10 +243,20 @@ impl Builder for DocxBuilder {
         let props_doc = props_pkg.as_document();
         let root = props_doc.root();
 
-        self.set_prop(&root, &factory, &context, "dc:title", "My Great Title")?;
-        self.set_prop(&root, &factory, &context, "dc:creator", "My Hero")?;
-        self.set_prop(&root, &factory, &context, "cp:lastModifiedBy", "My Hero")?;
-        self.set_prop(&root, &factory, &context, "cp:revision", "42")?;
+        if let Some(title) = meta.get_string(&["data", "title"]) {
+            self.set_prop(&root, &factory, &context, "dc:title", &title)?;
+        }
+        if let Some(author) = meta.get_string(&["data", "author"]) {
+            self.set_prop(&root, &factory, &context, "dc:creator", &author)?;
+            self.set_prop(&root, &factory, &context, "cp:lastModifiedBy", &author)?;
+        }
+        let mut rev = meta.get_int(&["docx", "revision"]).unwrap_or(-1);
+        if rev <= 0 {
+            let git_rev_output = subprocess::run_command("git", &["rev-list", "--all", "--count"], None)?;
+            let git_rev = git_rev_output.trim().parse::<i64>().context("Could not parse revision count from git output")?;
+            rev = std::cmp::max(1, git_rev - 1);
+        }
+        self.set_prop(&root, &factory, &context, "cp:revision", &rev.to_string())?;
 
         self.write_document(&props_doc, &output_path.to_path_buf(), "docProps/core.xml")?;
 

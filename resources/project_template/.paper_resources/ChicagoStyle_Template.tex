@@ -8,10 +8,7 @@
 % condition usage
 \usepackage{ifthen}
 
-% Tempora is a clone of Times Roman that
-%   includes Greek and Cyrillic; should do
-%   for most STM needs, but may need a Hebrew
-%   solution some day.
+
 \usepackage{fontspec}
 \defaultfontfeatures{Scale=MatchLowercase}
 \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
@@ -19,12 +16,26 @@
 $if(base_font_override)$
 \setmainfont{$base_font_override$}
 $else$
-\setmainfont{Tempora}
+% Tempora is a clone of Times Roman that
+%   includes Greek and Cyrillic; should do
+%   for most STM needs, but may need a Hebrew
+%   solution some day.
+\usepackage{tempora}
+\setmainfont{Tempora-Regular.otf}[
+    BoldFont       = Tempora-Bold.otf,
+    ItalicFont     = Tempora-Italic.otf,
+    BoldItalicFont = Tempora-BoldItalic.otf
+]
 $endif$
 $if(mono_font_override)$
 \setmonofont{$mono_font_override$}
 $else$
-\setmonofont{Consolas}
+\usepackage{sourcecodepro}
+\setmonofont{SourceCodePro-Regular.otf}[
+    BoldFont       = SourceCodePro-Bold.otf,
+    ItalicFont     = SourceCodePro-RegularIt.otf,
+    BoldItalicFont = SourceCodePro-BoldIt.otf
+]
 $endif$
 
 % font and typesetting niceties

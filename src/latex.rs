@@ -1,16 +1,14 @@
 use std::path::Path;
 
-use anyhow::{bail, Context, Result};
-use tempfile;
+use anyhow::{bail, Result};
 
 use crate::build;
 use crate::config::CONFIG;
 use crate::formats::Builder;
 use crate::metadata::PaperMeta;
 use crate::subprocess;
+use crate::subprocess::RunCommandError;
 use crate::util;
-
-const TEX_ENGINE: &str = "xelatex";
 
 pub struct LatexBuilder {}
 
@@ -145,67 +143,29 @@ impl Builder for LatexPdfBuilder {
         self.delegate.get_file_list()
     }
 
-    fn finish_file(&self, output_file_path: &Path, meta: &PaperMeta) -> Result<Vec<String>> {
-        let current = std::env::current_dir().context("Couldn't get current directory")?;
-        let output_path = output_file_path.parent().unwrap();
-        std::env::set_current_dir(output_path).context("Couldn't set current directory")?;
-        let tmpdir = tempfile::TempDir::new().context("Couldn't create temp directory")?;
-        let tmppath = tmpdir.path();
-        let tmppath_str = tmppath.as_os_str().to_string_lossy().to_string();
-
-        let filename = meta.get_string(&["filename"]).unwrap();
-
-        let args = &[
-            "--halt-on-error",
-            "--interaction",
-            "nonstopmode",
-            "--output-directory",
-            &tmppath_str,
-            "--jobname",
-            &filename,
-            &output_file_path
-                .file_name()
-                .unwrap()
-                .to_string_lossy()
-                .to_string(),
-        ];
-
+    fn finish_file(&self, output_file_path: &Path, _meta: &PaperMeta) -> Result<Vec<String>> {
+        let args = &["--color", "never", &output_file_path.to_string_lossy()];
         if CONFIG.get().verbose {
             println!("Running LaTeX build command:");
             println!("\t{}", args.join(" "));
         }
-        // LaTex needs to be run twice to do the pagination stuff
-        for _ in 0..2 {
-            let output = subprocess::run_command(TEX_ENGINE, args, None)?;
-            if CONFIG.get().verbose {
-                println!("{}", output);
+
+        let output = subprocess::run_command("tectonic", args, None);
+        match output {
+            Ok(stdout) => Ok(stdout.split("\n").map(|s| s.to_string()).collect()),
+            Err(e) => {
+                match e {
+                    RunCommandError::IoErr(ioe) => { return Err(ioe.into()); },
+                    RunCommandError::RuntimeErr(out) => {
+                        let stderr = String::from_utf8(out.stderr)?;
+                        let tex_err: Vec<&str> = stderr.split("\n")
+                            .filter(|s| s.starts_with("error: "))
+                            .collect();
+                        bail!("TeX runtime errors: \n{}", tex_err.join("\n"));
+                    }
+                }
             }
         }
-        std::env::set_current_dir(current).context("Couldn't set current directory")?;
 
-        let pdf_filename = format!("{}.pdf", filename);
-        let final_pdf_path = output_path.join(&pdf_filename);
-        if final_pdf_path.exists() {
-            std::fs::remove_file(&final_pdf_path)
-                .with_context(|| format!("Couldnt't remove file {:?}", final_pdf_path))?;
-        }
-        std::fs::rename(tmppath.join(&pdf_filename), &final_pdf_path).context("nuh uh")?;
-
-        let mut log_lines = vec![];
-        let engine_data = subprocess::run_command(TEX_ENGINE, &["--version"], None)?;
-        log_lines.extend(engine_data.split("\n").map(|s| s.to_string()));
-        log_lines.push("-----".to_string());
-
-        let log_file = tmppath.join(format!("{}.log", filename));
-        let log_data = std::fs::read_to_string(&log_file)
-            .with_context(|| format!("Couldnt't read file {:?}", &log_file))?;
-        let package_data = log_data
-            .split("\n")
-            .filter_map(|s| s.strip_prefix("Package: "))
-            .map(|s| s.to_string())
-            .collect::<Vec<String>>();
-        log_lines.extend(package_data);
-
-        Ok(log_lines)
     }
 }

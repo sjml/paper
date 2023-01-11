@@ -1,5 +1,3 @@
-find and fix "My Great Title"
-
 ## functionality
 * maybe set up unit tests? lol
 * double check what the table manipulation that Python was doing in doc_handling.py:91
@@ -14,7 +12,7 @@ find and fix "My Great Title"
 * homebrew tap?
 * release script (github action?)
 * move content directory to config
-* single-file tex build?
+* figure out if it's possible to pre-package the tectonic files?
 * parallelize the pandoc variable expansion?
 
 ## idiomatic rust

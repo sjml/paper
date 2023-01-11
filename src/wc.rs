@@ -3,7 +3,6 @@ use std::io::Read;
 
 use anyhow::{ensure, Context, Result};
 use serde_json;
-use walkdir;
 
 use crate::config::CONFIG;
 use crate::subprocess;
@@ -23,7 +22,7 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
         .join("scripts")
         .join("stripped_md.lua");
 
-    for entry in walkdir::WalkDir::new("./content") {
+    for entry in walkdir::WalkDir::new(&CONFIG.get().content_directory_name) {
         let entry = entry.context("Invalid directory entry in walkdir")?;
         if !entry.path().is_file() {
             continue;
@@ -35,12 +34,12 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
         }
         let trunc = entry
             .path()
-            .strip_prefix("./content")
+            .strip_prefix(&CONFIG.get().content_directory_name)
             .context("Could not strip prefix from entry path")?;
 
         let full_pstr = entry.path().as_os_str().to_string_lossy().to_string();
         let trunc_pstr = trunc.as_os_str().to_string_lossy().to_string();
-        if full_pstr == "./content" {
+        if full_pstr == CONFIG.get().content_directory_name {
             continue;
         }
 

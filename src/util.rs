@@ -6,6 +6,7 @@ use anyhow::{bail, Context, Result};
 use chrono::prelude::*;
 use yaml_rust::{yaml, Yaml, YamlLoader};
 
+use crate::config::CONFIG;
 use crate::metadata;
 use crate::subprocess;
 
@@ -145,7 +146,7 @@ pub fn ensure_paper_dir() -> Result<()> {
     let files = vec![path::Path::new("./paper_meta.yml")];
     let dirs = vec![
         path::Path::new("./.paper_resources"),
-        path::Path::new("./content"),
+        path::Path::new(&CONFIG.get().content_directory_name),
     ];
 
     for f in files {

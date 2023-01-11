@@ -91,6 +91,7 @@ fn _main() -> Result<()> {
         verbose: matches.get_flag("verbose"),
         pandoc_input_format: format!("markdown{}", pandoc_features.join("")),
         output_directory_name: "output".to_string(),
+        content_directory_name: "content".to_string(),
         resources_path: match option_env!("PAPER_RESOURCES_DIR") {
             Some(res_str) => Path::new(res_str).to_path_buf(),
             None => Path::new(env!("CARGO_MANIFEST_DIR"))

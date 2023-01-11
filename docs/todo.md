@@ -1,5 +1,4 @@
 ## burndown
-* make content directory a config value
 * watcher functionality
 * have docx pagination get fixed if no title page
 * make sure missing cite keys print warnings
@@ -7,6 +6,7 @@
 * use clap to generate completions and add them to dist
 * license, readme, etc
 * move examples over here, add scripts to update
+  * test reproducible builds with tectonic
 * change old repo name, change current repo name
 * release script (github build action?)
 * create homebrew formula, add it to tap

@@ -19,7 +19,7 @@ use crate::subprocess;
 use crate::util;
 
 pub fn get_content_file_list() -> Vec<String> {
-    let mut content_files = walkdir::WalkDir::new("./content")
+    let mut content_files = walkdir::WalkDir::new(&CONFIG.get().content_directory_name)
         .into_iter()
         .filter_map(|entry| entry.ok())
         .filter(|entry| entry.path().is_file())
@@ -33,7 +33,7 @@ pub fn get_content_file_list() -> Vec<String> {
 fn get_content_timestamp() -> Result<u64> {
     // if there are no changes in the content directory, return the last commit time
     let content_status =
-        subprocess::run_command("git", &["status", "./content", "--porcelain"], None)?;
+        subprocess::run_command("git", &["status", &CONFIG.get().content_directory_name, "--porcelain"], None)?;
     if content_status.is_empty() {
         let git_commit_time = subprocess::run_command("git", &["log", "-1", "--format=%ct"], None)?;
         let commit_time: u64 = git_commit_time
@@ -45,7 +45,7 @@ fn get_content_timestamp() -> Result<u64> {
 
     // otherwise return the most recent mod time in the content directory
     let mut most_recent: u64 = 0;
-    for entry in walkdir::WalkDir::new("./content") {
+    for entry in walkdir::WalkDir::new(&CONFIG.get().content_directory_name) {
         let entry = entry.context("Invalid directory entry in walkdir")?;
         let md = entry
             .metadata()
@@ -129,7 +129,7 @@ pub fn build(
         "--metadata-file".to_string(),
         "./paper_meta.yml".to_string(),
         "--resource-path".to_string(),
-        "./content".to_string(),
+        CONFIG.get().content_directory_name.clone(),
     ];
 
     let mut builder: Box<dyn formats::Builder>;

@@ -3,6 +3,7 @@ use std::fs;
 use anyhow::{Context, Result};
 use walkdir;
 
+use crate::build;
 use crate::config::CONFIG;
 use crate::subprocess;
 use crate::util;
@@ -10,12 +11,7 @@ use crate::util;
 pub fn fmt(wrap: bool, columns: u32) -> Result<()> {
     util::ensure_paper_dir()?;
 
-    let content_files = walkdir::WalkDir::new("./content")
-        .into_iter()
-        .filter_map(|entry| entry.ok())
-        .filter(|entry| entry.path().is_file())
-        .map(|entry| entry.path().as_os_str().to_string_lossy().to_string())
-        .collect::<Vec<String>>();
+    let content_files = build::get_content_file_list();
 
     let col_str = columns.to_string();
     for cf in content_files {

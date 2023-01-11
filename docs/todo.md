@@ -1,7 +1,5 @@
 ## burndown
-* make sure missing cite keys print warnings
 * set progress image to use timezone? (meta override?)
-* use clap to generate completions and add them to dist
 * license, readme, etc
 * move examples over here, add scripts to update
   * test reproducible builds with tectonic

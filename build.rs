@@ -1,6 +1,10 @@
 use std::process;
 
 use anyhow::{Context, Result};
+use clap_complete::shells::{Bash, Fish, Zsh};
+use clap_complete::{self, generate_to};
+
+include!("src/cli.rs");
 
 fn run<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::fmt::Debug>(
     cmd: &str,
@@ -17,6 +21,12 @@ fn run<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::fmt::Debug>(
 }
 
 fn main() -> Result<()> {
+    let mut cli = cli();
+
+    generate_to(Bash, &mut cli, "rust-paper", "resources/completions")?;
+    generate_to(Fish, &mut cli, "rust-paper", "resources/completions")?;
+    generate_to(Zsh, &mut cli, "rust-paper", "resources/completions")?;
+
     let is_git = run("git", &["rev-parse"])?.0.success();
     if is_git {
         let mut hash = run("git", &["rev-parse", "HEAD"])?.1;

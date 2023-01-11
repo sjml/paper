@@ -77,6 +77,10 @@ pub fn run_command<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::f
             if !o.status.success() {
                 return Err(RunCommandError::RuntimeErr(o));
             }
+            let stderr = String::from_utf8_lossy(&o.stderr).to_string();
+            if !stderr.is_empty() {
+                println!("{}", stderr.trim_end());
+            }
             Ok(String::from_utf8_lossy(&o.stdout).to_string())
         }
         Err(e) => Err(RunCommandError::IoErr(e)),

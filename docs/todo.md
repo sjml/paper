@@ -1,18 +1,15 @@
 ## burndown
-* more resource usage to actual filesystem
-  * default: relative to cargo manifest
-  * override in build script to the homebrew path
 * make content directory a config value
 * watcher functionality
 * have docx pagination get fixed if no title page
+* make sure missing cite keys print warnings
+* set progress image to use timezone? (meta override?)
 * use clap to generate completions and add them to dist
 * license, readme, etc
 * move examples over here, add scripts to update
 * change old repo name, change current repo name
-* create homebrew formula, add it to tap
 * release script (github build action?)
-* set progress image to use timezone? (meta override?)
-* make sure missing cite keys print warnings
+* create homebrew formula, add it to tap
 
 ## functionality
 * maybe set up unit tests? lol
@@ -31,3 +28,4 @@
 ## idiomatic rust
 - consider wrapping all the `if CONFIG.get().verbose` stuff into a logging system
 - need another pass of sweeping the `unwrap()`s
+- do a pass w/clippy

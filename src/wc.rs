@@ -1,19 +1,13 @@
 use std::fs;
-use std::io::{Read, Write};
+use std::io::Read;
 
 use anyhow::{ensure, Context, Result};
 use serde_json;
-use tempfile;
 use walkdir;
 
 use crate::config::CONFIG;
 use crate::subprocess;
 use crate::util;
-
-static WC_LUA_SCRIPT: &'static [u8] = include_bytes!(concat!(
-    env!("CARGO_MANIFEST_DIR"),
-    "/resources/scripts/stripped_md.lua"
-));
 
 fn count_words_in(s: &String) -> usize {
     return s.split_whitespace().collect::<Vec<&str>>().len();
@@ -23,12 +17,11 @@ fn count_words_in(s: &String) -> usize {
 pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
     let mut counts = vec![];
 
-    let mut strip_script = tempfile::NamedTempFile::new()?;
-    strip_script
-        .write(WC_LUA_SCRIPT)
-        .context("Could not write temp file for WC_LUA_SCRIPT")?;
-    let lua_path = strip_script.into_temp_path();
-    let lua_path_str = lua_path.as_os_str().clone();
+    let lua_path = CONFIG
+        .get()
+        .resources_path
+        .join("scripts")
+        .join("stripped_md.lua");
 
     for entry in walkdir::WalkDir::new("./content") {
         let entry = entry.context("Invalid directory entry in walkdir")?;
@@ -71,7 +64,7 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
                 "--to",
                 &CONFIG.get().pandoc_input_format,
                 "--lua-filter",
-                &lua_path_str.to_string_lossy(),
+                &lua_path.to_string_lossy(),
                 &entry.path().as_os_str().to_string_lossy(),
             ],
             None,
@@ -83,8 +76,6 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
             count_words_in(&stripped_content_string),
         ));
     }
-
-    lua_path.close().context("Could not close lua path")?;
 
     counts.sort();
 

@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::str::FromStr;
 
 use anyhow::Result;
@@ -90,6 +91,12 @@ fn _main() -> Result<()> {
         verbose: matches.get_flag("verbose"),
         pandoc_input_format: format!("markdown{}", pandoc_features.join("")),
         output_directory_name: "output".to_string(),
+        resources_path: match option_env!("PAPER_RESOURCES_DIR") {
+            Some(res_str) => Path::new(res_str).to_path_buf(),
+            None => Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("resources")
+                .to_path_buf(),
+        },
     });
 
     match matches.subcommand() {

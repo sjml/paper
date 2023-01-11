@@ -4,13 +4,12 @@ use std::path::Path;
 
 use anyhow::{bail, Context, Result};
 use dialoguer;
-use include_dir::{include_dir, Dir};
+use walkdir;
 use yaml_rust::{yaml, Yaml, YamlEmitter};
 
+use crate::config::CONFIG;
 use crate::subprocess;
 use crate::util;
-
-static PROJECT_TEMPLATE: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/resources/project_template");
 
 pub fn init_project() -> Result<()> {
     let proj_path_buf = std::env::current_dir().context("Current path is invalid.")?;
@@ -24,7 +23,28 @@ pub fn init_project() -> Result<()> {
     }
 
     // have already ensured that directory is empty
-    PROJECT_TEMPLATE.extract(&proj_path_buf)?;
+    let template_path = CONFIG.get().resources_path.join("project_template");
+    let entries = walkdir::WalkDir::new(&template_path)
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .collect::<Vec<walkdir::DirEntry>>();
+
+    for e in entries {
+        let src = e.path();
+        if template_path == src {
+            continue;
+        }
+        let dst = proj_path_buf.join(
+            src.strip_prefix(template_path.clone())
+                .context("Could not strip prefix")?,
+        );
+        if e.file_type().is_dir() {
+            fs::create_dir(&dst)
+                .with_context(|| format!("Could not create dst directory {:?}", &dst))?;
+        } else {
+            fs::copy(src, dst).with_context(|| format!("Could not copy file {:?}", &src))?;
+        }
+    }
 
     let mut meta_chain: Vec<Yaml> = Vec::new();
     let mut current_path_option: Option<&Path> = Some(proj_path_buf.as_path());
@@ -100,10 +120,10 @@ pub fn dev() -> Result<()> {
     util::ensure_paper_dir()?;
 
     if cfg!(debug_assertions) {
-        let src_path = Path::new(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/resources/project_template/.paper_resources"
-        ));
+        let src_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("resources")
+            .join("project_template")
+            .join(".paper_resources");
         let dst_path_buf = std::env::current_dir()
             .context("Could not get current directory")?
             .join(".paper_resources");

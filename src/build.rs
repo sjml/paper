@@ -260,31 +260,21 @@ pub fn build(
     Ok(())
 }
 
-static REF_WRITER_LUA_SCRIPT: &'static [u8] = include_bytes!(concat!(
-    env!("CARGO_MANIFEST_DIR"),
-    "/resources/scripts/ref_list.lua"
-));
-
 fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
     util::stamp_local_dir()?;
 
     if let Some(bib_paths) = meta.get_vec_string(&["sources"]) {
         let mut cited_refence_keys = vec![];
 
-        let mut ref_writer_file = tempfile::Builder::new()
-            .prefix("bib-writer")
-            .suffix(".lua")
-            .tempfile()
-            .context("Could not create temp file for REF_WRITER_LUA_SCRIPT")?;
-        ref_writer_file
-            .write(REF_WRITER_LUA_SCRIPT)
-            .context("Could not write to REF_WRITER_LUA_SCRIPT temp file")?;
-        let lua_path = ref_writer_file.into_temp_path();
-        let lua_path_str = lua_path.as_os_str().clone();
+        let lua_path = CONFIG
+            .get()
+            .resources_path
+            .join("scripts")
+            .join("ref_list.lua");
 
         let mut args = vec![
             "--to".to_string(),
-            lua_path_str.to_string_lossy().to_string(),
+            lua_path.to_string_lossy().to_string(),
             "--metadata-file".to_string(),
             "./paper_meta.yml".to_string(),
             "--citeproc".to_string(),

@@ -1,0 +1,98 @@
+<svg width="500" height="400" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="500" height="400" opacity="1" fill="#FFFFFF" stroke="none"/>
+<text x="250" y="15" dy="0.76em" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="20.161290322580644" opacity="1" fill="#000000">
+                 Progress
+</text>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="340" x2="489" y2="340"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="328" x2="489" y2="328"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="317" x2="489" y2="317"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="305" x2="489" y2="305"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="294" x2="489" y2="294"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="283" x2="489" y2="283"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="271" x2="489" y2="271"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="260" x2="489" y2="260"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="249" x2="489" y2="249"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="237" x2="489" y2="237"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="226" x2="489" y2="226"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="215" x2="489" y2="215"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="203" x2="489" y2="203"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="192" x2="489" y2="192"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="181" x2="489" y2="181"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="169" x2="489" y2="169"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="158" x2="489" y2="158"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="146" x2="489" y2="146"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="135" x2="489" y2="135"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="124" x2="489" y2="124"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="112" x2="489" y2="112"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="101" x2="489" y2="101"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="90" x2="489" y2="90"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="78" x2="489" y2="78"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="67" x2="489" y2="67"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="56" x2="489" y2="56"/>
+<line opacity="0.1" stroke="#000000" stroke-width="1" x1="80" y1="44" x2="489" y2="44"/>
+<text x="10" y="195" dy="0.76em" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000" transform="rotate(270, 10, 195)">
+Word Count
+</text>
+<line opacity="0.2" stroke="#000000" stroke-width="1" x1="80" y1="294" x2="489" y2="294"/>
+<line opacity="0.2" stroke="#000000" stroke-width="1" x1="80" y1="237" x2="489" y2="237"/>
+<line opacity="0.2" stroke="#000000" stroke-width="1" x1="80" y1="181" x2="489" y2="181"/>
+<line opacity="0.2" stroke="#000000" stroke-width="1" x1="80" y1="124" x2="489" y2="124"/>
+<line opacity="0.2" stroke="#000000" stroke-width="1" x1="80" y1="67" x2="489" y2="67"/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="79,40 79,349 "/>
+<text x="70" y="294" dy="0.5ex" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+10000
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="74,294 79,294 "/>
+<text x="70" y="237" dy="0.5ex" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+20000
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="74,237 79,237 "/>
+<text x="70" y="181" dy="0.5ex" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+30000
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="74,181 79,181 "/>
+<text x="70" y="124" dy="0.5ex" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+40000
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="74,124 79,124 "/>
+<text x="70" y="67" dy="0.5ex" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+50000
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="74,67 79,67 "/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,350 489,350 "/>
+<text x="80" y="360" dy="0.76em" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+Oct-20
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="80,350 80,355 "/>
+<text x="132" y="360" dy="0.76em" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+Nov-20
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="132,350 132,355 "/>
+<text x="185" y="360" dy="0.76em" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+Dec-20
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="185,350 185,355 "/>
+<text x="238" y="360" dy="0.76em" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+Jan-21
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="238,350 238,355 "/>
+<text x="291" y="360" dy="0.76em" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+Feb-21
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="291,350 291,355 "/>
+<text x="343" y="360" dy="0.76em" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+Mar-21
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="343,350 343,355 "/>
+<text x="396" y="360" dy="0.76em" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+Apr-21
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="396,350 396,355 "/>
+<text x="449" y="360" dy="0.76em" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, &apos;Segoe UI&apos;, Helvetica, Arial, sans-serif, &apos;Apple Color Emoji&apos;, &apos;Segoe UI Emoji&apos;" font-size="12.096774193548388" opacity="1" fill="#000000">
+Apr-21
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="449,350 449,355 "/>
+<polyline fill="none" opacity="1" stroke="#1E88E5" stroke-width="2" points="80,349 83,347 85,345 87,344 95,339 96,334 98,332 106,329 108,327 112,325 119,323 123,317 127,312 129,309 130,312 134,303 142,300 144,304 147,302 149,292 155,295 164,292 168,291 170,290 174,287 176,284 181,283 189,281 191,280 194,269 198,267 200,265 230,262 232,260 236,255 243,251 245,242 247,240 249,239 259,236 262,234 268,231 272,221 274,218 276,207 279,205 281,201 283,204 285,202 292,206 298,209 302,200 309,192 311,182 313,185 317,182 323,179 325,177 326,168 328,166 330,164 334,162 340,157 362,154 366,152 370,150 372,148 374,137 375,132 377,129 381,128 385,123 390,122 392,120 396,123 400,121 402,119 406,117 407,107 409,109 413,107 424,105 426,102 432,92 436,89 441,87 443,86 445,80 447,78 449,68 455,65 456,63 458,60 460,63 466,61 468,58 470,55 "/>
+<polyline fill="none" opacity="1" stroke="#388E3C" stroke-width="2" points="80,67 489,67 "/>
+<polyline fill="none" opacity="1" stroke="#D50000" stroke-width="2" points="469,349 469,40 "/>
+</svg>

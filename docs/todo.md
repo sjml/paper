@@ -1,15 +1,11 @@
 ## burndown
 * set progress image to use timezone? (meta override?)
-* license, readme, etc
 * move examples over here, add scripts to update
   * test reproducible builds with tectonic
 * change old repo name, change current repo name
 * release script (github build action?)
 * create homebrew formula, add it to tap
-
-## document
-* docx pagination broken if no title page
-* docx font override will break if there's interaction between the two
+  * update README with install instructions
 
 ## functionality
 * maybe set up unit tests? lol

@@ -12,8 +12,8 @@ if FORMAT:match("docx") then
         parent = last_thing
         last_thing = last_thing.content[#last_thing.content]
       end
-      local pb = pandoc.RawBlock('openxml', '<w:p><w:r><w:br w:type="page"/></w:r></w:p>')
-      table.insert(parent.content, #parent.content+1, pb)
+      local pb = pandoc.RawBlock("openxml", '<w:p><w:r><w:br w:type="page"/></w:r></w:p>')
+      table.insert(parent.content, #parent.content + 1, pb)
       return d
     end
   end

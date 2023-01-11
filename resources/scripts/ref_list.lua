@@ -1,7 +1,7 @@
 -- a custom writer that just spits out the citation keys for everything used
 --   in the given document
 
-local system = require "pandoc.system"
+local system = require("pandoc.system")
 local utils = dofile(pandoc.path.join({
   system.get_working_directory(),
   ".paper_resources",

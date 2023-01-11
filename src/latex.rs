@@ -153,19 +153,19 @@ impl Builder for LatexPdfBuilder {
         let output = subprocess::run_command("tectonic", args, None);
         match output {
             Ok(stdout) => Ok(stdout.split("\n").map(|s| s.to_string()).collect()),
-            Err(e) => {
-                match e {
-                    RunCommandError::IoErr(ioe) => { return Err(ioe.into()); },
-                    RunCommandError::RuntimeErr(out) => {
-                        let stderr = String::from_utf8(out.stderr)?;
-                        let tex_err: Vec<&str> = stderr.split("\n")
-                            .filter(|s| s.starts_with("error: "))
-                            .collect();
-                        bail!("TeX runtime errors: \n{}", tex_err.join("\n"));
-                    }
+            Err(e) => match e {
+                RunCommandError::IoErr(ioe) => {
+                    return Err(ioe.into());
                 }
-            }
+                RunCommandError::RuntimeErr(out) => {
+                    let stderr = String::from_utf8(out.stderr)?;
+                    let tex_err: Vec<&str> = stderr
+                        .split("\n")
+                        .filter(|s| s.starts_with("error: "))
+                        .collect();
+                    bail!("TeX runtime errors: \n{}", tex_err.join("\n"));
+                }
+            },
         }
-
     }
 }

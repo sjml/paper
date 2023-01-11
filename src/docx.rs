@@ -11,10 +11,11 @@ use tempfile::{self, NamedTempFile};
 use walkdir;
 use zip::{self, ZipArchive};
 
-use crate::{build, subprocess};
+use crate::build;
 use crate::config::CONFIG;
 use crate::formats::Builder;
 use crate::metadata::PaperMeta;
+use crate::subprocess;
 use crate::util;
 
 const DOCX_SCHEMA: &str = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
@@ -168,7 +169,9 @@ impl Builder for DocxBuilder {
         let output_path = output_dir.path();
 
         for i in 0..archive.len() {
-            let mut file = archive.by_index(i).with_context(|| format!("Could not get file {} from zip archive", i))?;
+            let mut file = archive
+                .by_index(i)
+                .with_context(|| format!("Could not get file {} from zip archive", i))?;
             let filepath = match file.enclosed_name() {
                 Some(path) => path.to_owned(),
                 None => continue,
@@ -176,16 +179,29 @@ impl Builder for DocxBuilder {
             let creation_path = output_path.join(filepath);
 
             if (*file.name()).ends_with('/') {
-                fs::create_dir_all(&creation_path).with_context(|| format!("Could not create directory during unzipping {:?}", &creation_path))?;
+                fs::create_dir_all(&creation_path).with_context(|| {
+                    format!(
+                        "Could not create directory during unzipping {:?}",
+                        &creation_path
+                    )
+                })?;
             } else {
                 if let Some(p) = creation_path.parent() {
                     if !p.exists() {
-                        fs::create_dir_all(p).with_context(|| format!("Could not create directory during unzipping {:?}", &p))?;
+                        fs::create_dir_all(p).with_context(|| {
+                            format!("Could not create directory during unzipping {:?}", &p)
+                        })?;
                     }
                 }
-                let mut outfile = fs::File::create(&creation_path).with_context(|| format!("Could not create file during unzipping {:?}", &creation_path))?;
-                std::io::copy(&mut file, &mut outfile)
-                    .with_context(|| format!("Could not copy file during unzipping {:?}", &file.name()))?;
+                let mut outfile = fs::File::create(&creation_path).with_context(|| {
+                    format!(
+                        "Could not create file during unzipping {:?}",
+                        &creation_path
+                    )
+                })?;
+                std::io::copy(&mut file, &mut outfile).with_context(|| {
+                    format!("Could not copy file during unzipping {:?}", &file.name())
+                })?;
             }
 
             #[cfg(unix)]
@@ -193,7 +209,12 @@ impl Builder for DocxBuilder {
                 use std::os::unix::fs::PermissionsExt;
                 if let Some(mode) = file.unix_mode() {
                     fs::set_permissions(&creation_path, fs::Permissions::from_mode(mode))
-                        .with_context(|| format!("Could not set permissions on path during unzipping {:?}", &creation_path))?;
+                        .with_context(|| {
+                            format!(
+                                "Could not set permissions on path during unzipping {:?}",
+                                &creation_path
+                            )
+                        })?;
                 }
             }
         }
@@ -215,8 +236,11 @@ impl Builder for DocxBuilder {
             let styles_path = output_path.join("word/styles.xml");
             let mut styles_datums = String::new();
             {
-                let mut styles_file = fs::File::open(&styles_path).with_context(|| format!("Could not open styles file {:?}", &styles_path))?;
-                styles_file.read_to_string(&mut styles_datums).with_context(|| format!("Could not read styles file {:?}", &styles_path))?;
+                let mut styles_file = fs::File::open(&styles_path)
+                    .with_context(|| format!("Could not open styles file {:?}", &styles_path))?;
+                styles_file
+                    .read_to_string(&mut styles_datums)
+                    .with_context(|| format!("Could not read styles file {:?}", &styles_path))?;
             }
 
             if let Some(base_override) = meta.get_string(&["base_font_override"]) {
@@ -232,13 +256,15 @@ impl Builder for DocxBuilder {
                 styles_datums = styles_datums.replace("Consolas", &mono_override);
             }
 
-            fs::write(&styles_path, styles_datums).with_context(|| format!("Could not write styles file {:?}", &styles_path))?;
+            fs::write(&styles_path, styles_datums)
+                .with_context(|| format!("Could not write styles file {:?}", &styles_path))?;
         }
 
         if CONFIG.get().verbose {
             println!("Fixing docx metadata...");
         }
-        let props_pkg = self.get_file_root(&output_path.to_path_buf(), "docProps/core.xml")
+        let props_pkg = self
+            .get_file_root(&output_path.to_path_buf(), "docProps/core.xml")
             .with_context(|| format!("Could not get file root for {:?}", &output_path))?;
         let props_doc = props_pkg.as_document();
         let root = props_doc.root();
@@ -252,8 +278,12 @@ impl Builder for DocxBuilder {
         }
         let mut rev = meta.get_int(&["docx", "revision"]).unwrap_or(-1);
         if rev <= 0 {
-            let git_rev_output = subprocess::run_command("git", &["rev-list", "--all", "--count"], None)?;
-            let git_rev = git_rev_output.trim().parse::<i64>().context("Could not parse revision count from git output")?;
+            let git_rev_output =
+                subprocess::run_command("git", &["rev-list", "--all", "--count"], None)?;
+            let git_rev = git_rev_output
+                .trim()
+                .parse::<i64>()
+                .context("Could not parse revision count from git output")?;
             rev = std::cmp::max(1, git_rev - 1);
         }
         self.set_prop(&root, &factory, &context, "cp:revision", &rev.to_string())?;
@@ -268,9 +298,14 @@ impl Builder for DocxBuilder {
                 let entry = entry.context("Invalid directory entry in walkdir")?;
                 filetime::set_file_mtime(
                     entry.path(),
-                    filetime::FileTime::from_unix_time(epoch_str.parse()
-                        .context("Could not parse epoch string into u64")?, 0),
-                ).context("Could not set file mtime")?;
+                    filetime::FileTime::from_unix_time(
+                        epoch_str
+                            .parse()
+                            .context("Could not parse epoch string into u64")?,
+                        0,
+                    ),
+                )
+                .context("Could not set file mtime")?;
             }
         }
 
@@ -286,28 +321,31 @@ impl Builder for DocxBuilder {
         for entry in walkdir::WalkDir::new(&output_path) {
             let entry = entry.context("Invalid directory entry in walkdir")?;
             let path = entry.path();
-            let name = path.strip_prefix(&output_path)
+            let name = path
+                .strip_prefix(&output_path)
                 .context("Could not strip output prefix")?;
 
             if path.is_file() {
                 #[allow(deprecated)]
-                zipper.start_file_from_path(name, options)
+                zipper
+                    .start_file_from_path(name, options)
                     .with_context(|| format!("Could not start file {:?}", name))?;
                 let mut f = fs::File::open(path)
                     .with_context(|| format!("Could not open file {:?}", &path))?;
                 f.read_to_end(&mut buffer)
                     .with_context(|| format!("Could not read file {:?}", &path))?;
-                zipper.write_all(&*buffer)
+                zipper
+                    .write_all(&*buffer)
                     .with_context(|| format!("Could not write zipped file {:?}", &path))?;
-                    buffer.clear();
-                } else if !name.as_os_str().is_empty() {
-                    #[allow(deprecated)]
-                    zipper.add_directory_from_path(name, options)
-                        .with_context(|| format!("Could not add directory to zip {:?}", &name))?;
+                buffer.clear();
+            } else if !name.as_os_str().is_empty() {
+                #[allow(deprecated)]
+                zipper
+                    .add_directory_from_path(name, options)
+                    .with_context(|| format!("Could not add directory to zip {:?}", &name))?;
             }
         }
-        zipper.finish()
-            .context("Could not finish zip file")?;
+        zipper.finish().context("Could not finish zip file")?;
 
         Ok(vec![])
     }
@@ -367,7 +405,8 @@ impl DocxBuilder {
     ) -> Result<()> {
         let xpath_str = format!("//{}", id);
         let xpath = self.get_xpath(&fact, &xpath_str)?;
-        let val = xpath.evaluate(&cont, *root)
+        let val = xpath
+            .evaluate(&cont, *root)
             .context("Could not evaluate xpath")?;
         if let Nodeset(ns) = val {
             let el = match ns.document_order_first() {

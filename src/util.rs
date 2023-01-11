@@ -32,9 +32,12 @@ pub fn get_paper_version_stamp() -> String {
 }
 
 pub fn stamp_local_dir() -> Result<()> {
-    let data_path = std::env::current_dir().context("Could not get current directory")?.join(".paper_data");
+    let data_path = std::env::current_dir()
+        .context("Could not get current directory")?
+        .join(".paper_data");
     if !data_path.exists() {
-        fs::create_dir_all(&data_path).with_context(|| format!("Could not create directory path {:?}", &data_path))?;
+        fs::create_dir_all(&data_path)
+            .with_context(|| format!("Could not create directory path {:?}", &data_path))?;
     }
     let vers = get_paper_version_stamp();
     fs::write(data_path.join("last_paper_version.txt"), vers)

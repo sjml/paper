@@ -28,9 +28,13 @@ return {
                       if inlines[i].tag == "Str" and inlines[i].text == "sec." and inlines[i + 1].tag == "Space" then
                         inlines:remove(i + 1)
                         inlines[i].text = "§"
-                      elseif inlines[i].tag == "Str" and inlines[i].text == "secs." and inlines[i + 1].tag == "Space" then
-                          inlines:remove(i + 1)
-                          inlines[i].text = "§§"
+                      elseif
+                        inlines[i].tag == "Str"
+                        and inlines[i].text == "secs."
+                        and inlines[i + 1].tag == "Space"
+                      then
+                        inlines:remove(i + 1)
+                        inlines[i].text = "§§"
                       end
                     end
                     return inlines

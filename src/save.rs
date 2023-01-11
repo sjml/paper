@@ -27,22 +27,30 @@ pub fn save() -> Result<()> {
 
     let meta = PaperMeta::new()?;
 
-    let readme_path = std::env::current_dir().context("Could not get current directory")?.join("README.md");
+    let readme_path = std::env::current_dir()
+        .context("Could not get current directory")?
+        .join("README.md");
     if !readme_path.exists() {
-        let mut readme_file = fs::File::create(&readme_path).context("Could not create readme path")?;
+        let mut readme_file =
+            fs::File::create(&readme_path).context("Could not create readme path")?;
         match meta.get_string(&["data", "class_mnemonic"]) {
             Some(mnemonic) => {
-                writeln!(readme_file, "# {}: {}\n", mnemonic, util::get_assignment()?).context("Could not write to readme file")?;
+                writeln!(readme_file, "# {}: {}\n", mnemonic, util::get_assignment()?)
+                    .context("Could not write to readme file")?;
             }
             None => {
-                writeln!(readme_file, "# {}\n", util::get_assignment()?).context("Could not write to readme file")?;
+                writeln!(readme_file, "# {}\n", util::get_assignment()?)
+                    .context("Could not write to readme file")?;
             }
         }
-        writeln!(readme_file, "{}", METADATA_START_SENTINEL).context("Could not write to readme file")?;
-        writeln!(readme_file, "{}", METADATA_END_SENTINEL).context("Could not write to readme file")?;
+        writeln!(readme_file, "{}", METADATA_START_SENTINEL)
+            .context("Could not write to readme file")?;
+        writeln!(readme_file, "{}", METADATA_END_SENTINEL)
+            .context("Could not write to readme file")?;
     }
 
-    let readme_text = fs::read_to_string(&readme_path).context("Could not read from readme file")?;
+    let readme_text =
+        fs::read_to_string(&readme_path).context("Could not read from readme file")?;
     let readme_meta_start_idx = readme_text.find(METADATA_START_SENTINEL);
     let readme_meta_end_idx = readme_text.find(METADATA_END_SENTINEL);
 
@@ -55,7 +63,8 @@ pub fn save() -> Result<()> {
 
         let progress_img_str = get_progress_image_str(&meta)?;
         fs::write(
-            std::env::current_dir().context("Could not get current directory")?
+            std::env::current_dir()
+                .context("Could not get current directory")?
                 .join(".paper_data")
                 .join("progress.svg"),
             progress_img_str,
@@ -144,7 +153,8 @@ fn get_progress_image_str(meta: &PaperMeta) -> Result<String> {
         None => None,
         Some(ds) => {
             let dd = DateTime::parse_from_str(&ds, "%Y-%m-%d")
-                .with_context(|| format!("Could not parse DateTime {}", &ds))?.with_timezone(&Utc);
+                .with_context(|| format!("Could not parse DateTime {}", &ds))?
+                .with_timezone(&Utc);
             Some(dd)
         }
     };
@@ -184,7 +194,12 @@ fn get_progress_image_str(meta: &PaperMeta) -> Result<String> {
     let min_wc = *wcs.iter().min().unwrap();
     let mut max_wc = *wcs.iter().max().unwrap();
     if target_wc >= 0 {
-        max_wc = std::cmp::max(max_wc, target_wc.try_into().context("Could not convert target_wc")?);
+        max_wc = std::cmp::max(
+            max_wc,
+            target_wc
+                .try_into()
+                .context("Could not convert target_wc")?,
+        );
     }
     let wc_max_buffer = std::cmp::max(max_wc / 20, 100);
     let max_wc = max_wc + wc_max_buffer;
@@ -212,26 +227,34 @@ fn get_progress_image_str(meta: &PaperMeta) -> Result<String> {
         .draw()
         .context("Could not draw axes for SVG")?;
 
-    chart.draw_series(LineSeries::new(
-        wc_data.iter().map(|(dt, wc)| (*dt, *wc)),
-        plotters::style::full_palette::BLUE_600.stroke_width(2),
-    )).context("Could not draw data series for SVG")?;
+    chart
+        .draw_series(LineSeries::new(
+            wc_data.iter().map(|(dt, wc)| (*dt, *wc)),
+            plotters::style::full_palette::BLUE_600.stroke_width(2),
+        ))
+        .context("Could not draw data series for SVG")?;
 
     if target_wc >= 0 {
-        let wcu: usize = target_wc.try_into().context("Could not convert target_wc")?;
+        let wcu: usize = target_wc
+            .try_into()
+            .context("Could not convert target_wc")?;
         let wordcount_series = vec![(earliest, wcu), (latest, wcu)];
-        chart.draw_series(LineSeries::new(
-            wordcount_series.iter().map(|(dt, wc)| (*dt, *wc)),
-            plotters::style::full_palette::GREEN_700.stroke_width(2),
-        )).context("Could not plot target lines on SVG")?;
+        chart
+            .draw_series(LineSeries::new(
+                wordcount_series.iter().map(|(dt, wc)| (*dt, *wc)),
+                plotters::style::full_palette::GREEN_700.stroke_width(2),
+            ))
+            .context("Could not plot target lines on SVG")?;
     }
 
     if let Some(due_date) = due_date {
         let duedate_series = vec![(due_date, min_wc), (due_date, max_wc)];
-        chart.draw_series(LineSeries::new(
-            duedate_series.iter().map(|(dt, wc)| (*dt, *wc)),
-            plotters::style::full_palette::RED_A700.stroke_width(2),
-        )).context("Could not plot target lines on SVG")?;
+        chart
+            .draw_series(LineSeries::new(
+                duedate_series.iter().map(|(dt, wc)| (*dt, *wc)),
+                plotters::style::full_palette::RED_A700.stroke_width(2),
+            ))
+            .context("Could not plot target lines on SVG")?;
     }
 
     root.present().context("Could not present root for SVG")?;
@@ -287,7 +310,9 @@ fn get_commit_data() -> Result<Vec<(String, i64, String, usize)>> {
 
         commits.push((
             git_hash.to_owned(),
-            timestamp.parse::<i64>().context("Could not parse timestamp to i64")?,
+            timestamp
+                .parse::<i64>()
+                .context("Could not parse timestamp to i64")?,
             message.to_owned(),
             wc,
         ));

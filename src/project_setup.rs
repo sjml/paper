@@ -105,14 +105,19 @@ pub fn dev() -> Result<()> {
             "/resources/project_template/.paper_resources"
         ));
         let dst_path_buf = std::env::current_dir()
-            .context("Could not get current directory")?.join(".paper_resources");
+            .context("Could not get current directory")?
+            .join(".paper_resources");
         let dst_path = dst_path_buf.as_path();
 
         if dst_path.is_symlink() {
-            let linked = dst_path.read_link()
+            let linked = dst_path
+                .read_link()
                 .with_context(|| format!("Could not read link {:?}", dst_path))?
-                .canonicalize().context("Could not canonicalize dst path")?;
-            let src_canon = src_path.canonicalize().context("Could not canonicalize src path")?;
+                .canonicalize()
+                .context("Could not canonicalize dst path")?;
+            let src_canon = src_path
+                .canonicalize()
+                .context("Could not canonicalize src path")?;
             if linked == src_canon {
                 bail!("Looks like this project is already set up for dev!")
             }

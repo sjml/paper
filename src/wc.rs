@@ -24,7 +24,9 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
     let mut counts = vec![];
 
     let mut strip_script = tempfile::NamedTempFile::new()?;
-    strip_script.write(WC_LUA_SCRIPT).context("Could not write temp file for WC_LUA_SCRIPT")?;
+    strip_script
+        .write(WC_LUA_SCRIPT)
+        .context("Could not write temp file for WC_LUA_SCRIPT")?;
     let lua_path = strip_script.into_temp_path();
     let lua_path_str = lua_path.as_os_str().clone();
 
@@ -38,7 +40,10 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
                 continue;
             }
         }
-        let trunc = entry.path().strip_prefix("./content").context("Could not strip prefix from entry path")?;
+        let trunc = entry
+            .path()
+            .strip_prefix("./content")
+            .context("Could not strip prefix from entry path")?;
 
         let full_pstr = entry.path().as_os_str().to_string_lossy().to_string();
         let trunc_pstr = trunc.as_os_str().to_string_lossy().to_string();
@@ -46,10 +51,11 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
             continue;
         }
 
-        let mut content_file = fs::File::open(entry.path())
-            .with_context(|| format!("Could not open {:?}", &entry))?;
+        let mut content_file =
+            fs::File::open(entry.path()).with_context(|| format!("Could not open {:?}", &entry))?;
         let mut content_string = String::new();
-        content_file.read_to_string(&mut content_string)
+        content_file
+            .read_to_string(&mut content_string)
             .with_context(|| format!("Could not read {:?} to string", &content_file))?;
 
         // pandoc \

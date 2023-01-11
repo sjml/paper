@@ -1,15 +1,15 @@
 // because the popular subprocess crate was causing IOErrors during debugging sessions,
 //   and my needs are modest.
 
+use std::fmt;
 use std::io;
 use std::io::Write;
 use std::process;
-use std::fmt;
 
 #[derive(Debug)]
 pub enum RunCommandError {
     IoErr(io::Error),
-    RuntimeErr(process::Output)
+    RuntimeErr(process::Output),
 }
 
 impl std::error::Error for RunCommandError {}
@@ -19,22 +19,25 @@ impl fmt::Display for RunCommandError {
         match self {
             RunCommandError::IoErr(ioe) => {
                 write!(f, "{:?}", ioe)
-            },
+            }
             RunCommandError::RuntimeErr(out) => {
                 let stderr = match String::from_utf8(out.stderr.clone()) {
                     Ok(s) => s,
-                    Err(_) => "<unprintable>".to_string()
+                    Err(_) => "<unprintable>".to_string(),
                 };
                 let stdout = match String::from_utf8(out.stdout.clone()) {
                     Ok(s) => s,
-                    Err(_) => "<unprintable>".to_string()
+                    Err(_) => "<unprintable>".to_string(),
                 };
-                write!(f, "Command Runtime Error!\n\nstatus: {}\nstdout: {}\nstderr: {}", out.status, stdout, stderr)
+                write!(
+                    f,
+                    "Command Runtime Error!\n\nstatus: {}\nstdout: {}\nstderr: {}",
+                    out.status, stdout, stderr
+                )
             }
         }
     }
 }
-
 
 pub fn run_command<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::fmt::Debug>(
     cmd: &str,
@@ -54,7 +57,9 @@ pub fn run_command<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::f
         command.stdout(process::Stdio::piped());
         running = match command.spawn() {
             Ok(r) => r,
-            Err(e) => { return Err(RunCommandError::IoErr(e)); }
+            Err(e) => {
+                return Err(RunCommandError::IoErr(e));
+            }
         };
 
         let stdin = running.stdin.as_mut().expect("Couldn't get stdin.");
@@ -73,9 +78,7 @@ pub fn run_command<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::f
                 return Err(RunCommandError::RuntimeErr(o));
             }
             Ok(String::from_utf8_lossy(&o.stdout).to_string())
-        },
-        Err(e) => Err(RunCommandError::IoErr(e))
+        }
+        Err(e) => Err(RunCommandError::IoErr(e)),
     }
-
-
 }

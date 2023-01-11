@@ -6,7 +6,7 @@ if FORMAT:match("docx") then
       label = pandoc.Div(pandoc.Para("Bibliography"))
       label.attr = pandoc.Attr()
       label.attr["attributes"]["custom-style"] = "BibliographyLabel"
-      return {label, d}
+      return { label, d }
     end
   end
 end

@@ -1,7 +1,5 @@
 ## burndown
-* release script (github build action?)
-* create homebrew formula, add it to tap
-  * update README with install instructions
+* get bottle building from personal homebrew tap
 
 ## functionality
 * set progress image to use timezone? (meta override?)

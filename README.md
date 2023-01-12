@@ -14,9 +14,19 @@ In general, it just does a simple [pandoc](https://pandoc.org/) assembly of what
 * The _Summa Theologica_ drops the author on subsequent citations
 
 ## Installation
-Assuming you have a working [Homebrew](https://brew.sh) installation...
+If you don't have a [Homebrew](https://brew.sh/) setup, take care of that first. 
 
-Note that the first time you build a PDF you'll need internet access as it will pull down all the necessary LaTeX files and cache them. After that it should work fine offline.
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Then you can simply run:
+
+```
+brew install sjml/sjml/paper
+```
+
+Note that the first time you build a PDF you'll need internet access as it will pull down all the necessary LaTeX files and cache them. After that it **should** work fine offline. 
 
 ## Commands
 * `paper new`: generates a new scaffold directory
@@ -44,13 +54,13 @@ The metadata file that assists in the generation. YAML format. `paper` will walk
 
 * `data`: 
     * (These are variables that will be put into the actual text of the paper itself, usually on the title page. It also gets used by `paper` for default filenames and things. )
-    * `date`: due date in ISO-8601 format OR `null` OR placeholder `"[DATE]"` (if set, will be graphed as a red line on the progress image)
+    * `date`: due date in ISO-8601 format (`YYYY-MM-DD`) OR `null` OR placeholder `"[DATE]"` (if set, in addition to getting put on the title page, it will be graphed as a red line on [the progress image](#example-progress-metrics))
     * `author`: author's name
     * `title`: title of paper
     * `class_mnemonic`: like "PHIL 101" or whatever
     * `class_name`: like "Introduction to Philosophy" or whatever
     * `professor`: the person what teaches the class
-* `target_word_count`: if not null, will be graphed as a green line on the progress image
+* `target_word_count`: if not null, will be graphed as a green line on [the progress image](#example-progress-metrics)
 * `sources`: An array of paths to BibTeX (`.bib`) or CSL JSON files that contain citation data exported from Zotero, for example. If present and non-empty, [`pandoc` will be given these files in an effort to process citations](https://pandoc.org/MANUAL.html#citations).
 * `vulgate_cite_key`: if citing a Bible with the translation listed as `"Vulgatam"`, you need to specify a citation key for the initial footnote. If you're not dealing with the Vulgate, you don't need to worry about this! 
 * `no_title_page`: when building for LaTeX or PDF, omit the title page. (Works with docx format too, but the numbering will be messed up. On my list to fix at some point.)
@@ -93,9 +103,7 @@ On top of doing the document generation, assuming you use `paper save` to commit
 * you have [gh](https://cli.github.com/) installed and are logged in to a GitHub account
     - only needed for initial push; if you don't like GitHub you can manually push and then everything will just work normally from there
     - also used for the `web` command
-* If using the docx builder:
-    * you have Microsoft Word installed (or at least the expected fonts)
-* If using the LaTeX builder:
+* if using the docx builder, you have Microsoft Word installed (or at least the expected fonts)
 * you are not doing any zany branching stuff with your repo
     - should still work, but who knows? I tend to not branch on non-collaborative projects, so not a use case I've looked at a ton
 * you are not malicious; input is not sanitized or anything

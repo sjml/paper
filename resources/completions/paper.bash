@@ -85,7 +85,7 @@ _paper() {
 
     case "${cmd}" in
         paper)
-            opts="-v -h --verbose --help new init dev build save push web wc watch fmt help"
+            opts="-v -h --version --verbose --help new init dev build save push web wc watch fmt help"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0

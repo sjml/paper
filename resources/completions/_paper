@@ -15,6 +15,7 @@ _paper() {
 
     local context curcontext="$curcontext" state line
     _arguments "${_arguments_options[@]}" \
+'--version[Print version information and exit]' \
 '-v[Spam the output log]' \
 '--verbose[Spam the output log]' \
 '-h[Print help information]' \

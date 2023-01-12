@@ -11,7 +11,6 @@
 
 ## paper internal
 * figure out if it's possible to pre-package the tectonic bundle?
-* parallelize the pandoc variable expansion? (profile first, may not be the bottleneck)
 
 ## idiomatic rust
 - consider wrapping all the `if CONFIG.get().verbose` stuff into a logging system

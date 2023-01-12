@@ -41,6 +41,11 @@ fn _main() -> Result<()> {
         },
     });
 
+    if matches.get_flag("version") {
+        println!("{} v{}", util::LIB_NAME, util::LIB_VERSION);
+        std::process::exit(0);
+    }
+
     match matches.subcommand() {
         Some(("new", sub_matches)) => {
             project_setup::new_project(

@@ -1,3 +1,4 @@
+complete -c paper -n "__fish_use_subcommand" -l version -d 'Print version information and exit'
 complete -c paper -n "__fish_use_subcommand" -s v -l verbose -d 'Spam the output log'
 complete -c paper -n "__fish_use_subcommand" -s h -l help -d 'Print help information'
 complete -c paper -n "__fish_use_subcommand" -f -a "new" -d 'Create the scaffolding for a new writing/research project.'

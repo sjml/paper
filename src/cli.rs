@@ -3,8 +3,8 @@ use clap::{arg, value_parser, Command};
 pub fn cli() -> Command {
     Command::new("paper")
         .about("Shane’s little paper-{writing|managing|building} utility\n    <https://github.com/sjml/paper>")
-        .subcommand_required(true)
         .arg_required_else_help(true)
+        .arg(arg!(--version "Print version information and exit"))
         .arg(arg!(-v --verbose "Spam the output log").global(true))
         .subcommand(
             Command::new("new")

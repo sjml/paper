@@ -6,7 +6,7 @@ cd ../examples
 set -e
 
 cargo build
-PAPER=$(pwd)/../target/debug/rust-paper
+PAPER=$(pwd)/../target/debug/paper
 
 for d in *; do
   if [ -d $d ]; then
@@ -19,12 +19,12 @@ for d in *; do
       echo "   Building latex+pdf..."
       $PAPER build --output-format latex+pdf
 
-      # diffs=$(git diff output)
-      # if [[ ${#diff} -le 0 ]]; then
-      #   cd .paper_data
-      #     git checkout . 2> /dev/null
-      #   cd ..
-      # fi
+      diffs=$(git diff output)
+      if [[ ${#diff} -le 0 ]]; then
+        cd .paper_data
+          git checkout . 2> /dev/null
+        cd ..
+      fi
     popd
   fi
 done

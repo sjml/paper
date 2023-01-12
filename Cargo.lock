@@ -885,6 +885,32 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
 
 [[package]]
+name = "paper"
+version = "0.5.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "clap",
+ "clap_complete",
+ "dialoguer",
+ "filetime",
+ "include_dir",
+ "notify",
+ "plotters",
+ "regex",
+ "serde_json",
+ "state",
+ "sxd-document",
+ "sxd-xpath",
+ "tempfile",
+ "termcolor",
+ "time 0.3.17",
+ "walkdir",
+ "yaml-rust",
+ "zip",
+]
+
+[[package]]
 name = "pathfinder_geometry"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1090,32 +1116,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3acd125665422973a33ac9d3dd2df85edad0f4ae9b00dafb1a05e43a9f5ef8e7"
 dependencies = [
  "winapi",
-]
-
-[[package]]
-name = "rust-paper"
-version = "0.5.0"
-dependencies = [
- "anyhow",
- "chrono",
- "clap",
- "clap_complete",
- "dialoguer",
- "filetime",
- "include_dir",
- "notify",
- "plotters",
- "regex",
- "serde_json",
- "state",
- "sxd-document",
- "sxd-xpath",
- "tempfile",
- "termcolor",
- "time 0.3.17",
- "walkdir",
- "yaml-rust",
- "zip",
 ]
 
 [[package]]

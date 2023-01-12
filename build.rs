@@ -23,9 +23,9 @@ fn run<T: AsRef<str> + std::convert::AsRef<std::ffi::OsStr> + std::fmt::Debug>(
 fn main() -> Result<()> {
     let mut cli = cli();
 
-    generate_to(Bash, &mut cli, "rust-paper", "resources/completions")?;
-    generate_to(Fish, &mut cli, "rust-paper", "resources/completions")?;
-    generate_to(Zsh, &mut cli, "rust-paper", "resources/completions")?;
+    generate_to(Bash, &mut cli, "paper", "resources/completions")?;
+    generate_to(Fish, &mut cli, "paper", "resources/completions")?;
+    generate_to(Zsh, &mut cli, "paper", "resources/completions")?;
 
     let is_git = run("git", &["rev-parse"])?.0.success();
     if is_git {

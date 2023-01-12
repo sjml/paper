@@ -1,6 +1,4 @@
 ## burndown
-* test reproducible builds with tectonic
-* change old repo name, change current repo name
 * release script (github build action?)
 * create homebrew formula, add it to tap
   * update README with install instructions

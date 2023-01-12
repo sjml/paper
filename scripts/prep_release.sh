@@ -19,5 +19,15 @@ lipo -create -output target/universal-apple-darwin/release/paper \
 
 rm -rf dist
 
-mkdir -p dist/macos
-cp target/universal-apple-darwin/release/paper ./dist/macos/
+mkdir -p dist/macos/{bin,share,etc}
+cp target/universal-apple-darwin/release/paper ./dist/macos/bin/
+cp -R resources/project_template ./dist/macos/share/
+cp -R resources/scripts ./dist/macos/share/
+cp -R resources/completions ./dist/macos/etc
+
+VERSION_TAG="${VERSION_TAG:-$(./scripts/get_version.sh)}"
+OUT_NAME=paper-$VERSION_TAG-macos-universal
+cd dist
+mv macos $OUT_NAME
+cd $OUT_NAME
+tar cvf ../$OUT_NAME.tar.gz ./*

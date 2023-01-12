@@ -245,17 +245,18 @@ impl Builder for DocxBuilder {
         if let Nodeset(ns) = val {
             for node in ns {
                 if let Some(el) = node.element() {
-                    let name = QName::with_namespace_uri(Some("http://schemas.openxmlformats.org/wordprocessingml/2006/main"), "lastRow");
+                    let name = QName::with_namespace_uri(
+                        Some("http://schemas.openxmlformats.org/wordprocessingml/2006/main"),
+                        "lastRow",
+                    );
                     el.set_attribute_value(name, "1");
                 }
             }
-        }
-        else {
+        } else {
             bail!("XPath did not return Nodeset");
         }
 
         self.write_document(&doc_doc, &output_path.to_path_buf(), "word/document.xml")?;
-
 
         // change fonts (if needed) in Normal and Verbatim Char styles
         if meta.contains(&["base_font_override"]) || meta.contains(&["mono_font_override"]) {
@@ -322,23 +323,22 @@ impl Builder for DocxBuilder {
 
         self.write_document(&props_doc, &output_path.to_path_buf(), "docProps/core.xml")?;
 
+        let mut mod_time: Option<filetime::FileTime> = None;
         if let Ok(epoch_str) = std::env::var("SOURCE_DATE_EPOCH") {
             if CONFIG.get().verbose {
-                println!("Correcting interior timestamps...");
+                println!("Correcting interior timestamps to {}...", epoch_str);
             }
+            let ft = filetime::FileTime::from_unix_time(
+                epoch_str
+                    .parse()
+                    .context("Could not parse epoch string into u64")?,
+                0,
+            );
             for entry in walkdir::WalkDir::new(&output_path) {
                 let entry = entry.context("Invalid directory entry in walkdir")?;
-                filetime::set_file_mtime(
-                    entry.path(),
-                    filetime::FileTime::from_unix_time(
-                        epoch_str
-                            .parse()
-                            .context("Could not parse epoch string into u64")?,
-                        0,
-                    ),
-                )
-                .context("Could not set file mtime")?;
+                filetime::set_file_mtime(entry.path(), ft).context("Could not set file mtime")?;
             }
+            mod_time = Some(ft);
         }
 
         if CONFIG.get().verbose {
@@ -347,8 +347,15 @@ impl Builder for DocxBuilder {
         let outfile = fs::File::create(output_file_path)
             .with_context(|| format!("Could not create file {:?}", &output_file_path))?;
         let mut zipper = zip::ZipWriter::new(outfile);
-        let options =
+        let mut options =
             zip::write::FileOptions::default().compression_method(zip::CompressionMethod::Deflated);
+        if let Some(mt) = mod_time {
+            let offset = time::OffsetDateTime::from_unix_timestamp(mt.unix_seconds())?;
+            let now = time::OffsetDateTime::now_local()?;
+            let shifted = offset.to_offset(now.offset());
+            let zip_dt = zip::DateTime::from_time(shifted).unwrap();
+            options = options.last_modified_time(zip_dt);
+        }
         let mut buffer = Vec::new();
         for entry in walkdir::WalkDir::new(&output_path) {
             let entry = entry.context("Invalid directory entry in walkdir")?;

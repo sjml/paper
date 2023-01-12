@@ -42,10 +42,11 @@ fn get_content_timestamp() -> Result<u64> {
             "--porcelain",
         ],
         None,
-        false
+        false,
     )?;
     if content_status.is_empty() {
-        let git_commit_time = subprocess::run_command("git", &["log", "-1", "--format=%ct"], None, false)?;
+        let git_commit_time =
+            subprocess::run_command("git", &["log", "-1", "--format=%ct", "--", &CONFIG.get().content_directory_name], None, false)?;
         let commit_time: u64 = git_commit_time
             .trim()
             .parse()
@@ -261,7 +262,8 @@ pub fn build(
         println!("\t{}", pandoc_args.join(" "));
     }
 
-    let output = subprocess::run_command("pandoc", pandoc_args.as_slice(), None, CONFIG.get().verbose)?;
+    let output =
+        subprocess::run_command("pandoc", pandoc_args.as_slice(), None, CONFIG.get().verbose)?;
     if CONFIG.get().verbose {
         println!("{}", output);
     }

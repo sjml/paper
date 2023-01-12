@@ -1,6 +1,5 @@
 SJML Paper v0.5.0
-2213e5a98ada5d9c126e66d637e2be3a4f6d3cd5+dev
-Built 2023-01-11T15:36:20.865174-05:00
+b189d54894ef71504d9f6a006c02af669818aab5
 by rustc 1.66.0 (69f9c33d7 2022-12-12)
 
 ############################################################
@@ -186,6 +185,14 @@ rust-paper v0.5.0 (/Users/shane/Projects/rust-paper)
 │   └── sxd-document v0.3.2 (*)
 ├── tempfile v3.3.0 (*)
 ├── termcolor v1.1.3
+├── time v0.3.17
+│   ├── itoa v1.0.5
+│   ├── libc v0.2.139
+│   ├── num_threads v0.1.6
+│   │   └── libc v0.2.139
+│   ├── time-core v0.1.0
+│   └── time-macros v0.2.6 (proc-macro)
+│       └── time-core v0.1.0
 ├── walkdir v2.3.2 (*)
 ├── yaml-rust v0.4.5
 │   └── linked-hash-map v0.5.6
@@ -194,11 +201,7 @@ rust-paper v0.5.0 (/Users/shane/Projects/rust-paper)
     ├── constant_time_eq v0.1.5
     ├── crc32fast v1.3.2 (*)
     ├── flate2 v1.0.25 (*)
-    └── time v0.3.17
-        ├── itoa v1.0.5
-        ├── time-core v0.1.0
-        └── time-macros v0.2.6 (proc-macro)
-            └── time-core v0.1.0
+    └── time v0.3.17 (*)
 [build-dependencies]
 ├── anyhow v1.0.68
 ├── clap v4.0.32 (*)

@@ -95,7 +95,8 @@ pub fn init_project() -> Result<()> {
                 util::get_paper_version_stamp()
             ),
         ],
-        None, false,
+        None,
+        false,
     )?;
 
     Ok(())

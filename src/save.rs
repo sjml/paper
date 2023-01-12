@@ -265,7 +265,12 @@ fn get_progress_image_str(meta: &PaperMeta) -> Result<String> {
 }
 
 fn get_commit_data() -> Result<Vec<(String, i64, String, usize)>> {
-    let log = subprocess::run_command("git", &["log", "--format=%P|||%ct|||%B||-30-||"], None, false)?;
+    let log = subprocess::run_command(
+        "git",
+        &["log", "--format=%P|||%ct|||%B||-30-||"],
+        None,
+        false,
+    )?;
     let commits_raw: Vec<String> = log
         .split("||-30-||")
         .filter_map(|c| {

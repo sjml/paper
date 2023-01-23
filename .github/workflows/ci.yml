@@ -5,12 +5,22 @@ on:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
-    - name: Compile
+    - name: Set up Homebrew
+      id: set-up-homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+    - name: Install Support Programs
+      run: brew install pandoc tectonic gh
+    - name: Compile Release
       run: cargo build --release
+    - name: Run Tests
+      run: cargo test

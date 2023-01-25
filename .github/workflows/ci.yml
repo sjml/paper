@@ -52,7 +52,7 @@ jobs:
       run: |
         git config --global user.name "$PUSHER_NAME"
         git config --global user.email "$PUSHER_EMAIL"
-        git clone git@github.com:sjml/paper.git paper
+        git clone git@github.com:sjml/homebrew-sjml.git homebrew-sjml
     - name: Update Local Tap
       # doing manually since `brew bump-formula-pr` has a long installation and wants a PAT?
       #    probably useful if you want to open a PR to the core Homebrew repo, but we're just
@@ -60,13 +60,13 @@ jobs:
       run: |
         wget "https://github.com/sjml/paper/archive/refs/tags/$PAPER_VERSION.tar.gz"
         SHA256_SUM=($(shasum -a 256 $PAPER_VERSION.tar.gz))
-        cd paper
+        cd homebrew-sjml
         sed -i .bak -E "s/(\s*)url (.*)$/\1url \"https:\/\/github.com\/sjml\/paper\/archive\/refs\/tags\/$PAPER_VERSION.tar.gz\"/" Formula/paper.rb
         sed -i .bak -E "s/(\s*)sha256 (.*)$/\1sha256 \"$SHA256_SUM\"/" Formula/paper.rb
         rm Formula/*.bak
     - name: Commit and Push to Remote
       run: |
-        cd paper
+        cd homebrew-sjml
         git add .
         git commit -m "Updating paper to $PAPER_VERSION"
         echo "Pushing to remote..."

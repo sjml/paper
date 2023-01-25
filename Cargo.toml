@@ -19,7 +19,7 @@ clap_complete = "4.0.7"
 [dependencies]
 anyhow = "1.0.68"
 chrono = "0.4.23"
-clap = { version = "4.0.32", features = ["derive"] }
+clap = { version = "4.0.32", features = ["derive", "wrap_help"] }
 dialoguer = "0.10.2"
 filetime = "0.2.19"
 include_dir = "0.7.3"

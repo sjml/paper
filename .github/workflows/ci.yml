@@ -15,12 +15,59 @@ jobs:
       uses: actions/checkout@v3
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
-    - name: Set up Homebrew
-      id: set-up-homebrew
-      uses: Homebrew/actions/setup-homebrew@master
-    - name: Install Support Programs
-      run: brew install pandoc tectonic gh
-    - name: Compile Release
-      run: cargo build --release
     - name: Run Tests
       run: cargo test
+
+    # at some point we'll want more real tests and will need this stuff
+    #   for now, the above command just checks that it compiles
+    # - name: Set up Homebrew
+    #   id: set-up-homebrew
+    #   uses: Homebrew/actions/setup-homebrew@master
+    # - name: Install Support Programs
+    #   run: brew install pandoc tectonic gh
+    # - name: Compile Release
+    #   run: cargo build --release
+
+  publish-brew:
+    runs-on: macos-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: ci
+    steps:
+    - name: Set Version Variable
+      run: echo "PAPER_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+    - name: Setup Git Credentials
+      env:
+        SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+      run: |
+        SSH_PATH="$HOME/.ssh"
+        mkdir -p "$SSH_PATH"
+        echo "$SSH_DEPLOY_KEY" > "$SSH_PATH/deploy_key"
+        chmod 600 "$SSH_PATH/deploy_key"
+        ssh-keyscan -H "github.com" > "$SSH_PATH/known_hosts"
+        echo "GIT_SSH_COMMAND="ssh -vvv -i $SSH_PATH/deploy_key -o UserKnownHostsFile=$SSH_PATH/known_hosts"" >> $GITHUB_ENV
+    - name: Clone Personal Homebrew Repo
+      env:
+        PUSHER_NAME: ${{ github.event.pusher.name }}
+        PUSHER_EMAIL: ${{ github.event.pusher.email }}
+      run: |
+        git config --global user.name "$PUSHER_NAME"
+        git config --global user.email "$PUSHER_EMAIL"
+        git clone git@github.com:sjml/paper.git paper
+    - name: Update Local Tap
+      # doing manually since `brew bump-formula-pr` has a long installation and wants a PAT?
+      #    probably useful if you want to open a PR to the core Homebrew repo, but we're just
+      #    gonna push directly.
+      run: |
+        wget "https://github.com/sjml/paper/archive/refs/tags/$PAPER_VERSION.tar.gz"
+        SHA256_SUM=($(shasum -a 256 $PAPER_VERSION.tar.gz))
+        cd paper
+        sed -i .bak -E "s/(\s*)url (.*)$/\1url \"https:\/\/github.com\/sjml\/paper\/archive\/refs\/tags\/$PAPER_VERSION.tar.gz\"/" Formula/paper.rb
+        sed -i .bak -E "s/(\s*)sha256 (.*)$/\1sha256 \"$SHA256_SUM\"/" Formula/paper.rb
+        rm Formula/*.bak
+    - name: Commit and Push to Remote
+      run: |
+        cd paper
+        git add .
+        git commit -m "Updating paper to $PAPER_VERSION"
+        echo "Pushing to remote..."
+        git push

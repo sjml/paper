@@ -69,7 +69,7 @@ The metadata file that assists in the generation. YAML format. `paper` will walk
 * `base_font_override`: change away from the default Times New Roman. Doesn't do any checking to make sure it's a valid font name, or that it doesn't destroy your layout, crash Word, erase your hard drive, etc. You're on your own if you go playing here...
 * `mono_font_override`: same as above, but for the monospace font (which is Consolas by default for docx and Inconsolata for LaTeX)
 
-Note that due to [some limitations in Rust XML libraries](https://github.com/shepmaster/sxd-document/issues/86), the font overrides just do a simple find-and-replace for the known default font strings. This works unless there is interaction between them, so if you change the base font to Consolas and then change the mono font to something else, they'll both be changed. So don't do that. (LaTeX works fine.)
+Note that due to [some limitations in Rust XML libraries](https://github.com/shepmaster/sxd-document/issues/86), the font overrides for Word files just do a simple find-and-replace for the known default font strings. This works unless there is interaction between them, so if you change the base font to Consolas and then change the mono font to something else, they'll both be changed. So don't do that. (LaTeX works fine.)
 
 ### output-specific variables
 These variables are only relevant to their given output formats. 

@@ -148,13 +148,15 @@ pub fn web() -> Result<()> {
 fn get_progress_image_str(meta: &PaperMeta) -> Result<String> {
     let mut img = String::new();
 
-    let target_wc = meta.get_int(&["data", "target_word_count"]).unwrap_or(-1);
+    let target_wc = meta.get_int(&["target_word_count"]).unwrap_or(-1);
     let due_date = match meta.get_string(&["data", "date"]) {
         None => None,
         Some(ds) => {
-            let dd = DateTime::parse_from_str(&ds, "%Y-%m-%d")
-                .with_context(|| format!("Could not parse DateTime {}", &ds))?
-                .with_timezone(&Utc);
+            let nd = NaiveDate::parse_from_str(&ds, "%Y-%m-%d")
+                .with_context(|| format!("Could not parse DateTime {}", &ds))?;
+            let dd = nd.and_time(NaiveTime::default()).and_local_timezone(Utc).single()
+                .with_context(|| format!("Could not add time to parsed Datetime {}", &ds))
+                .unwrap();
             Some(dd)
         }
     };

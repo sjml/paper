@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# maybe can manually build brew bottle?
+# > brew install --build-bottle sjml/sjml/paper
+# > brew bottle sjml/sjml/paper
+# then swap out the exe for a universal one, recreate the archive,
+#   and recalculate the sha256 hash?
+# hmmm... on the whole may be easier to just wait for GitHub actions to
+#   have Apple Silicon runners (https://github.com/github/roadmap/issues/528)
+
 cd "$(dirname "$0")"
 cd ..
 

@@ -1,11 +1,10 @@
 [package]
 name = "paper"
-version = "0.5.2"
+version = "0.5.3"
 edition = "2021"
 authors = ["Shane Liesegang"]
 description = "Shane’s little paper-{writing|managing|building} utility"
-# readme = "README.md"
-readme = false
+readme = "README.md"
 repository = "https://github.com/sjml/paper"
 license = "MIT"
 keywords = ["academic", "writing", "references", "markdown", "latex"]

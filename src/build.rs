@@ -309,7 +309,7 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
         for bp in bib_paths {
             let mut bp_local = bp.clone();
             if bp.starts_with("~") {
-                bp_local = format!("{}{}", env!("HOME"), &bp_local[1..]);
+                bp_local = format!("{}{}", std::env::var("HOME").context("No $HOME variable set.")?, &bp_local[1..]);
             }
             bpp_strings.push(bp_local.clone());
             let bpp = path::Path::new(&bp_local);

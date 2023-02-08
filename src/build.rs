@@ -273,7 +273,7 @@ pub fn build(
     }
 
     let output =
-        subprocess::run_command("pandoc", pandoc_args.as_slice(), None, CONFIG.get().verbose)?;
+        subprocess::run_command("pandoc", pandoc_args.as_slice(), None, true)?;
     if CONFIG.get().verbose {
         println!("{}", output);
     }

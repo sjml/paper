@@ -65,7 +65,7 @@ The metadata file that assists in the generation. YAML format. `paper` will walk
 * `target_word_count`: if not null, will be graphed as a green line on [the progress image](#example-progress-metrics)
 * `sources`: An array of paths to BibTeX (`.bib`) or CSL JSON files that contain citation data exported from Zotero, for example. If present and non-empty, [`pandoc` will be given these files in an effort to process citations](https://pandoc.org/MANUAL.html#citations).
 * `vulgate_cite_key`: if citing a Bible with the translation listed as `"Vulgatam"`, you need to specify a citation key for the initial footnote. If you're not dealing with the Vulgate, you don't need to worry about this! 
-* `no_title_page`: when building for LaTeX or PDF, omit the title page. (Works with docx format too, but the numbering will be messed up. On my list to fix at some point.)
+* `no_title_page`: omit the title page when building output
 * `base_font_override`: change away from the default Times New Roman. Doesn't do any checking to make sure it's a valid font name, or that it doesn't destroy your layout, crash Word, erase your hard drive, etc. You're on your own if you go playing here...
 * `mono_font_override`: same as above, but for the monospace font (which is Consolas by default for docx and Inconsolata for LaTeX)
 

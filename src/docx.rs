@@ -41,11 +41,21 @@ impl Builder for DocxBuilder {
     }
 
     fn prepare(&mut self, args: &mut Vec<String>, meta: &PaperMeta) -> Result<()> {
-        let cmds = [
-            "--to=docx".to_string(),
-            "--reference-doc".to_string(),
-            "./.paper_resources/ChicagoStyle_Template.docx".to_string(),
-        ];
+        let cmds;
+        if meta.get_bool(&["no_title_page"]).unwrap_or_else(|| false) {
+            cmds = [
+                "--to=docx".to_string(),
+                "--reference-doc".to_string(),
+                "./.paper_resources/ChicagoStyle_NoTitlePage_Template.docx".to_string(),
+            ];
+        }
+        else {
+            cmds = [
+                "--to=docx".to_string(),
+                "--reference-doc".to_string(),
+                "./.paper_resources/ChicagoStyle_Template.docx".to_string(),
+            ];
+        }
         args.extend_from_slice(&cmds);
 
         if !meta.get_bool(&["no_title_page"]).unwrap_or_else(|| false) {

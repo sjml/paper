@@ -5,7 +5,6 @@ import sys
 import zipfile
 import tempfile
 import re
-import shutil
 
 if len(sys.argv) < 2:
     print("Enter path to a docx file")

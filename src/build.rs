@@ -272,8 +272,7 @@ pub fn build(
         println!("\t{}", pandoc_args.join(" "));
     }
 
-    let output =
-        subprocess::run_command("pandoc", pandoc_args.as_slice(), None, true)?;
+    let output = subprocess::run_command("pandoc", pandoc_args.as_slice(), None, true)?;
     if CONFIG.get().verbose {
         println!("{}", output);
     }
@@ -309,7 +308,11 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
         for bp in bib_paths {
             let mut bp_local = bp.clone();
             if bp.starts_with("~") {
-                bp_local = format!("{}{}", std::env::var("HOME").context("No $HOME variable set.")?, &bp_local[1..]);
+                bp_local = format!(
+                    "{}{}",
+                    std::env::var("HOME").context("No $HOME variable set.")?,
+                    &bp_local[1..]
+                );
             }
             bpp_strings.push(bp_local.clone());
             let bpp = path::Path::new(&bp_local);

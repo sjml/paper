@@ -48,8 +48,7 @@ impl Builder for DocxBuilder {
                 "--reference-doc".to_string(),
                 "./.paper_resources/ChicagoStyle_NoTitlePage_Template.docx".to_string(),
             ];
-        }
-        else {
+        } else {
             cmds = [
                 "--to=docx".to_string(),
                 "--reference-doc".to_string(),

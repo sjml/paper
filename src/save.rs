@@ -154,7 +154,10 @@ fn get_progress_image_str(meta: &PaperMeta) -> Result<String> {
         Some(ds) => {
             let nd = NaiveDate::parse_from_str(&ds, "%Y-%m-%d")
                 .with_context(|| format!("Could not parse DateTime {}", &ds))?;
-            let dd = nd.and_time(NaiveTime::default()).and_local_timezone(Utc).single()
+            let dd = nd
+                .and_time(NaiveTime::default())
+                .and_local_timezone(Utc)
+                .single()
                 .with_context(|| format!("Could not add time to parsed Datetime {}", &ds))
                 .unwrap();
             Some(dd)

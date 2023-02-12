@@ -31,7 +31,7 @@ pub fn get_paper_version_stamp() -> String {
         version = format!("{}\nby <<unknown rustc>>", version);
     }
 
-    return version;
+    version
 }
 
 pub fn stamp_local_dir() -> Result<()> {
@@ -56,11 +56,10 @@ pub fn get_date_string(meta: &metadata::PaperMeta) -> Result<String> {
             let due = NaiveDate::parse_from_str(&date_string, "%Y-%m-%d")
                 .with_context(|| format!("Could not parse NaiveDate from {}", &date_string))?;
             let due = due.and_time(NaiveTime::from_hms_opt(0, 1, 0).unwrap());
-            let due = match Local.from_local_datetime(&due) {
+            match Local.from_local_datetime(&due) {
                 chrono::LocalResult::Single(s) => s,
                 _ => Local::now(),
-            };
-            due
+            }
         }
     };
 
@@ -127,7 +126,7 @@ pub fn merge_yaml_hash(target: &mut yaml::Hash, new_hash: &yaml::Hash) {
                     }
                 },
                 Yaml::String(vs) => {
-                    if vs.starts_with("[") && vs.ends_with("]") {
+                    if vs.starts_with('[') && vs.ends_with(']') {
                         continue;
                     } else {
                         target[k] = Yaml::String(vs.to_string());

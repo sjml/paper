@@ -3,8 +3,7 @@ use std::io::Write;
 use std::path::Path;
 
 use anyhow::{bail, Context, Result};
-use dialoguer;
-use walkdir;
+use walkdir::WalkDir;
 use yaml_rust::{yaml, Yaml, YamlEmitter};
 
 use crate::config::CONFIG;
@@ -13,18 +12,18 @@ use crate::util;
 
 pub fn init_project() -> Result<()> {
     let proj_path_buf = std::env::current_dir().context("Current path is invalid.")?;
-    if !(proj_path_buf
+    if proj_path_buf
         .read_dir()
         .context("Current path is invalid.")?
         .next()
-        .is_none())
+        .is_some()
     {
         bail!("Directory needs to be empty to initialize project.");
     }
 
     // have already ensured that directory is empty
     let template_path = CONFIG.get().resources_path.join("project_template");
-    let entries = walkdir::WalkDir::new(&template_path)
+    let entries = WalkDir::new(&template_path)
         .into_iter()
         .filter_map(|e| e.ok())
         .collect::<Vec<walkdir::DirEntry>>();
@@ -114,7 +113,7 @@ pub fn new_project(project_name: &str) -> Result<()> {
     std::env::set_current_dir(project_path)
         .with_context(|| format!("Could not move to directory {:?}", project_path))?;
 
-    return init_project();
+    init_project()
 }
 
 pub fn dev() -> Result<()> {
@@ -149,7 +148,7 @@ pub fn dev() -> Result<()> {
         } else {
             println!("This symlinks the package resource directory to this local one, deleting the local version.");
             println!("It’s meant for development on paper itself.");
-            println!("");
+            println!();
             let do_it = dialoguer::Confirm::new()
                 .with_prompt("Is that what you’re up to?")
                 .default(false)

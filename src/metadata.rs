@@ -55,10 +55,7 @@ impl PaperMeta {
     }
 
     pub fn contains(&self, keychain: &[&str]) -> bool {
-        match self.fetch_node(keychain) {
-            Some(_) => true,
-            None => false,
-        }
+        self.fetch_node(keychain).is_some()
     }
 
     pub fn get_bool(&self, keychain: &[&str]) -> Option<bool> {
@@ -89,7 +86,7 @@ impl PaperMeta {
                             None => return None,
                         }
                     }
-                    return Some(v);
+                    Some(v)
                 }
                 _ => None,
             },

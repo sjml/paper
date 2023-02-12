@@ -6,8 +6,8 @@ use std::time::UNIX_EPOCH;
 
 use anyhow::{bail, Context, Result};
 use regex::Regex;
-use serde_json;
-use walkdir;
+use serde_json::{self, Value};
+use walkdir::WalkDir;
 
 use crate::build;
 use crate::config::CONFIG;
@@ -19,7 +19,7 @@ use crate::subprocess;
 use crate::util;
 
 pub fn get_content_file_list() -> Vec<String> {
-    let mut content_files = walkdir::WalkDir::new(&CONFIG.get().content_directory_name)
+    let mut content_files = WalkDir::new(&CONFIG.get().content_directory_name)
         .into_iter()
         .filter_map(|entry| entry.ok())
         .filter(|entry| entry.path().is_file())
@@ -66,7 +66,7 @@ fn get_content_timestamp() -> Result<u64> {
 
     // otherwise return the most recent mod time in the content directory
     let mut most_recent: u64 = 0;
-    for entry in walkdir::WalkDir::new(&CONFIG.get().content_directory_name) {
+    for entry in WalkDir::new(&CONFIG.get().content_directory_name) {
         let entry = entry.context("Invalid directory entry in walkdir")?;
         let md = entry
             .metadata()
@@ -90,8 +90,8 @@ fn generate_filename(meta: &PaperMeta) -> Result<String> {
     let author_splits = meta
         .get_string(&["data", "author"])
         .expect("No author in metadata.");
-    let authors: Vec<&str> = author_splits.split(",").map(|s| s.trim()).collect();
-    let author_label = authors.first().unwrap().split(" ").last().unwrap();
+    let authors: Vec<&str> = author_splits.split(',').map(|s| s.trim()).collect();
+    let author_label = authors.first().unwrap().split(' ').last().unwrap();
     match meta.get_string(&["data", "class_mnemonic"]) {
         Some(mnemonic) => {
             filename = format!(
@@ -101,7 +101,7 @@ fn generate_filename(meta: &PaperMeta) -> Result<String> {
             );
         }
         None => {
-            filename = format!("{}", author_label);
+            filename = author_label.to_string();
         }
     }
 
@@ -157,17 +157,17 @@ pub fn build(
     match of {
         OutputFormat::Docx => {
             meta.set_int(&["docx", "revision"], docx_revision)?;
-            builder = Box::new(docx::DocxBuilder::default());
+            builder = Box::<docx::DocxBuilder>::default();
         }
         OutputFormat::LaTeX => {
-            builder = Box::new(latex::LatexBuilder::default());
+            builder = Box::<latex::LatexBuilder>::default();
         }
         OutputFormat::LaTeXPdf => {
-            builder = Box::new(latex::LatexPdfBuilder::default());
+            builder = Box::<latex::LatexPdfBuilder>::default();
         }
         _ => {
             // wrong, just leaving here now until the rest of the arms are filled
-            builder = Box::new(latex::LatexBuilder::default());
+            builder = Box::<latex::LatexBuilder>::default();
         }
     }
 
@@ -219,7 +219,7 @@ pub fn build(
         }
         pandoc_args.push("--citeproc".to_string());
         pandoc_args.push("--csl".to_string());
-        if !(meta.get_bool(&["use_ibid"]).unwrap_or_else(|| false)) {
+        if !(meta.get_bool(&["use_ibid"]).unwrap_or(false)) {
             pandoc_args.push(
                 "./.paper_resources/chicago-fullnote-bibliography-short-title-subsequent.csl"
                     .to_string(),
@@ -232,9 +232,9 @@ pub fn build(
             pandoc_args.push("--bibliography".to_string());
 
             let mut source = bs.clone();
-            if source.starts_with("~") {
+            if source.starts_with('~') {
                 source = source.replacen(
-                    "~",
+                    '~',
                     std::env::var("HOME")
                         .context("Could not get $HOME env var")?
                         .as_str(),
@@ -284,7 +284,7 @@ pub fn build(
     Ok(())
 }
 
-fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
+fn record_build_data(log_lines: &[String], meta: &PaperMeta) -> Result<()> {
     util::stamp_local_dir()?;
 
     if let Some(bib_paths) = meta.get_vec_string(&["sources"]) {
@@ -307,7 +307,7 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
         let mut bpp_strings = vec![];
         for bp in bib_paths {
             let mut bp_local = bp.clone();
-            if bp.starts_with("~") {
+            if bp.starts_with('~') {
                 bp_local = format!(
                     "{}{}",
                     std::env::var("HOME").context("No $HOME variable set.")?,
@@ -325,9 +325,9 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
 
         let ref_str = subprocess::run_command("pandoc", &args, None, false)?;
         let ref_str = ref_str.trim();
-        cited_refence_keys.extend(ref_str.split("\n").map(|s| s.to_string()));
+        cited_refence_keys.extend(ref_str.split('\n').map(|s| s.to_string()));
 
-        let mut refs: Vec<serde_json::Value> = vec![];
+        let mut refs: Vec<Value> = vec![];
         for bpps in bpp_strings {
             let bpp = path::Path::new(&bpps);
             let mut csl_args = vec!["--to", "csljson"];
@@ -337,18 +337,18 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
             csl_args.push(&bpps);
             let source_data_text = subprocess::run_command("pandoc", &csl_args, None, false)?;
             fs::write("csl.json", &source_data_text).context("Could not write csl.json file")?;
-            let source_data: serde_json::Value = serde_json::from_str(&source_data_text)
+            let source_data: Value = serde_json::from_str(&source_data_text)
                 .context("Could not parse JSON from sources data")?;
             match source_data {
-                serde_json::Value::Array(source_list) => {
+                Value::Array(source_list) => {
                     for entry in source_list {
                         match entry {
-                            serde_json::Value::Object(entry_obj) => {
+                            Value::Object(entry_obj) => {
                                 if let Some(id_val) = entry_obj.get("id") {
                                     match id_val {
-                                        serde_json::Value::String(id_str) => {
+                                        Value::String(id_str) => {
                                             if cited_refence_keys.contains(id_str) {
-                                                refs.push(serde_json::Value::Object(entry_obj));
+                                                refs.push(Value::Object(entry_obj));
                                             }
                                         }
                                         _ => bail!("Invalid CSL JSON in {}", bpps),
@@ -365,7 +365,7 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
             }
         }
         if !refs.is_empty() {
-            let refs_val = serde_json::Value::Array(refs);
+            let refs_val = Value::Array(refs);
             let refs_str = serde_json::to_string_pretty(&refs_val).with_context(|| {
                 format!("Could not make pretty string from JSON {:?}", &refs_val)
             })?;
@@ -373,7 +373,7 @@ fn record_build_data(log_lines: &Vec<String>, meta: &PaperMeta) -> Result<()> {
                 .context("Could not get current directory")?
                 .join(".paper_data")
                 .join("cited_references.json");
-            fs::write(csl_out_path, &refs_str)?;
+            fs::write(csl_out_path, refs_str)?;
         }
     }
 

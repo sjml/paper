@@ -40,7 +40,7 @@ fn main() -> Result<()> {
     }
 
     let dep_tree = run("cargo", &["tree"])?;
-    let dep_single_line = dep_tree.1.replace("\n", "||||||");
+    let dep_single_line = dep_tree.1.replace('\n', "||||||");
     println!("cargo:rustc-env=PAPER_RUST_DEPS={}", dep_single_line);
 
     Ok(())

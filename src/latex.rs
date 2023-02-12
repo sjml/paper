@@ -10,13 +10,8 @@ use crate::subprocess;
 use crate::subprocess::RunCommandError;
 use crate::util;
 
+#[derive(Default)]
 pub struct LatexBuilder {}
-
-impl Default for LatexBuilder {
-    fn default() -> Self {
-        LatexBuilder {}
-    }
-}
 
 impl Builder for LatexBuilder {
     fn get_output_file_suffix(&self) -> String {
@@ -119,16 +114,9 @@ impl Builder for LatexBuilder {
     }
 }
 
+#[derive(Default)]
 pub struct LatexPdfBuilder {
     delegate: LatexBuilder,
-}
-
-impl Default for LatexPdfBuilder {
-    fn default() -> Self {
-        LatexPdfBuilder {
-            delegate: LatexBuilder::default(),
-        }
-    }
 }
 
 impl Builder for LatexPdfBuilder {
@@ -153,15 +141,13 @@ impl Builder for LatexPdfBuilder {
 
         let output = subprocess::run_command("tectonic", args, None, true);
         match output {
-            Ok(stdout) => Ok(stdout.split("\n").map(|s| s.to_string()).collect()),
+            Ok(stdout) => Ok(stdout.split('\n').map(|s| s.to_string()).collect()),
             Err(e) => match e {
-                RunCommandError::IoErr(ioe) => {
-                    return Err(ioe.into());
-                }
+                RunCommandError::IoErr(ioe) => Err(ioe.into()),
                 RunCommandError::RuntimeErr(out) => {
                     let stderr = String::from_utf8(out.stderr)?;
                     let tex_err: Vec<&str> = stderr
-                        .split("\n")
+                        .split('\n')
                         .filter(|s| s.starts_with("error: "))
                         .collect();
                     bail!("TeX runtime errors: \n{}", tex_err.join("\n"));

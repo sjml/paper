@@ -3,9 +3,8 @@ use std::io::Write;
 
 use anyhow::{bail, Context, Result};
 use chrono::prelude::*;
-use dialoguer;
 use plotters::prelude::*;
-use serde_json;
+use serde_json::{self, Value};
 
 use crate::metadata::PaperMeta;
 use crate::subprocess;
@@ -300,12 +299,12 @@ fn get_commit_data() -> Result<Vec<(String, i64, String, usize)>> {
         if wc_splits.len() < 2 {
             continue;
         }
-        let wc_data: serde_json::Value = match serde_json::from_str(wc_splits[1]) {
+        let wc_data: Value = match serde_json::from_str(wc_splits[1]) {
             Err(_) => continue,
             Ok(data) => data,
         };
         let wc = match wc_data {
-            serde_json::Value::Object(wco) => match wco.get("total") {
+            Value::Object(wco) => match wco.get("total") {
                 Some(wcv) => {
                     if let Some(wcvi) = wcv.as_u64() {
                         wcvi as usize

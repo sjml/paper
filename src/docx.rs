@@ -1,15 +1,13 @@
 use std::fs;
 use std::io::{Read, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use anyhow::{bail, Context, Result};
-use filetime;
-use sxd_document;
+use filetime::{self, FileTime};
 use sxd_document::QName;
-use sxd_xpath;
 use sxd_xpath::Value::Nodeset;
 use tempfile::{self, NamedTempFile};
-use walkdir;
+use walkdir::WalkDir;
 use zip::{self, ZipArchive};
 
 use crate::build;
@@ -23,16 +21,9 @@ const DOCX_SCHEMA: &str = "http://schemas.openxmlformats.org/wordprocessingml/20
 const PROP_SCHEMA: &str = "http://schemas.openxmlformats.org/package/2006/metadata/core-properties";
 const DCMD_SCHEMA: &str = "http://purl.org/dc/elements/1.1/";
 
+#[derive(Default)]
 pub struct DocxBuilder {
     tmp_prefix_files: Vec<NamedTempFile>,
-}
-
-impl Default for DocxBuilder {
-    fn default() -> Self {
-        DocxBuilder {
-            tmp_prefix_files: vec![],
-        }
-    }
 }
 
 impl Builder for DocxBuilder {
@@ -42,7 +33,7 @@ impl Builder for DocxBuilder {
 
     fn prepare(&mut self, args: &mut Vec<String>, meta: &PaperMeta) -> Result<()> {
         let cmds;
-        if meta.get_bool(&["no_title_page"]).unwrap_or_else(|| false) {
+        if meta.get_bool(&["no_title_page"]).unwrap_or(false) {
             cmds = [
                 "--to=docx".to_string(),
                 "--reference-doc".to_string(),
@@ -57,7 +48,7 @@ impl Builder for DocxBuilder {
         }
         args.extend_from_slice(&cmds);
 
-        if !meta.get_bool(&["no_title_page"]).unwrap_or_else(|| false) {
+        if !meta.get_bool(&["no_title_page"]).unwrap_or(false) {
             let outpath = Path::new(&CONFIG.get().output_directory_name);
             let mut title_page_file = tempfile::Builder::new()
                 .prefix("title-page")
@@ -129,7 +120,7 @@ impl Builder for DocxBuilder {
             }
 
             title_string_coll.push("\\\n".to_string());
-            title_string_coll.push(util::get_date_string(&meta)?);
+            title_string_coll.push(util::get_date_string(meta)?);
 
             title_string_coll.push("\n:::\n".to_string());
 
@@ -242,7 +233,7 @@ impl Builder for DocxBuilder {
             println!("Fixing docx table styles...");
         }
         let doc_doc = self
-            .get_file_root(&output_path.to_path_buf(), "word/document.xml")
+            .get_file_root(output_path, "word/document.xml")
             .with_context(|| format!("Could not get file root for {:?}", &output_path))?;
         let doc_doc = doc_doc.as_document();
         let root = doc_doc.root();
@@ -265,7 +256,7 @@ impl Builder for DocxBuilder {
             bail!("XPath did not return Nodeset");
         }
 
-        self.write_document(&doc_doc, &output_path.to_path_buf(), "word/document.xml")?;
+        self.write_document(&doc_doc, output_path, "word/document.xml")?;
 
         // change fonts (if needed) in Normal and Verbatim Char styles
         if meta.contains(&["base_font_override"]) || meta.contains(&["mono_font_override"]) {
@@ -306,7 +297,7 @@ impl Builder for DocxBuilder {
             println!("Fixing docx metadata...");
         }
         let props_pkg = self
-            .get_file_root(&output_path.to_path_buf(), "docProps/core.xml")
+            .get_file_root(output_path, "docProps/core.xml")
             .with_context(|| format!("Could not get file root for {:?}", &output_path))?;
         let props_doc = props_pkg.as_document();
         let root = props_doc.root();
@@ -330,20 +321,20 @@ impl Builder for DocxBuilder {
         }
         self.set_prop(&root, &factory, &context, "cp:revision", &rev.to_string())?;
 
-        self.write_document(&props_doc, &output_path.to_path_buf(), "docProps/core.xml")?;
+        self.write_document(&props_doc, output_path, "docProps/core.xml")?;
 
-        let mut mod_time: Option<filetime::FileTime> = None;
+        let mut mod_time: Option<FileTime> = None;
         if let Ok(epoch_str) = std::env::var("SOURCE_DATE_EPOCH") {
             if CONFIG.get().verbose {
                 println!("Correcting interior timestamps to {}...", epoch_str);
             }
-            let ft = filetime::FileTime::from_unix_time(
+            let ft = FileTime::from_unix_time(
                 epoch_str
                     .parse()
                     .context("Could not parse epoch string into u64")?,
                 0,
             );
-            for entry in walkdir::WalkDir::new(&output_path) {
+            for entry in WalkDir::new(output_path) {
                 let entry = entry.context("Invalid directory entry in walkdir")?;
                 filetime::set_file_mtime(entry.path(), ft).context("Could not set file mtime")?;
             }
@@ -366,11 +357,11 @@ impl Builder for DocxBuilder {
             options = options.last_modified_time(zip_dt);
         }
         let mut buffer = Vec::new();
-        for entry in walkdir::WalkDir::new(&output_path) {
+        for entry in WalkDir::new(output_path) {
             let entry = entry.context("Invalid directory entry in walkdir")?;
             let path = entry.path();
             let name = path
-                .strip_prefix(&output_path)
+                .strip_prefix(output_path)
                 .context("Could not strip output prefix")?;
 
             if path.is_file() {
@@ -383,7 +374,7 @@ impl Builder for DocxBuilder {
                 f.read_to_end(&mut buffer)
                     .with_context(|| format!("Could not read file {:?}", &path))?;
                 zipper
-                    .write_all(&*buffer)
+                    .write_all(&buffer)
                     .with_context(|| format!("Could not write zipped file {:?}", &path))?;
                 buffer.clear();
             } else if !name.as_os_str().is_empty() {
@@ -400,7 +391,7 @@ impl Builder for DocxBuilder {
 }
 
 impl DocxBuilder {
-    fn get_file_root(&self, base: &PathBuf, path_str: &str) -> Result<sxd_document::Package> {
+    fn get_file_root(&self, base: &Path, path_str: &str) -> Result<sxd_document::Package> {
         let path = base.join(path_str);
         let pstr = path.as_os_str();
         let mut file =
@@ -419,7 +410,7 @@ impl DocxBuilder {
     fn write_document(
         &self,
         doc: &sxd_document::dom::Document,
-        base: &PathBuf,
+        base: &Path,
         path_str: &str,
     ) -> Result<()> {
         let path = base.join(path_str);
@@ -430,7 +421,7 @@ impl DocxBuilder {
 
         let writer = sxd_document::writer::Writer::new().set_single_quotes(false);
         writer
-            .format_document(&doc, &mut file)
+            .format_document(doc, &mut file)
             .context("Unable to output XML document.")?;
         Ok(())
     }
@@ -452,9 +443,9 @@ impl DocxBuilder {
         value: &str,
     ) -> Result<()> {
         let xpath_str = format!("//{}", id);
-        let xpath = self.get_xpath(&fact, &xpath_str)?;
+        let xpath = self.get_xpath(fact, &xpath_str)?;
         let val = xpath
-            .evaluate(&cont, *root)
+            .evaluate(cont, *root)
             .context("Could not evaluate xpath")?;
         if let Nodeset(ns) = val {
             let el = match ns.document_order_first() {

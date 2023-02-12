@@ -2,13 +2,12 @@ use std::fs;
 use std::io::Read;
 
 use anyhow::{ensure, Context, Result};
-use serde_json;
 
 use crate::config::CONFIG;
 use crate::subprocess;
 use crate::util;
 
-fn count_words_in(s: &String) -> usize {
+fn count_words_in(s: &str) -> usize {
     return s.split_whitespace().collect::<Vec<&str>>().len();
 }
 

@@ -1,7 +1,7 @@
-use state;
+use state::Storage;
 use std::path::PathBuf;
 
-pub static CONFIG: state::Storage<Configuration> = state::Storage::new();
+pub static CONFIG: Storage<Configuration> = Storage::new();
 
 pub struct Configuration {
     // runtime

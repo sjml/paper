@@ -230,7 +230,7 @@ impl Builder for DocxBuilder {
         //   they explicitly have a footer, and we use that to do the spacing since
         //   Word doesn't have a good way to add spacing after the *whole* table
         if CONFIG.get().verbose {
-            println!("Fixing docx table styles...");
+            println!("Fixing docx table post-spacing styles...");
         }
         let doc_doc = self
             .get_file_root(output_path, "word/document.xml")
@@ -250,6 +250,30 @@ impl Builder for DocxBuilder {
                         "lastRow",
                     );
                     el.set_attribute_value(name, "1");
+                }
+            }
+        } else {
+            bail!("XPath did not return Nodeset");
+        }
+
+        // pandoc with version 3 started emitting a node to align all tables to the
+        //   leading edge of their text.
+        if CONFIG.get().verbose {
+            println!("Fixing docx table alignmnent...");
+        }
+
+        let xpath = self.get_xpath(&factory, "//w:tblPr/w:jc")?;
+        let val = xpath
+            .evaluate(&context, root)
+            .context("Could not evaluate xpath")?;
+        if let Nodeset(ns) = val {
+            for node in ns {
+                if let Some(el) = node.element() {
+                    let name = QName::with_namespace_uri(
+                        Some("http://schemas.openxmlformats.org/wordprocessingml/2006/main"),
+                        "val",
+                    );
+                    el.set_attribute_value(name, "center");
                 }
             }
         } else {

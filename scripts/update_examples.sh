@@ -20,7 +20,7 @@ for d in *; do
       $PAPER build --output-format latex+pdf
 
       diffs=$(git diff output)
-      if [[ ${#diff} -le 0 ]]; then
+      if [[ ${#diffs} -le 0 ]]; then
         cd .paper_data
           git checkout . 2> /dev/null
         cd ..

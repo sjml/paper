@@ -1,9 +1,9 @@
-SJML Paper v0.5.0
-8a953c899382e7c17e8bc226a3f6d18a49da3b0a+dev
-by rustc 1.66.0 (69f9c33d7 2022-12-12)
+SJML Paper v0.5.5
+678454a1d6a517cdf5aa9d956fd33144fc57a2dc+dev
+by rustc 1.67.1 (d5a82bbd2 2023-02-07)
 
 ############################################################
-paper v0.5.0 (/Users/shane/Projects/paper)
+paper v0.5.5 (/Users/shane/Projects/paper)
 ├── anyhow v1.0.68
 ├── chrono v0.4.23
 │   ├── iana-time-zone v0.1.53
@@ -17,48 +17,51 @@ paper v0.5.0 (/Users/shane/Projects/paper)
 │   ├── num-traits v0.2.15 (*)
 │   └── time v0.1.45
 │       └── libc v0.2.139
-├── clap v4.0.32
+├── clap v4.1.4
 │   ├── bitflags v1.3.2
-│   ├── clap_derive v4.0.21 (proc-macro)
+│   ├── clap_derive v4.1.0 (proc-macro)
 │   │   ├── heck v0.4.0
 │   │   ├── proc-macro-error v1.0.4
 │   │   │   ├── proc-macro-error-attr v1.0.4 (proc-macro)
-│   │   │   │   ├── proc-macro2 v1.0.49
+│   │   │   │   ├── proc-macro2 v1.0.50
 │   │   │   │   │   └── unicode-ident v1.0.6
 │   │   │   │   └── quote v1.0.23
-│   │   │   │       └── proc-macro2 v1.0.49 (*)
+│   │   │   │       └── proc-macro2 v1.0.50 (*)
 │   │   │   │   [build-dependencies]
 │   │   │   │   └── version_check v0.9.4
-│   │   │   ├── proc-macro2 v1.0.49 (*)
+│   │   │   ├── proc-macro2 v1.0.50 (*)
 │   │   │   ├── quote v1.0.23 (*)
 │   │   │   └── syn v1.0.107
-│   │   │       ├── proc-macro2 v1.0.49 (*)
+│   │   │       ├── proc-macro2 v1.0.50 (*)
 │   │   │       ├── quote v1.0.23 (*)
 │   │   │       └── unicode-ident v1.0.6
 │   │   │   [build-dependencies]
 │   │   │   └── version_check v0.9.4
-│   │   ├── proc-macro2 v1.0.49 (*)
+│   │   ├── proc-macro2 v1.0.50 (*)
 │   │   ├── quote v1.0.23 (*)
 │   │   └── syn v1.0.107 (*)
-│   ├── clap_lex v0.3.0
+│   ├── clap_lex v0.3.1
 │   │   └── os_str_bytes v6.4.1
 │   ├── is-terminal v0.4.2
-│   │   ├── io-lifetimes v1.0.3
+│   │   ├── io-lifetimes v1.0.4
 │   │   │   └── libc v0.2.139
-│   │   └── rustix v0.36.6
+│   │   └── rustix v0.36.7
 │   │       ├── bitflags v1.3.2
 │   │       ├── errno v0.2.8
 │   │       │   └── libc v0.2.139
-│   │       ├── io-lifetimes v1.0.3 (*)
+│   │       ├── io-lifetimes v1.0.4 (*)
 │   │       └── libc v0.2.139
 │   ├── once_cell v1.17.0
 │   ├── strsim v0.10.0
-│   └── termcolor v1.1.3
-├── dialoguer v0.10.2
-│   ├── console v0.15.4
+│   ├── termcolor v1.2.0
+│   └── terminal_size v0.2.3
+│       └── rustix v0.36.7 (*)
+├── dialoguer v0.10.3
+│   ├── console v0.15.5
 │   │   ├── lazy_static v1.4.0
 │   │   ├── libc v0.2.139
 │   │   └── unicode-width v0.1.10
+│   ├── shell-words v1.1.0
 │   ├── tempfile v3.3.0
 │   │   ├── cfg-if v1.0.0
 │   │   ├── fastrand v1.8.0
@@ -70,7 +73,7 @@ paper v0.5.0 (/Users/shane/Projects/paper)
 │   └── libc v0.2.139
 ├── include_dir v0.7.3
 │   └── include_dir_macros v0.7.3 (proc-macro)
-│       ├── proc-macro2 v1.0.49 (*)
+│       ├── proc-macro2 v1.0.50 (*)
 │       └── quote v1.0.23 (*)
 ├── notify v5.0.0
 │   ├── bitflags v1.3.2
@@ -124,17 +127,17 @@ paper v0.5.0 (/Users/shane/Projects/paper)
 │   │   │       └── rustc_version v0.3.3
 │   │   │           └── semver v0.11.0
 │   │   │               └── semver-parser v0.10.2
-│   │   │                   └── pest v2.5.2
+│   │   │                   └── pest v2.5.4
 │   │   │                       ├── thiserror v1.0.38
 │   │   │                       │   └── thiserror-impl v1.0.38 (proc-macro)
-│   │   │                       │       ├── proc-macro2 v1.0.49 (*)
+│   │   │                       │       ├── proc-macro2 v1.0.50 (*)
 │   │   │                       │       ├── quote v1.0.23 (*)
 │   │   │                       │       └── syn v1.0.107 (*)
 │   │   │                       └── ucd-trie v0.1.5
 │   │   ├── pathfinder_simd v0.5.1 (*)
 │   │   └── walkdir v2.3.2 (*)
 │   ├── image v0.24.5
-│   │   ├── bytemuck v1.12.3
+│   │   ├── bytemuck v1.13.0
 │   │   ├── byteorder v1.4.3
 │   │   ├── color_quant v1.1.0
 │   │   ├── jpeg-decoder v0.3.0
@@ -166,7 +169,7 @@ paper v0.5.0 (/Users/shane/Projects/paper)
 │   ├── plotters-svg v0.3.3
 │   │   └── plotters-backend v0.3.4
 │   └── ttf-parser v0.15.2
-├── regex v1.7.0
+├── regex v1.7.1
 │   ├── aho-corasick v0.7.20
 │   │   └── memchr v2.5.0
 │   ├── memchr v2.5.0
@@ -184,7 +187,7 @@ paper v0.5.0 (/Users/shane/Projects/paper)
 │   ├── quick-error v1.2.3
 │   └── sxd-document v0.3.2 (*)
 ├── tempfile v3.3.0 (*)
-├── termcolor v1.1.3
+├── termcolor v1.2.0
 ├── time v0.3.17
 │   ├── itoa v1.0.5
 │   ├── libc v0.2.139
@@ -204,17 +207,23 @@ paper v0.5.0 (/Users/shane/Projects/paper)
     └── time v0.3.17 (*)
 [build-dependencies]
 ├── anyhow v1.0.68
-├── clap v4.0.32 (*)
-└── clap_complete v4.0.7
-    └── clap v4.0.32 (*)
+├── clap v4.1.4
+│   ├── bitflags v1.3.2
+│   ├── clap_derive v4.1.0 (proc-macro) (*)
+│   ├── clap_lex v0.3.1 (*)
+│   ├── is-terminal v0.4.2 (*)
+│   ├── once_cell v1.17.0
+│   ├── strsim v0.10.0
+│   └── termcolor v1.2.0
+└── clap_complete v4.1.1
+    └── clap v4.1.4 (*)
 
 ############################################################
-pandoc 2.19.2
-Compiled with pandoc-types 1.22.2.1, texmath 0.12.5.2, skylighting 0.13,
-citeproc 0.8.0.1, ipynb 0.2, hslua 2.2.1
+pandoc 3.1
+Features: +server +lua
 Scripting engine: Lua 5.4
 User data directory: /Users/shane/.local/share/pandoc
-Copyright (C) 2006-2022 John MacFarlane. Web:  https://pandoc.org
+Copyright (C) 2006-2023 John MacFarlane. Web:  https://pandoc.org
 This is free software; see the source for copying conditions. There is no
 warranty, not even for merchantability or fitness for a particular purpose.
 

@@ -45,7 +45,7 @@
     pdftitle={{What Does God Need with a Starship?}},
     pdfauthor={{Zefram Cochrane}},
     pdflang={en-US},
-    pdfcreator={SJML Paper v0.5.0},
+    pdfcreator={SJML Paper v0.5.5},
     % pdfproducer={},
 }
 % for nicer linebreak placements in URLs
@@ -221,14 +221,16 @@ Tables make everything more believable, don't you agree?
 
 \begin{longtable}[]{@{}lr@{}}
 \caption{Word Counts}\tabularnewline
-\toprule()
+\toprule\noalign{}
 File & Word Count \\
-\midrule()
+\midrule\noalign{}
 \endfirsthead
-\toprule()
+\toprule\noalign{}
 File & Word Count \\
-\midrule()
+\midrule\noalign{}
 \endhead
+\bottomrule\noalign{}
+\endlastfoot
 00\_intro.md & 2838 \\
 01\_initial\_problem.md & 9782 \\
 02\_literature\_review.md & 6465 \\
@@ -237,7 +239,6 @@ File & Word Count \\
 05\_next\_steps.md & 2483 \\
 06\_conclusion.md & 2162 \\
 \textbf{TOTAL} & 52059 \\
-\bottomrule()
 \end{longtable}
 
 This paragraph is indented after the table because it's moving on to a

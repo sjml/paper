@@ -18,7 +18,11 @@ return {
         if ref_data ~= nil and ref_data.author ~= nil and #ref_data.author > 0 then
           if ref_data.author[1].family == "Aquinas" and ref_data.author[1].given == "Thomas" then
             local lower_title = string.lower(pandoc.utils.stringify(ref_data.title))
-            if lower_title == "summa theologica" or lower_title == "summa theologiae" then
+            if
+              lower_title == "summa theologica"
+              or lower_title == "summa theologiae"
+              or lower_title == "summa theologiæ"
+            then
               local is_subsequent = aquinas_keys[citation.id] == true
               aquinas_keys[citation.id] = true
               if is_subsequent then

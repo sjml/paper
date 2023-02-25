@@ -336,7 +336,6 @@ fn record_build_data(log_lines: &[String], meta: &PaperMeta) -> Result<()> {
             }
             csl_args.push(&bpps);
             let source_data_text = subprocess::run_command("pandoc", &csl_args, None, false)?;
-            fs::write("csl.json", &source_data_text).context("Could not write csl.json file")?;
             let source_data: Value = serde_json::from_str(&source_data_text)
                 .context("Could not parse JSON from sources data")?;
             match source_data {

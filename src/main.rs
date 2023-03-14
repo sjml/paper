@@ -77,8 +77,9 @@ fn _main() -> Result<()> {
                     .expect("required"),
             )?;
         }
-        Some(("save", _)) => {
-            save::save()?;
+        Some(("save", sub_matches)) => {
+            let msg = sub_matches.get_one::<String>("message");
+            save::save(msg)?;
         }
         Some(("push", _)) => {
             save::push()?;

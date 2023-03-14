@@ -15,12 +15,15 @@ const METADATA_START_SENTINEL: &str = "<!-- begin paper metadata -->";
 const METADATA_END_SENTINEL: &str = "<!-- end paper metadata -->";
 const SVG_STYLE_FONT: &str = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'";
 
-pub fn save() -> Result<()> {
+pub fn save(msg: Option<&String>) -> Result<()> {
     util::ensure_paper_dir()?;
 
-    let message: String = dialoguer::Input::new()
-        .with_prompt("Commit message?")
-        .interact_text()?;
+    let message = match msg {
+        Some(m) => m.to_string(),
+        None => dialoguer::Input::new()
+            .with_prompt("Commit message?")
+            .interact_text()?,
+    };
 
     util::stamp_local_dir()?;
 

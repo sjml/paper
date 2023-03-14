@@ -24,6 +24,7 @@ complete -c paper -n "__fish_seen_subcommand_from build" -s t -l output-format -
 complete -c paper -n "__fish_seen_subcommand_from build" -l docx-revision -d 'Revision number for docx output format; if unset or negative, will use the number of times the project was saved.' -r
 complete -c paper -n "__fish_seen_subcommand_from build" -s v -l verbose -d 'Spam the output log'
 complete -c paper -n "__fish_seen_subcommand_from build" -s h -l help -d 'Print help'
+complete -c paper -n "__fish_seen_subcommand_from save" -l message -d 'A memo describing this version of the paper (used in the git commit message)' -r
 complete -c paper -n "__fish_seen_subcommand_from save" -s v -l verbose -d 'Spam the output log'
 complete -c paper -n "__fish_seen_subcommand_from save" -s h -l help -d 'Print help'
 complete -c paper -n "__fish_seen_subcommand_from push" -s v -l verbose -d 'Spam the output log'

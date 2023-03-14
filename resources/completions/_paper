@@ -67,6 +67,7 @@ _arguments "${_arguments_options[@]}" \
 ;;
 (save)
 _arguments "${_arguments_options[@]}" \
+'--message=[A memo describing this version of the paper (used in the git commit message)]:MESSAGE: ' \
 '-v[Spam the output log]' \
 '--verbose[Spam the output log]' \
 '-h[Print help]' \

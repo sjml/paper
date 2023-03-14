@@ -3,7 +3,6 @@
     - waiting on Apple Silicon runners on GitHub: https://github.com/github/roadmap/issues/528
 
 ## functionality
-* `paper save` should take a --message flag (docs say it does already! 😬)
 * biblical citations should insert space before themselves if it's not there
     - while we're at it, any way to make other citations smart about quotes/punctuation/etc? 
 * have the watcher watch the yaml? 

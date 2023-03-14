@@ -38,6 +38,7 @@ pub fn cli() -> Command {
         .subcommand(
             Command::new("save")
                 .about("Make a git commit with some extra tracking data.")
+                .arg(arg!(--message <MESSAGE> "A memo describing this version of the paper (used in the git commit message)"))
         )
         .subcommand(
             Command::new("push")

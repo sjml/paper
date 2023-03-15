@@ -5,7 +5,6 @@
 ## functionality
 * biblical citations should insert space before themselves if it's not there
     - while we're at it, any way to make other citations smart about quotes/punctuation/etc? 
-* have the watcher watch the yaml? 
 * biblical citations mess up ibid for things around them
 * set progress image to use timezone? (meta override?)
 * maybe set up unit tests? lol

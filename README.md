@@ -42,7 +42,7 @@ Note that the first time you build a PDF you'll need internet access as it will 
     - there is also a `--docx-revision` option that you can pass an integer to set the revision number in the metadata visible in Word (with a normally produced file, this is the number of times you saved it); if not set or <= 0, will use the number of git commits
 * `paper wc`: outputs word count information, broken down by file
     - `--full`: whether to print the full word count for each file as opposed to the count without footnotes and citations (default: `false`)
-* `paper watch`: runs the program as a watcher, re-running the build and outputting the word count whenever something in the `content` directory changes; takes all the same arguments as `wc` and `build`
+* `paper watch`: runs the program as a watcher, re-running the build and outputting the word count whenever the metadata or something in the `content` directory changes; takes all the same arguments as `wc` and `build`
 * `paper save`: modifies the metrics in the readme (word count, progress towards goal) and makes a git commit, prompting for a message and appending some extra data to it
     - can pass a message directly with `--message`, just like with a regular git commit
 * `paper fmt`: runs an automated formatter over all the Markdown files in the `content` directory (under the hood, just uses pandoc "translating" from Markdown to Markdown)

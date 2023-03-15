@@ -40,10 +40,12 @@ pub fn watch(
     let (tx, rx) = std::sync::mpsc::channel();
 
     let mut watcher = RecommendedWatcher::new(tx, Config::default())?;
-    let watched_path = Path::new(&CONFIG.get().content_directory_name);
-    watcher.watch(watched_path, RecursiveMode::Recursive)?;
+    let content_path = Path::new(&CONFIG.get().content_directory_name);
+    let config_path = Path::new("./paper_meta.yml");
+    watcher.watch(content_path, RecursiveMode::Recursive)?;
+    watcher.watch(config_path, RecursiveMode::NonRecursive)?;
 
-    println!("Watching `{:?}` directory...", watched_path);
+    println!("Watching `{:?}` directory...", content_path);
     println!("(Press Ctrl-C to exit.)");
     respond_to_event(
         show_full,

@@ -45,7 +45,7 @@ pub fn watch(
     watcher.watch(content_path, RecursiveMode::Recursive)?;
     watcher.watch(config_path, RecursiveMode::NonRecursive)?;
 
-    println!("Watching `{:?}` directory...", content_path);
+    println!("Watching `{}` directory...", content_path.display());
     println!("(Press Ctrl-C to exit.)");
     respond_to_event(
         show_full,

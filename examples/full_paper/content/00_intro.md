@@ -79,7 +79,7 @@ three quarters inches in height.
 ![Photo by [Robert Bye](https://unsplash.com/@robertbye) on
 [Unsplash](https://unsplash.com/s/photos/jerusalem)](./images/robert-bye-W4V4vtq36NU-unsplash.jpg){height="2.75in"}
 
-`\noindent{}`{=tex}And this paragraph just continues on after the picture, with
+\noindent{}And this paragraph just continues on after the picture, with
 discussion proceeding apace because it's just illustrative rather than becoming
 the center of the conversation. Ligula, porttitor eu, consequat vitae, eleifend
 ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.
@@ -121,7 +121,7 @@ is:
 > deserunt adipisicing velit excepteur nisi cupidatat. Exercitation dolore ea
 > esse officia est aliquip sit nulla ea duis.
 
-`\noindent{}`{=tex}And that's what Christmas is all about, Charlie Brown.
+\noindent{}And that's what Christmas is all about, Charlie Brown.
 
 Eiusmod amet tempor aute in excepteur tempor in dolore nisi. Et cillum tempor
 aute fugiat aliqua occaecat. Fugiat sunt esse officia incididunt aliqua. Aliqua
@@ -158,7 +158,7 @@ paragraph, and nest them!
     1.  Magna voluptate laborum
     2.  Excepteur adipisicing nostrud
 
-`\noindent{}`{=tex}Reprehenderit magna non non sit fugiat excepteur ipsum eu
+\noindent{}Reprehenderit magna non non sit fugiat excepteur ipsum eu
 veniam consequat laborum. Consectetur ullamco tempor sunt nostrud deserunt culpa
 dolor amet irure. Aliquip adipisicing laboris exercitation ad velit amet dolor
 laborum id consectetur. Minim cupidatat occaecat veniam tempor voluptate.

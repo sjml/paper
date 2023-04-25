@@ -26,7 +26,7 @@ anim pariatur cupidatat enim:
 2.  Item 2
 3.  Item 3
 
-`\noindent{}`{=tex}And what comes after. Enim adipisicing velit cupidatat
+\noindent{}And what comes after. Enim adipisicing velit cupidatat
 aliquip incididunt voluptate.
 
 Finally, some lists with longer items.

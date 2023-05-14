@@ -39,7 +39,7 @@ local bible_books = {
   {"Isaiah", "Book of the Prophet Isaiah", "Isa", nil, "Is"},
   {"Jeremiah", "Book of the Prophet Jeremiah", "Jer", nil, "Je", "Jr"},
   {"Lamentations", "Book of Lamentations", "Lam", nil, "La"},
-  {"Ezekial", "Book of the Prophet Ezekial", "Ezek", nil, "Eze", "Ezk"},
+  {"Ezekiel", "Book of the Prophet Ezekiel", "Ezek", nil, "Eze", "Ezk"},
   {"Daniel", "Book of the Prophet Daniel", "Dan", nil, "Dn", "Da"},
   {"Hosea", "Book of the Prophet Hosea", "Hos", nil, "Ho"},
   {"Joel", "Book of the Prophet Joel", "Joel", nil, "Jl"},

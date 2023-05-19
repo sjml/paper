@@ -2,13 +2,23 @@
 * get bottle building from personal homebrew tap
     - waiting on Apple Silicon runners on GitHub: https://github.com/github/roadmap/issues/528
 
+## bugs
+* wordcount output doesn't render well on GitHub; maybe need to process it (divider line in table becomes its own row of dashes; d'oh)
+* lua errors not getting propagated (like bad lookups on bible books)
+* crash building docx in some content (THEO7977 paper as example; submitted as PDF so it's fine but let's fix)
+* word count full/stripped seems miscalculated (maybe totals flipped?)
+
 ## documentation
-* `\Adonai{}`
+* `\Adonai{}` and `\noindent{}`
+* `use_ibid`
 
 ## functionality
+* add "sentinels" -- strings of text that indicate something is not finished (emit warning on build if present)
+* allow date to only give year or year-month
 * biblical citations should insert space before themselves if it's not there
     - while we're at it, any way to make other citations smart about quotes/punctuation/etc? 
 * biblical citations mess up ibid for things around them
+* figure out if we can pass [multiple] to footmisc somehow to get comma-separated footnotes
 * yaml setting for content files to skip when calculating total word count
 * set progress image to use timezone? (meta override?)
 * maybe set up unit tests? lol

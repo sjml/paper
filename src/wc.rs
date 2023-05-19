@@ -108,7 +108,7 @@ pub fn wc_json() -> Result<String> {
     Ok(full_map_json)
 }
 
-pub fn wc_string(show_full: bool) -> Result<String> {
+pub fn wc_string(show_full: bool, delimit_final_row: bool) -> Result<String> {
     let wcd = wc_data()?;
     if wcd.is_empty() {
         return Ok(String::new());
@@ -137,7 +137,7 @@ pub fn wc_string(show_full: bool) -> Result<String> {
             .fold((0, 0), |acc, d| (acc.0 + d.0, acc.1 + d.1));
         let mut sum_strs = vec!["**TOTAL**".to_string(), sums.1.to_string()];
         if show_full {
-            sum_strs.push(sums.0.to_string());
+            sum_strs.insert(1, sums.0.to_string());
         }
         table.push(sum_strs);
     }
@@ -164,12 +164,14 @@ pub fn wc_string(show_full: bool) -> Result<String> {
 
     let mut out_strings: Vec<String> = vec![];
     for (row_idx, row_data) in table.iter().enumerate() {
-        if row_idx == table.len() - 1 {
-            let divs = max_widths
-                .iter()
-                .map(|w| "-".repeat(*w))
-                .collect::<Vec<String>>();
-            out_strings.push(format!("| {} |", divs.join(" | ")));
+        if delimit_final_row {
+            if row_idx == table.len() - 1 {
+                let divs = max_widths
+                    .iter()
+                    .map(|w| "-".repeat(*w))
+                    .collect::<Vec<String>>();
+                out_strings.push(format!("| {} |", divs.join(" | ")));
+            }
         }
         let cells: Vec<String> = row_data
             .iter()
@@ -197,7 +199,7 @@ pub fn wc_string(show_full: bool) -> Result<String> {
 
 pub fn wc(show_full: bool) -> Result<()> {
     util::ensure_paper_dir()?;
-    let out = wc_string(show_full)?;
+    let out = wc_string(show_full, true)?;
     println!("{}\n", out);
     Ok(())
 }

@@ -72,7 +72,7 @@ pub fn save(msg: Option<&String>) -> Result<()> {
             progress_img_str,
         )?;
 
-        let wcs = wc::wc_string(false)?;
+        let wcs = wc::wc_string(false, false)?;
 
         let readme_out_text = format!(
             "{}{}\n{}\n\n![WordCountProgress](./.paper_data/progress.svg)\n{}{}",

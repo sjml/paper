@@ -164,14 +164,12 @@ pub fn wc_string(show_full: bool, delimit_final_row: bool) -> Result<String> {
 
     let mut out_strings: Vec<String> = vec![];
     for (row_idx, row_data) in table.iter().enumerate() {
-        if delimit_final_row {
-            if row_idx == table.len() - 1 {
-                let divs = max_widths
-                    .iter()
-                    .map(|w| "-".repeat(*w))
-                    .collect::<Vec<String>>();
-                out_strings.push(format!("| {} |", divs.join(" | ")));
-            }
+        if delimit_final_row && row_idx == table.len() - 1 {
+            let divs = max_widths
+                .iter()
+                .map(|w| "-".repeat(*w))
+                .collect::<Vec<String>>();
+            out_strings.push(format!("| {} |", divs.join(" | ")));
         }
         let cells: Vec<String> = row_data
             .iter()
@@ -188,7 +186,14 @@ pub fn wc_string(show_full: bool, delimit_final_row: bool) -> Result<String> {
         if row_idx == 0 && wcd.len() > 1 {
             let divs = max_widths
                 .iter()
-                .map(|w| "-".repeat(*w))
+                .enumerate()
+                .map(|(i, w)| {
+                    if i > 0 {
+                        format!("{}:", "-".repeat(*w - 1))
+                    } else {
+                        "-".repeat(*w)
+                    }
+                })
                 .collect::<Vec<String>>();
             out_strings.push(format!("| {} |", divs.join(" | ")));
         }

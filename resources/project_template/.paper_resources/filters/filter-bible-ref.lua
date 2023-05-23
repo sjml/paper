@@ -95,7 +95,7 @@ local bible_books = {
 
 function normalize_book_name(book, idx)
   if idx > 3 then
-    print("[LUA FILTER WARNING] Cannot normalize a Bible book to an index greater than 3.")
+    utils.error("[LUA FILTER WARNING] Cannot normalize a Bible book to an index greater than 3.")
     return nil
   end
 
@@ -111,7 +111,7 @@ function normalize_book_name(book, idx)
     end
   end
 
-  print('[LUA FILTER WARNING] Could not normalize book name: "' .. book .. '"')
+  utils.error('[LUA FILTER WARNING] Could not normalize book name: "' .. book .. '"')
   return nil
 end
 
@@ -139,7 +139,7 @@ function process_bible_citation(suffix)
   end
   book = utils.strip(book)
   if #book == 0 then
-    print("[LUA FILTER WARNING] No reference given for bible citation.")
+    utils.error("[LUA FILTER WARNING] No reference given for bible citation.")
     return nil
   end
   book = normalize_book_name(book, 3)
@@ -174,7 +174,7 @@ function filter_cite_element_for_biblical_refs(elem)
     table.insert(translation_list, t)
   end
   if #translation_list > 1 then
-    print(
+    utils.error(
       "[LUA FILTER WARNING] Cannot mix translations in a single citation. ("
         .. table.concat(translation_list, " + ")
         .. ")"
@@ -183,7 +183,7 @@ function filter_cite_element_for_biblical_refs(elem)
   end
 
   if #bible_cites > 0 and other_count > 0 then
-    print("[LUA FILTER WARNING] Cannot mix Bible citations with other types.")
+    utils.error("[LUA FILTER WARNING] Cannot mix Bible citations with other types.")
     return nil
   end
 
@@ -209,7 +209,7 @@ function filter_cite_element_for_biblical_refs(elem)
 
   if translation == "Vulgatam" and bible_translations[translation] ~= true then
     if meta.vulgate_cite_key == nil then
-      print("[LUA FILTER WARNING] Vulgatam citation made, but no vulgate_cite_key given in metadata.")
+      utils.error("[LUA FILTER WARNING] Vulgatam citation made, but no vulgate_cite_key given in metadata.")
       return nil
     end
     local vcitation = pandoc.Citation(meta.vulgate_cite_key, "NormalCitation")

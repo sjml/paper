@@ -3,21 +3,21 @@
 -- recursive functions can't be anonymous; have to live outside the returned table
 local function dump(t, prefix)
   if t == nil then
-    print("nil")
+    io.stderr:write("nil")
     return
   end
   if prefix == nil then
     prefix = ""
   end
   if type(t) ~= "table" then
-    print(prefix .. t)
+    io.stderr:write(prefix .. t)
   end
   for k, v in pairs(t) do
     if type(v) == "table" then
-      print(prefix .. k)
+      io.stderr:write(prefix .. k)
       dump(v, prefix .. "    ")
     end
-    print(prefix .. k, v)
+    io.stderr:write(prefix .. k, v)
   end
 end
 
@@ -37,6 +37,10 @@ end
 return {
   dump = dump,
   fix_table_strings = fix_table_strings,
+
+  error = function(str)
+    io.stderr:write(str)
+  end,
 
   starts_with = function(str, start)
     return str:sub(1, #start) == start

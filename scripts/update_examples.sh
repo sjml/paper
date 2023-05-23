@@ -12,8 +12,8 @@ for d in *; do
   if [ -d $d ]; then
     pushd $d
       rm -rf output
-      echo "   Formatting..."
-      $PAPER fmt
+      # echo "   Formatting..."
+      # $PAPER fmt
       echo "   Building docx..."
       $PAPER build --output-format docx --docx-revision 2
       echo "   Building latex+pdf..."

@@ -2,11 +2,6 @@
 * get bottle building from personal homebrew tap
     - waiting on Apple Silicon runners on GitHub: https://github.com/github/roadmap/issues/528
 
-## documentation
-* `\Adonai{}` and `\noindent{}`
-* `use_ibid`
-* `sentinels`
-
 ## functionality
 * redo wc output to be a valid pandoc table with bottom row delimited that can get piped to GFM?
 * allow date to only give year or year-month

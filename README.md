@@ -18,11 +18,7 @@ In general, it just does a simple [pandoc](https://pandoc.org/) assembly of what
 ## Installation
 If you don't have a [Homebrew](https://brew.sh/) setup, take care of that first. 
 
-```
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-Then you can simply run:
+Then you just:
 
 ```
 brew install sjml/sjml/paper
@@ -59,14 +55,17 @@ The metadata file that assists in the generation. YAML format. `paper` will walk
     * `date`: due date in ISO-8601 format (`YYYY-MM-DD`) OR `null` OR placeholder `"[DATE]"` (if set, in addition to getting put on the title page, it will be graphed as a red line on [the progress image](#example-progress-metrics))
     * `author`: author's name
     * `title`: title of paper
+    * `subtitle`: (optional) if you're the kind of person who likes to get fancy and have something after a semi-colon when naming your stuff
     * `class_mnemonic`: like "PHIL 101" or whatever
     * `class_name`: like "Introduction to Philosophy" or whatever
     * `professor`: the person what teaches the class
+* `use_ibid`: if `true`, citations will use "Ibid." for repeated sources; otherwise they'll use the short name. If not specified, assumed to be `false`.
 * `target_word_count`: if not null, will be graphed as a green line on [the progress image](#example-progress-metrics)
+* `sentinels`: a list of strings that, if any are present in any content files, will emit a warning when the project is built. If you, like me, scatter notes to yourself like "TODO:" or enclose stray thoughts in double brackets, this can be helpful to make sure you don't accidentally leave any behind in the final output.
 * `sources`: An array of paths to BibTeX (`.bib`) or CSL JSON files that contain citation data exported from Zotero, for example. If present and non-empty, [`pandoc` will be given these files in an effort to process citations](https://pandoc.org/MANUAL.html#citations).
 * `vulgate_cite_key`: if citing a Bible with the translation listed as `"Vulgatam"`, you need to specify a citation key for the initial footnote. If you're not dealing with the Vulgate, you don't need to worry about this! 
-* `no_title_page`: omit the title page when building output
-* `base_font_override`: change away from the default Times New Roman. Doesn't do any checking to make sure it's a valid font name, or that it doesn't destroy your layout, crash Word, erase your hard drive, etc. You're on your own if you go playing here...
+* `no_title_page`: omit the title page when building output if `true`
+* `base_font_override`: change away from the default (Times New Roman for docx and Tempora for LaTeX). Doesn't do any checking to make sure it's a valid font name, or that it doesn't destroy your layout, crash Word, erase your hard drive, etc. You're on your own if you go playing here...
 * `mono_font_override`: same as above, but for the monospace font (which is Consolas by default for docx and Inconsolata for LaTeX)
 
 Note that due to [some limitations in Rust XML libraries](https://github.com/shepmaster/sxd-document/issues/86), the font overrides for Word files just do a simple find-and-replace for the known default font strings. This works unless there is interaction between them, so if you change the base font to Consolas and then change the mono font to something else, they'll both be changed. So don't do that. (LaTeX works fine.)
@@ -80,21 +79,25 @@ These variables are only relevant to their given output formats.
 ## `./content` folder
 Any file in this folder that ends with `.md` will be given to pandoc for assembly into the final paper. Note that they're given in alphabetical order, and should be Markdown files. At the moment, no metadata in them is processed. 
 
+There are a few special strings that you can put into the Markdown files for specific behaviors. Both are raw LaTeX strings, but will be treated properly in the docx output as well.
+* `\noindent{}`: Put this at the very start of a paragraph to indicate that it should not be indented. Useful for following blockquotes or figures, since Markdown otherwise will assume a new paragraph is starting right after those. 
+* `\Adonai{}`: Will be replaced with "Lᴏʀᴅ" in small-caps, as is the convention in many English translations of the Bible when the original text uses the Tetragrammaton.
+
 ## Metrics
 On top of doing the document generation, assuming you use `paper save` to commit your work, it also generates progress reports like the below, based on git commits. (This example shows good consistent progress towards a ~50,000 word thesis. The green line is target word count; the red line is the due date.)
 
 <!-- begin paper metadata -->
 ### Example progress metrics
-| File                      | Word Count |
-| ------------------------- | ----------:|
-| `00_intro.md`             |       2838 |
-| `01_initial_problem.md`   |       9782 |
-| `02_literature_review.md` |       6465 |
-| `03_experiment_design.md` |      18254 |
-| `04_analysis.md`          |      10075 |
-| `05_next_steps.md`        |       2483 |
-| `06_conclusion.md`        |       2162 |
-| **TOTAL**                 |      52059 |
+| File                    | Word Count |
+| ----------------------- | ---------: |
+| 00_intro.md             |       2838 |
+| 01_initial_problem.md   |       9782 |
+| 02_literature_review.md |       6465 |
+| 03_experiment_design.md |      18254 |
+| 04_analysis.md          |      10075 |
+| 05_next_steps.md        |       2483 |
+| 06_conclusion.md        |       2162 |
+| **TOTAL**               |      52059 |
 
 ![WordCountProgress](./docs/fake_progress.svg)
 <!-- end paper metadata -->
@@ -105,7 +108,6 @@ On top of doing the document generation, assuming you use `paper save` to commit
 * you have [gh](https://cli.github.com/) installed and are logged in to a GitHub account
     - only needed for initial push; if you don't like GitHub you can manually push and then everything will just work normally from there
     - also used for the `web` command
-* if using the docx builder, you have Microsoft Word installed (or at least the expected fonts)
 * you are not doing any zany branching stuff with your repo
     - should still work, but who knows? I tend to not branch on non-collaborative projects, so not a use case I've looked at a ton
 * you are not malicious; input is not sanitized or anything

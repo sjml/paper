@@ -30,6 +30,12 @@
     BoldItalicFont = SourceCodePro-BoldIt.otf
 ]
 
+% macro for small-caps "LORD" even though Tempora
+%   doesn't have proper small caps
+%   Make sure to use as \Adonai{} so following spaces
+%   work properly.
+\def\Adonai{L\footnotesize{}ORD\normalsize{}}
+
 % font and typesetting niceties
 \usepackage{upquote}
 \usepackage{microtype}
@@ -45,7 +51,7 @@
     pdftitle={{{[}TITLE{]}}},
     pdfauthor={{{[}AUTHOR{]}}},
     pdflang={en-US},
-    pdfcreator={SJML Paper v0.5.5},
+    pdfcreator={SJML Paper v0.5.8},
     % pdfproducer={},
 }
 % for nicer linebreak placements in URLs

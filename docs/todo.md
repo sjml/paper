@@ -2,9 +2,6 @@
 * get bottle building from personal homebrew tap
     - waiting on Apple Silicon runners on GitHub: https://github.com/github/roadmap/issues/528
 
-## bugs
-* crash building docx in some content (THEO7977 paper as example; submitted as PDF so it's fine but let's fix)
-
 ## documentation
 * `\Adonai{}` and `\noindent{}`
 * `use_ibid`

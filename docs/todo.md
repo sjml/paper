@@ -5,9 +5,9 @@
 ## documentation
 * `\Adonai{}` and `\noindent{}`
 * `use_ibid`
+* `sentinels`
 
 ## functionality
-* add "sentinels" -- strings of text that indicate something is not finished (emit warning on build if present)
 * redo wc output to be a valid pandoc table with bottom row delimited that can get piped to GFM?
 * allow date to only give year or year-month
 * biblical citations should insert space before themselves if it's not there

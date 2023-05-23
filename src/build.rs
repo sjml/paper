@@ -263,7 +263,15 @@ pub fn build(
         println!("No citation processing.");
     }
 
+    let sentinels = &meta.get_vec_string(&["sentinels"]).unwrap_or(vec![]);
     for content_file in builder.get_file_list() {
+        let content = fs::read_to_string(content_file.clone())
+            .with_context(|| format!("ERROR: Could not read content file {:?}", content_file))?;
+        for s in sentinels {
+            if content.contains(s) {
+                eprintln!("[WARNING] {:?} contains sentinel '{}'", content_file, s);
+            }
+        }
         pandoc_args.push(content_file);
     }
 

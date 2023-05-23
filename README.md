@@ -55,7 +55,7 @@ The metadata file that assists in the generation. YAML format. `paper` will walk
     * `date`: due date in ISO-8601 format (`YYYY-MM-DD`) OR `null` OR placeholder `"[DATE]"` (if set, in addition to getting put on the title page, it will be graphed as a red line on [the progress image](#example-progress-metrics))
     * `author`: author's name
     * `title`: title of paper
-    * `subtitle`: (optional) if you're the kind of person who likes to get fancy and have something after a semi-colon when naming your stuff
+    * `subtitle`: (optional) if you're the kind of person who likes to get fancy and have something after a colon when naming your stuff
     * `class_mnemonic`: like "PHIL 101" or whatever
     * `class_name`: like "Introduction to Philosophy" or whatever
     * `professor`: the person what teaches the class

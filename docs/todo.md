@@ -2,6 +2,9 @@
 * get bottle building from personal homebrew tap
     - waiting on Apple Silicon runners on GitHub: https://github.com/github/roadmap/issues/528
 
+## bugs
+* watch/build fails with UTC error if output format is docx
+
 ## functionality
 * redo wc output to be a valid pandoc table with bottom row delimited that can get piped to GFM?
 * allow date to only give year or year-month

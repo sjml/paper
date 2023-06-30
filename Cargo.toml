@@ -1,6 +1,6 @@
 [package]
 name = "paper"
-version = "0.5.8"
+version = "0.5.9"
 edition = "2021"
 authors = ["Shane Liesegang"]
 description = "Shane’s little paper-{writing|managing|building} utility"

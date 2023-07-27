@@ -2,11 +2,9 @@
 * get bottle building from personal homebrew tap
     - waiting on Apple Silicon runners on GitHub: https://github.com/github/roadmap/issues/528
 
-## bugs
-* watch/build fails with UTC error if output format is docx
-
 ## functionality
 * redo wc output to be a valid pandoc table with bottom row delimited that can get piped to GFM?
+* maybe do some profiling; `wc` takes 300 ms to run?! performance not **too** important, but that's _slooooow_...
 * allow date to only give year or year-month
 * biblical citations should insert space before themselves if it's not there
     - while we're at it, any way to make other citations smart about quotes/punctuation/etc? 

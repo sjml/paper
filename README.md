@@ -30,7 +30,7 @@ Note that the first time you build a PDF you'll need internet access as it will 
 * `paper new`: generates a new scaffold directory
 * `paper init`: sets up the directory you're in as the scaffold, so long as it's empty
 * `paper build`: builds an output version of the paper for submission
-    - you can pass `--output-format` with any of the following values. The PDF versions will overwrite each other.
+    - you can pass `--output-format` with any of the following values.
         - `docx` _(default)_: a Word document
         - `latex`: a LaTeX file
         - `latex+pdf`: a LaTeX file and a PDF generated from it

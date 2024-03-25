@@ -1,9 +1,10 @@
-SJML Paper v0.5.8
-7916d57125e1f8a7d58e28e7c0ee42d7bbc8af0e
-by rustc 1.69.0 (84c898d65 2023-04-16)
+SJML Paper v0.5.11
+1caf47a4ed9480856df908785e6cf47eb4822abd
+Built 2024-03-25T13:53:57.054883-04:00
+by rustc 1.77.0 (aedd173a2 2024-03-17)
 
 ############################################################
-paper v0.5.8 (/Users/shane/Projects/paper)
+paper v0.5.11 (/Users/shane/Projects/paper)
 ├── anyhow v1.0.68
 ├── chrono v0.4.23
 │   ├── iana-time-zone v0.1.53
@@ -188,14 +189,14 @@ paper v0.5.8 (/Users/shane/Projects/paper)
 │   └── sxd-document v0.3.2 (*)
 ├── tempfile v3.3.0 (*)
 ├── termcolor v1.2.0
-├── time v0.3.17
+├── time v0.3.23
 │   ├── itoa v1.0.5
 │   ├── libc v0.2.139
 │   ├── num_threads v0.1.6
 │   │   └── libc v0.2.139
-│   ├── time-core v0.1.0
-│   └── time-macros v0.2.6 (proc-macro)
-│       └── time-core v0.1.0
+│   ├── time-core v0.1.1
+│   └── time-macros v0.2.10 (proc-macro)
+│       └── time-core v0.1.1
 ├── walkdir v2.3.2 (*)
 ├── yaml-rust v0.4.5
 │   └── linked-hash-map v0.5.6
@@ -204,7 +205,7 @@ paper v0.5.8 (/Users/shane/Projects/paper)
     ├── constant_time_eq v0.1.5
     ├── crc32fast v1.3.2 (*)
     ├── flate2 v1.0.25 (*)
-    └── time v0.3.17 (*)
+    └── time v0.3.23 (*)
 [build-dependencies]
 ├── anyhow v1.0.68
 ├── clap v4.1.4
@@ -219,11 +220,11 @@ paper v0.5.8 (/Users/shane/Projects/paper)
     └── clap v4.1.4 (*)
 
 ############################################################
-pandoc 3.1.2
+pandoc 3.1.12.3
 Features: +server +lua
 Scripting engine: Lua 5.4
 User data directory: /Users/shane/.local/share/pandoc
-Copyright (C) 2006-2023 John MacFarlane. Web:  https://pandoc.org
+Copyright (C) 2006-2023 John MacFarlane. Web: https://pandoc.org
 This is free software; see the source for copying conditions. There is no
 warranty, not even for merchantability or fitness for a particular purpose.
 

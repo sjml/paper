@@ -5,6 +5,13 @@
     noraggedright
 ]{turabian-researchpaper}
 
+% borrows liberally from the default pandoc template;
+% latest version here: https://github.com/jgm/pandoc/blob/main/data/templates/default.latex
+% (maybe should just use that more?
+%  handy to use the turabian-researchpaper package, but maybe
+%  fighting it too much...)
+
+
 % condition usage
 \usepackage{ifthen}
 
@@ -51,7 +58,7 @@
     pdftitle={{{[}TITLE{]}}},
     pdfauthor={{{[}AUTHOR{]}}},
     pdflang={en-US},
-    pdfcreator={SJML Paper v0.5.8},
+    pdfcreator={SJML Paper v0.5.11},
     % pdfproducer={},
 }
 % for nicer linebreak placements in URLs
@@ -129,29 +136,38 @@
 \renewcommand\subsubsection[1]{\oldsubsubsection{\texorpdfstring{\raggedright\emph{#1}}{#1}}}
 
 % standard bibliography environment taken from default pandoc template
-%   except where noted
+%   except where noted (original comments removed)
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ \let\@cite@ofmt\@firstofone
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
 \newlength{\cslhangindent}
 \setlength{\cslhangindent}{1.5em}
 \newlength{\csllabelwidth}
 \setlength{\csllabelwidth}{3em}
-\newlength{\cslentryspacingunit}
-\setlength{\cslentryspacingunit}{\parskip}
+\newlength{\cslitemsep} % custom separation between items
+\setlength{\cslitemsep}{1em}
 \newenvironment{CSLReferences}[2]
  {
 \newpage % start on new page
+\singlespacing % single-space it
 \centerline{\underline{Bibliography}} % label it
- \setlength{\parindent}{0pt}
- \singlespacing
-  \let\oldpar\par
-  \def\par{\hangindent=\cslhangindent\oldpar}
-  \setlength{\parskip}{1em}
- }
-{
-}
+\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  \setlength{\leftmargin}{\cslhangindent}
+  \setlength{\itemindent}{-1\cslhangindent}
+  \setlength{\itemsep}{\cslitemsep}}} % use custom separation
+ {\end{list}}
 \usepackage{calc}
-\newcommand{\CSLBlock}[1]{#1\hfill\break}
-\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
-\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLBlock}[1]{\hfill\break#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 

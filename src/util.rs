@@ -8,7 +8,6 @@ use yaml_rust::{yaml, Yaml, YamlLoader};
 
 use crate::config::CONFIG;
 use crate::metadata;
-use crate::subprocess;
 
 pub static LIB_NAME: &str = "SJML Paper";
 pub static LIB_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -19,17 +18,14 @@ pub fn get_paper_version_stamp() -> String {
     if !git_rev.is_empty() {
         version = format!("{}\n{}", version, git_rev);
     }
-    // let now = Local::now();
-    // version = format!("{}\nBuilt {}", version, now.to_rfc3339());
+    let now = Local::now();
+    version = format!("{}\nBuilt {}", version, now.to_rfc3339());
 
-    let cmd = std::env::var_os("RUSTC").unwrap_or_else(|| std::ffi::OsString::from("rustc"));
-    if let Ok(rustc_info) =
-        subprocess::run_command(cmd.to_str().unwrap(), &["--version"], None, false)
-    {
-        version = format!("{}\nby {}", version, rustc_info);
-    } else {
-        version = format!("{}\nby <<unknown rustc>>", version);
+    let mut rustc_ver = env!("PAPER_RUSTC_VERSION_STR");
+    if rustc_ver.is_empty() {
+        rustc_ver = "<<unknown rustc>>";
     }
+    version = format!("{}\nby {}\n", version, rustc_ver);
 
     version
 }

@@ -27,6 +27,10 @@ fn main() -> Result<()> {
     generate_to(Fish, &mut cli, "paper", "resources/completions")?;
     generate_to(Zsh, &mut cli, "paper", "resources/completions")?;
 
+    let cmd = std::env::var_os("RUSTC").unwrap_or_else(|| std::ffi::OsString::from("rustc"));
+    let rustc_info = run(&cmd.to_string_lossy(), &["--version"])?.1;
+    println!("cargo:rustc-env=PAPER_RUSTC_VERSION_STR={}", rustc_info);
+
     let is_git = run("git", &["rev-parse"])?.0.success();
     if is_git {
         let mut hash = run("git", &["rev-parse", "HEAD"])?.1;

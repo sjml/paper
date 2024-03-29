@@ -10,6 +10,9 @@
 * maybe do some profiling; `wc` takes 300 ms to run?! performance not **too** important, but that's _slooooow_...
   * seems to go even slower with multiple content files? blergh.
 * allow date to only give year or year-month
+* missing date 
+  * uses current on title page, but doesn't insert newline? (docx)
+  * totally empty (latex/pdf)
 * biblical citations should insert space before themselves if it's not there
     - while we're at it, any way to make other citations smart about quotes/punctuation/etc? 
 * biblical citations mess up ibid for things around them

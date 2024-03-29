@@ -40,7 +40,11 @@ fn _main() -> Result<()> {
     });
 
     if matches.get_flag("version") {
-        println!("{} v{}", util::LIB_NAME, util::LIB_VERSION);
+        if config::CONFIG.get().verbose {
+            println!("{}", util::get_paper_version_stamp());
+        } else {
+            println!("{} v{}", util::LIB_NAME, util::LIB_VERSION);
+        }
         std::process::exit(0);
     }
 

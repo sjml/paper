@@ -243,24 +243,24 @@ pub fn build(
             }
             pandoc_args.push(source);
         }
-
-        let post_lua_filters = fs::read_dir(&filter_dir)
-            .with_context(|| format!("Could not read {:?}", &filter_dir))?
-            .filter_map(|lf| lf.ok())
-            .filter(|lf| {
-                lf.file_name()
-                    .as_os_str()
-                    .to_string_lossy()
-                    .starts_with("post-filter-")
-            })
-            .collect::<Vec<fs::DirEntry>>();
-
-        for lf in post_lua_filters {
-            pandoc_args.push("--lua-filter".to_string());
-            pandoc_args.push(lf.path().to_string_lossy().to_string());
-        }
     } else if CONFIG.get().verbose {
         println!("No citation processing.");
+    }
+
+    let post_lua_filters = fs::read_dir(&filter_dir)
+        .with_context(|| format!("Could not read {:?}", &filter_dir))?
+        .filter_map(|lf| lf.ok())
+        .filter(|lf| {
+            lf.file_name()
+                .as_os_str()
+                .to_string_lossy()
+                .starts_with("post-filter-")
+        })
+        .collect::<Vec<fs::DirEntry>>();
+
+    for lf in post_lua_filters {
+        pandoc_args.push("--lua-filter".to_string());
+        pandoc_args.push(lf.path().to_string_lossy().to_string());
     }
 
     let sentinels = &meta.get_vec_string(&["sentinels"]).unwrap_or(vec![]);

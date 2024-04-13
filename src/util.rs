@@ -47,7 +47,7 @@ pub fn stamp_local_dir() -> Result<()> {
 
 pub fn get_date_string(meta: &metadata::PaperMeta) -> Result<String> {
     let date: DateTime<Local> = match meta.get_string(&["data", "date"]) {
-        None => Local::now(),
+        None => return Ok(String::new()),
         Some(date_string) => {
             let due = NaiveDate::parse_from_str(&date_string, "%Y-%m-%d")
                 .with_context(|| format!("Could not parse NaiveDate from {}", &date_string))?;

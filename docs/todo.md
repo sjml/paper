@@ -3,7 +3,6 @@
     - waiting on Apple Silicon runners on GitHub: https://github.com/github/roadmap/issues/528
 
 ## functionality
-* FollowedHyperlink style
 * word count fix?
 * watch doesn't build if the output directory doesn't already exist?
 * redo wc output to be a valid pandoc table with bottom row delimited that can get piped to GFM?

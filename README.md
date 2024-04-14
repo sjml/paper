@@ -6,7 +6,7 @@ Focused on [Chicago Manual of Style citations](https://www.chicagomanualofstyle.
 
 You can see styles of produced documents in the `output` directories of the various [`examples`](./examples/).
 
-In general, it just does a simple [pandoc](https://pandoc.org/) assembly of whatever Markdown files are in the `content` directory, but it has some custom filters for my/STM needs.
+In general, it just does a simple [pandoc](https://pandoc.org/) assembly of whatever Markdown files are in the `content` directory, but it has some custom filters for my/CSTM needs.
 * citation keys like `@Bible-NABRE` do appropriate in-text biblical citations with the given translation (only referencing it on the first usage unless there are multiple translations used within a single paper)
     * exception being the Vulgate, which gets a normal footnote citation on first usage and then mentioned on each subsequent
 * if the author is listed as the USCCB, abbreviation is used on subsequent references

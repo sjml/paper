@@ -1,10 +1,10 @@
-SJML Paper v0.5.11
-1caf47a4ed9480856df908785e6cf47eb4822abd
-Built 2024-03-25T13:53:59.331130-04:00
-by rustc 1.77.0 (aedd173a2 2024-03-17)
+SJML Paper v0.5.13
+76b1c53657f34a93db36bc62b607c2a57f17c203
+Built 2024-04-14T10:43:57.281559-04:00
+by rustc 1.77.2 (25ef9e3d8 2024-04-09)
 
 ############################################################
-paper v0.5.11 (/Users/shane/Projects/paper)
+paper v0.5.13 (/Users/shane/Projects/paper)
 ├── anyhow v1.0.68
 ├── chrono v0.4.23
 │   ├── iana-time-zone v0.1.53
@@ -220,7 +220,7 @@ paper v0.5.11 (/Users/shane/Projects/paper)
     └── clap v4.1.4 (*)
 
 ############################################################
-pandoc 3.1.12.3
+pandoc 3.1.13
 Features: +server +lua
 Scripting engine: Lua 5.4
 User data directory: /Users/shane/.local/share/pandoc

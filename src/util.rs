@@ -23,7 +23,7 @@ pub fn get_paper_version_stamp() -> String {
     if rustc_ver.is_empty() {
         rustc_ver = "<<unknown rustc>>";
     }
-    version = format!("{}\nnBuilt by {}", version, rustc_ver);
+    version = format!("{}\nBuilt by {}", version, rustc_ver);
 
     version
 }

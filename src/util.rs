@@ -18,14 +18,12 @@ pub fn get_paper_version_stamp() -> String {
     if !git_rev.is_empty() {
         version = format!("{}\n{}", version, git_rev);
     }
-    let now = Local::now();
-    version = format!("{}\nBuilt {}", version, now.to_rfc3339());
 
     let mut rustc_ver = env!("PAPER_RUSTC_VERSION_STR");
     if rustc_ver.is_empty() {
         rustc_ver = "<<unknown rustc>>";
     }
-    version = format!("{}\nby {}\n", version, rustc_ver);
+    version = format!("{}\nnBuilt by {}", version, rustc_ver);
 
     version
 }

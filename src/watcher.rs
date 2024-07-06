@@ -41,7 +41,8 @@ pub fn watch(
 
     let mut watcher = RecommendedWatcher::new(tx, Config::default())?;
     let content_path = Path::new(&CONFIG.get().content_directory_name);
-    let config_path = Path::new("./paper_meta.yml");
+    let config_path_buf = util::find_meta(None)?;
+    let config_path = config_path_buf.as_path();
     watcher.watch(content_path, RecursiveMode::Recursive)?;
     watcher.watch(config_path, RecursiveMode::NonRecursive)?;
 

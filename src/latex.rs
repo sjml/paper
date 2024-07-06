@@ -36,7 +36,7 @@ impl Builder for LatexBuilder {
             }
             args.extend_from_slice(&[
                 "--template".to_string(),
-                "./.paper_resources/ChicagoStyle_Template.tex".to_string(),
+                ".paper_resources/ChicagoStyle_Template.tex".to_string(),
             ]);
         }
 

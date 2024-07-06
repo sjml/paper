@@ -50,6 +50,8 @@ Note that the first time you build a PDF you'll need internet access as it will 
 ## `paper_meta.yml`
 The metadata file that assists in the generation. YAML format. `paper` will walk up the directory tree until the root looking for similarly named files, so you can have a root `paper_meta.yml` with the author name, one in a directory for each class with the professor and mnemonic, etc. (Note this is only traversed when the project is set up; it doesn't automatically pick up changes live, but writes the full coalesced data to the lowest file in the hierarchy at init time.)
 
+(Note that all of these files could also be called `_paper_meta.yml` or `.paper_meta.yml`.)
+
 * `data`: 
     * (These are variables that will be put into the actual text of the paper itself, usually on the title page. It also gets used by `paper` for default filenames and things. )
     * `date`: due date in ISO-8601 format (`YYYY-MM-DD`) OR `null` OR placeholder `"[DATE]"` (if set, in addition to getting put on the title page, it will be graphed as a red line on [the progress image](#example-progress-metrics))

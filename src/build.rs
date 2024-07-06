@@ -148,7 +148,10 @@ pub fn build(
         "--from".to_string(),
         CONFIG.get().pandoc_input_format.clone(),
         "--metadata-file".to_string(),
-        "./paper_meta.yml".to_string(),
+        util::find_meta(None)?
+            .to_str()
+            .context("Meta path could not be converted to string.")?
+            .to_string(),
         "--resource-path".to_string(),
         CONFIG.get().content_directory_name.clone(),
     ];
@@ -221,12 +224,12 @@ pub fn build(
         pandoc_args.push("--csl".to_string());
         if !(meta.get_bool(&["use_ibid"]).unwrap_or(false)) {
             pandoc_args.push(
-                "./.paper_resources/chicago-fullnote-bibliography-short-title-subsequent.csl"
+                ".paper_resources/chicago-fullnote-bibliography-short-title-subsequent.csl"
                     .to_string(),
             );
         } else {
             pandoc_args
-                .push("./.paper_resources/chicago-fullnote-bibliography-with-ibid.csl".to_string());
+                .push(".paper_resources/chicago-fullnote-bibliography-with-ibid.csl".to_string());
         }
         for bs in bib_sources {
             pandoc_args.push("--bibliography".to_string());
@@ -308,7 +311,10 @@ fn record_build_data(log_lines: &[String], meta: &PaperMeta) -> Result<()> {
             "--to".to_string(),
             lua_path.to_string_lossy().to_string(),
             "--metadata-file".to_string(),
-            "./paper_meta.yml".to_string(),
+            util::find_meta(None)?
+                .to_str()
+                .context("Meta path could not be converted to string.")?
+                .to_string(),
             "--citeproc".to_string(),
         ];
 

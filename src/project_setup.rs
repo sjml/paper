@@ -48,16 +48,21 @@ pub fn init_project() -> Result<()> {
     let mut meta_chain: Vec<Yaml> = Vec::new();
     let mut current_path_option: Option<&Path> = Some(proj_path_buf.as_path());
     while let Some(current_path) = current_path_option {
-        let meta_path = current_path.join("paper_meta.yml");
-        if meta_path.exists() {
-            match util::load_yml_file(&meta_path) {
-                Ok(meta_yml) => match meta_yml {
-                    Yaml::Hash(_) => meta_chain.push(meta_yml),
-                    _ => bail!("Non-hash YAML document found at {:?}", meta_path),
-                },
-                // don't give up on one bad YAML file; just print the error and skip it
-                Err(e) => eprintln!("ERROR: {}", e),
+        match util::find_meta(Some(current_path)) {
+            Ok(meta_path) => {
+                if CONFIG.get().verbose {
+                    println!("Found meta file at {:?}", meta_path);
+                }
+                match util::load_yml_file(&meta_path) {
+                    Ok(meta_yml) => match meta_yml {
+                        Yaml::Hash(_) => meta_chain.push(meta_yml),
+                        _ => bail!("Non-hash YAML document found at {:?}", meta_path),
+                    },
+                    // don't give up on one bad YAML file; just print the error and skip it
+                    Err(e) => eprintln!("ERROR: {}", e),
+                }
             }
+            Err(_) => {}
         }
         current_path_option = current_path.parent();
     }

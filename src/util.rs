@@ -1,6 +1,6 @@
 use std::fs;
 use std::path;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use anyhow::{bail, Context, Result};
 use chrono::prelude::*;
@@ -68,9 +68,9 @@ pub fn get_date_string(meta: &metadata::PaperMeta) -> Result<String> {
     Ok(out_string)
 }
 
-pub fn load_yml_file(path: &Path) -> Result<Yaml> {
-    let file_contents =
-        fs::read_to_string(path).with_context(|| format!("Could not read file at {:?}", path))?;
+pub fn load_yml_file(path: &PathBuf) -> Result<Yaml> {
+    let file_contents = fs::read_to_string(path.clone())
+        .with_context(|| format!("Could not read file at {:?}", path))?;
     let yml = YamlLoader::load_from_str(&file_contents)
         .with_context(|| format!("Invalid YAML file at {:?}", path))?;
 
@@ -137,10 +137,40 @@ pub fn merge_yaml_hash(target: &mut yaml::Hash, new_hash: &yaml::Hash) {
     }
 }
 
+pub fn find_meta(base: Option<&Path>) -> Result<path::PathBuf> {
+    let options = vec![
+        path::Path::new("paper_meta.yml"),
+        path::Path::new("_paper_meta.yml"),
+        path::Path::new(".paper_meta.yml"),
+    ];
+
+    let base_path = match base {
+        Some(p) => p.to_path_buf(),
+        None => std::env::current_dir().context("Could not get current directory")?,
+    };
+
+    for try_path in options {
+        let joined = base_path.join(try_path);
+        if joined.exists() {
+            return Ok(joined);
+        }
+    }
+    bail!("Could not find valid meta file.");
+}
+
 pub fn ensure_paper_dir() -> Result<()> {
-    let files = vec![path::Path::new("./paper_meta.yml")];
+    match find_meta(None) {
+        Ok(_) => {}
+        Err(_) => {
+            bail!("Invalid paper directory; no meta file found.");
+        }
+    }
+    // don't have manual file list anymore since we're checking for the meta file
+    //   right above here; leave the machinery in place, though, in case we want
+    //   to check something else.
+    let files: Vec<&Path> = vec![];
     let dirs = vec![
-        path::Path::new("./.paper_resources"),
+        path::Path::new(".paper_resources"),
         path::Path::new(&CONFIG.get().content_directory_name),
     ];
 

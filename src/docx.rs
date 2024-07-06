@@ -37,13 +37,13 @@ impl Builder for DocxBuilder {
             cmds = [
                 "--to=docx".to_string(),
                 "--reference-doc".to_string(),
-                "./.paper_resources/ChicagoStyle_NoTitlePage_Template.docx".to_string(),
+                ".paper_resources/ChicagoStyle_NoTitlePage_Template.docx".to_string(),
             ];
         } else {
             cmds = [
                 "--to=docx".to_string(),
                 "--reference-doc".to_string(),
-                "./.paper_resources/ChicagoStyle_Template.docx".to_string(),
+                ".paper_resources/ChicagoStyle_Template.docx".to_string(),
             ];
         }
         args.extend_from_slice(&cmds);

@@ -1,5 +1,3 @@
-use std::path;
-
 use anyhow::{bail, Result};
 use yaml_rust::{yaml, Yaml};
 
@@ -11,8 +9,8 @@ pub struct PaperMeta {
 
 impl PaperMeta {
     pub fn new() -> Result<Self> {
-        let meta_path = path::Path::new("./paper_meta.yml");
-        match util::load_yml_file(meta_path) {
+        let meta_path = util::find_meta(None)?;
+        match util::load_yml_file(&meta_path) {
             Ok(data) => {
                 let mut me = PaperMeta { _root: data };
                 match me.get_string(&["data", "date"]) {

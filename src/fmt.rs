@@ -27,8 +27,12 @@ pub fn fmt(wrap: bool, columns: u32) -> Result<()> {
             args.extend_from_slice(&["--wrap", "preserve"])
         }
         args.push(&cf);
-        let md_out =
-            subprocess::run_command(&pandoc_wrap::get_pandoc_exe_path()?, &args, None, false)?;
+        let md_out = subprocess::run_command(
+            &pandoc_wrap::get_pandoc_exe_path()?.to_string_lossy(),
+            &args,
+            None,
+            false,
+        )?;
         let md_curr = fs::read_to_string(&cf).context("Couldn't read file to string")?;
         let md_curr = md_curr.trim();
         if md_out.trim() != md_curr.trim() {

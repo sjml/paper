@@ -55,7 +55,7 @@ impl Builder for LatexBuilder {
                 }
                 // process any markdown inside the variables (italics in a title, for instance)
                 let marked_up = subprocess::run_command(
-                    &pandoc_wrap::get_pandoc_exe_path()?,
+                    &pandoc_wrap::get_pandoc_exe_path()?.to_string_lossy(),
                     &[
                         "--from".to_string(),
                         CONFIG.get().pandoc_input_format.clone(),

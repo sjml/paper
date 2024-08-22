@@ -284,7 +284,7 @@ pub fn build(
     }
 
     let output = subprocess::run_command(
-        &pandoc_wrap::get_pandoc_exe_path()?,
+        &pandoc_wrap::get_pandoc_exe_path()?.to_string_lossy(),
         pandoc_args.as_slice(),
         None,
         true,
@@ -342,8 +342,12 @@ fn record_build_data(log_lines: &[String], meta: &PaperMeta) -> Result<()> {
         }
         args.extend_from_slice(&get_content_file_list());
 
-        let ref_str =
-            subprocess::run_command(&pandoc_wrap::get_pandoc_exe_path()?, &args, None, false)?;
+        let ref_str = subprocess::run_command(
+            &pandoc_wrap::get_pandoc_exe_path()?.to_string_lossy(),
+            &args,
+            None,
+            false,
+        )?;
         let ref_str = ref_str.trim();
         cited_refence_keys.extend(ref_str.split('\n').map(|s| s.to_string()));
 
@@ -356,7 +360,7 @@ fn record_build_data(log_lines: &[String], meta: &PaperMeta) -> Result<()> {
             }
             csl_args.push(&bpps);
             let source_data_text = subprocess::run_command(
-                &pandoc_wrap::get_pandoc_exe_path()?,
+                &pandoc_wrap::get_pandoc_exe_path()?.to_string_lossy(),
                 &csl_args,
                 None,
                 false,
@@ -423,7 +427,7 @@ fn record_build_data(log_lines: &[String], meta: &PaperMeta) -> Result<()> {
     writeln!(out_file, "{}", separator).context("Could not write to build data output file")?;
 
     let pandoc_vers = subprocess::run_command(
-        &pandoc_wrap::get_pandoc_exe_path()?,
+        &pandoc_wrap::get_pandoc_exe_path()?.to_string_lossy(),
         &["--version"],
         None,
         false,

@@ -2,49 +2,47 @@ use std::env;
 use std::fs;
 use std::io;
 use std::path::PathBuf;
-use std::str::FromStr;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{anyhow, bail, Context, Result};
 use reqwest;
-use tempfile;
+use tempfile::tempdir;
 
 use crate::config::CONFIG;
 use crate::subprocess;
 
-// locks pandoc to a particular version so we don't have to chase
-//   down differences immediately when the system version changes
-
 const PANDOC_LOCKED_VERSION: &str = "3.3";
 
-pub fn get_pandoc_exe_path() -> Result<String> {
+pub fn get_pandoc_exe_path() -> Result<PathBuf> {
     // check if downloaded version exists
     let exe_path = CONFIG
         .get()
         .resources_path
         .join(format!("pandoc-{}", PANDOC_LOCKED_VERSION))
         .join("pandoc");
-    if exe_path.exists() && exe_path.is_file() {
-        match exe_path.into_os_string().into_string() {
-            Ok(p) => return Ok(p),
-            Err(orig) => bail!("Could not turn OsString `{:?}` into String", orig),
-        }
+
+    if exe_path.is_file() {
+        return Ok(exe_path);
     }
 
-    // see if we can download it
+    // Determine the OS and architecture
     let (os_name, ext) = match env::consts::OS {
         "macos" => ("macOS", ".zip"),
         "linux" => ("linux", ".tar.gz"),
         _ => bail!("Unsupported OS!"),
     };
+
     if os_name != "macOS" {
         eprintln!("Not tested on Linux, but we're going to try...");
     }
+
     let arch = match env::consts::ARCH {
-        "x86_64" => match os_name {
-            "macOS" => "x86_64",
-            "linux" => "amd64",
-            _ => unreachable!(),
-        },
+        "x86_64" => {
+            if os_name == "macOS" {
+                "x86_64"
+            } else {
+                "amd64"
+            }
+        }
         "aarch64" => "arm64",
         _ => bail!("Unsupported architecture!"),
     };
@@ -54,7 +52,7 @@ pub fn get_pandoc_exe_path() -> Result<String> {
         _ => unreachable!(),
     };
     let filename = format!("{}{}", file_basename, ext);
-    let dl_path = format!(
+    let dl_url = format!(
         "https://github.com/jgm/pandoc/releases/download/{}/{}",
         PANDOC_LOCKED_VERSION, filename
     );
@@ -63,80 +61,74 @@ pub fn get_pandoc_exe_path() -> Result<String> {
         "Attempting to download Pandoc v{}...",
         PANDOC_LOCKED_VERSION
     );
-    let tmp_dir = tempfile::Builder::new().prefix("paper-pandoc").tempdir()?;
-    let tmp_dir_str = tmp_dir
-        .path()
-        .as_os_str()
-        .to_str()
-        .expect("Could not turn OsStr into str");
-    let mut res = reqwest::blocking::get(&dl_path)
-        .with_context(|| format!("Could not download `{}`", dl_path))?;
-    let output_file_path = tmp_dir.path().join(filename);
+
+    let tmp_dir = tempdir().context("Could not create temporary directory")?;
+    let output_file_path = tmp_dir.path().join(&filename);
+
+    let mut res = reqwest::blocking::get(&dl_url)
+        .with_context(|| format!("Could not download `{}`", dl_url))?;
     let mut destination = fs::File::create(&output_file_path)?;
     io::copy(&mut res, &mut destination)?;
 
-    let output_file_path_str = match output_file_path.into_os_string().into_string() {
-        Ok(str) => str,
-        Err(orig) => bail!("Could not turn OsString `{:?}` into String", orig),
-    };
-
+    // Unzip or untar the file
     let unzipped_path = match ext {
         ".zip" => {
             let unzip_output = subprocess::run_command(
                 "unzip",
                 &[
-                    output_file_path_str,
+                    output_file_path.to_string_lossy().to_string(),
                     "-d".to_string(),
-                    tmp_dir_str.to_string(),
+                    tmp_dir.path().to_string_lossy().to_string(),
                 ],
                 None,
                 false,
             )
             .context("Could not unzip downloaded Pandoc. Weird!")?;
+
             let exe = unzip_output
-                .split("\n")
-                .into_iter()
+                .lines()
                 .find(|&line| {
                     line.trim().starts_with("inflating: ") && line.trim().ends_with("/bin/pandoc")
                 })
-                .expect("Couldn't find executable in zip")
-                .trim()
-                .strip_prefix("inflating: ")
-                .expect("Couldn't strip prefix from exe line");
-            PathBuf::from_str(exe)?
+                .and_then(|line| line.trim().strip_prefix("inflating: "))
+                .ok_or_else(|| anyhow!("Couldn't find executable in zip"))?;
+
+            PathBuf::from(exe)
         }
         ".tar.gz" => {
             let untar_output = subprocess::run_command(
                 "tar",
-                &["-zxf", &output_file_path_str, "-C", tmp_dir_str],
+                &[
+                    "-zxf",
+                    &output_file_path.to_string_lossy(),
+                    "-C",
+                    tmp_dir.path().to_string_lossy().as_ref(),
+                ],
                 None,
                 false,
             )
-            .context("Could not unzip downloaded Pandoc. Weird!")?;
+            .context("Could not untar downloaded Pandoc. Weird!")?;
+
             let exe = untar_output
-                .split("\n")
-                .into_iter()
-                .find(|&line| line.trim().starts_with("x ") && line.trim().ends_with("/bin/pandoc"))
-                .expect("Couldn't find executable in zip")
-                .trim()
-                .strip_prefix("x ")
-                .expect("Couldn't strip prefix from exe line");
+                .lines()
+                .find(|&line| line.starts_with("x ") && line.trim().ends_with("/bin/pandoc"))
+                .and_then(|line| line.trim().strip_prefix("x "))
+                .ok_or_else(|| anyhow!("Couldn't find executable in tar"))?;
+
             tmp_dir.path().join(exe)
         }
-        _ => {
-            bail!("Unsupported extension: {}", ext);
-        }
-    };
-    let parent = match exe_path.parent() {
-        Some(p) => p,
-        None => bail!("No parent for exe path? `{:?}`", exe_path),
-    };
-    fs::create_dir_all(parent)?;
-    fs::rename(unzipped_path, &exe_path)?;
-    let exe_str = match exe_path.into_os_string().into_string() {
-        Ok(str) => str,
-        Err(orig) => bail!("Could not turn OsString `{:?}` into String", orig),
+        _ => bail!("Unsupported extension: {}", ext),
     };
 
-    Ok(exe_str)
+    // Ensure the directory exists and move the file
+    if let Some(parent) = exe_path.parent() {
+        fs::create_dir_all(parent)?;
+    } else {
+        bail!("No parent for exe path: {:?}", exe_path);
+    }
+
+    fs::rename(&unzipped_path, &exe_path)
+        .with_context(|| format!("Failed to move Pandoc executable to {:?}", exe_path))?;
+
+    Ok(exe_path)
 }

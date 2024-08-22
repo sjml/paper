@@ -56,7 +56,7 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
         //  --lua-filter ../../../resources/writers/stripped_md.lua \
         //  <PATH_TO_FILE>
         let stripped_content_string = subprocess::run_command(
-            &pandoc_wrap::get_pandoc_exe_path()?,
+            &pandoc_wrap::get_pandoc_exe_path()?.to_string_lossy(),
             &[
                 "--from",
                 &CONFIG.get().pandoc_input_format,

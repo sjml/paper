@@ -4,6 +4,7 @@ use std::io::Read;
 use anyhow::{ensure, Context, Result};
 
 use crate::config::CONFIG;
+use crate::pandoc_wrap;
 use crate::subprocess;
 use crate::util;
 
@@ -55,7 +56,7 @@ pub fn wc_data() -> Result<Vec<(String, usize, usize)>> {
         //  --lua-filter ../../../resources/writers/stripped_md.lua \
         //  <PATH_TO_FILE>
         let stripped_content_string = subprocess::run_command(
-            "pandoc",
+            &pandoc_wrap::get_pandoc_exe_path()?,
             &[
                 "--from",
                 &CONFIG.get().pandoc_input_format,

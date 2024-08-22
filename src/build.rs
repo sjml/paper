@@ -9,12 +9,12 @@ use regex::Regex;
 use serde_json::{self, Value};
 use walkdir::WalkDir;
 
-use crate::build;
 use crate::config::CONFIG;
 use crate::docx;
 use crate::formats::{self, OutputFormat};
 use crate::latex;
 use crate::metadata::PaperMeta;
+use crate::pandoc_wrap;
 use crate::subprocess;
 use crate::util;
 
@@ -283,7 +283,12 @@ pub fn build(
         println!("\t{}", pandoc_args.join(" "));
     }
 
-    let output = subprocess::run_command("pandoc", pandoc_args.as_slice(), None, true)?;
+    let output = subprocess::run_command(
+        &pandoc_wrap::get_pandoc_exe_path()?,
+        pandoc_args.as_slice(),
+        None,
+        true,
+    )?;
     if CONFIG.get().verbose {
         println!("{}", output);
     }
@@ -335,9 +340,10 @@ fn record_build_data(log_lines: &[String], meta: &PaperMeta) -> Result<()> {
             }
             args.extend_from_slice(&["--bibliography".to_string(), bp_local]);
         }
-        args.extend_from_slice(&build::get_content_file_list());
+        args.extend_from_slice(&get_content_file_list());
 
-        let ref_str = subprocess::run_command("pandoc", &args, None, false)?;
+        let ref_str =
+            subprocess::run_command(&pandoc_wrap::get_pandoc_exe_path()?, &args, None, false)?;
         let ref_str = ref_str.trim();
         cited_refence_keys.extend(ref_str.split('\n').map(|s| s.to_string()));
 
@@ -349,7 +355,12 @@ fn record_build_data(log_lines: &[String], meta: &PaperMeta) -> Result<()> {
                 csl_args.extend_from_slice(&["--from", "csljson"]);
             }
             csl_args.push(&bpps);
-            let source_data_text = subprocess::run_command("pandoc", &csl_args, None, false)?;
+            let source_data_text = subprocess::run_command(
+                &pandoc_wrap::get_pandoc_exe_path()?,
+                &csl_args,
+                None,
+                false,
+            )?;
             let source_data: Value = serde_json::from_str(&source_data_text)
                 .context("Could not parse JSON from sources data")?;
             match source_data {
@@ -411,8 +422,13 @@ fn record_build_data(log_lines: &[String], meta: &PaperMeta) -> Result<()> {
     writeln!(out_file, "{}", dep_str).context("Could not write to build data output file")?;
     writeln!(out_file, "{}", separator).context("Could not write to build data output file")?;
 
-    let pandoc_vers = subprocess::run_command("pandoc", &["--version"], None, false)
-        .context("Could not get pandoc version string")?;
+    let pandoc_vers = subprocess::run_command(
+        &pandoc_wrap::get_pandoc_exe_path()?,
+        &["--version"],
+        None,
+        false,
+    )
+    .context("Could not get pandoc version string")?;
     writeln!(out_file, "{}", pandoc_vers).context("Could not write to build data output file")?;
 
     writeln!(out_file, "{}", separator).context("Could not write to build data output file")?;

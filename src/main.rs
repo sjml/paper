@@ -12,6 +12,7 @@ mod fmt;
 mod formats;
 mod latex;
 pub mod metadata;
+mod pandoc_wrap;
 mod project_setup;
 mod save;
 mod subprocess;

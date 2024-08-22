@@ -2,6 +2,11 @@
 * get bottle building from personal homebrew tap
     - waiting on Apple Silicon runners on GitHub: https://github.com/github/roadmap/issues/528
 
+## lock tectonic and pandoc
+* can "just" build tectonic into the executable (would be nice to have a custom bundle but that looks to be a righteous pain at the moment)
+* pull pandoc executable from GitHub release based on a specific version
+* if tectonic build proves to be a pain, try and do likewise
+
 ## functionality
 * word count fix?
 * watch doesn't build if the output directory doesn't already exist?

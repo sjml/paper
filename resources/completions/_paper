@@ -190,7 +190,7 @@ esac
 (( $+functions[_paper_commands] )) ||
 _paper_commands() {
     local commands; commands=(
-'new:Create the scaffolding for a new writing/research project.' \
+'new:Create a new directory with the scaffolding for a new writing/research project.' \
 'init:While in an empty directory, set it up for a project.
 (Called as part of the process for `new`.)' \
 'dev:Set up a project for development work on paper itself.
@@ -200,7 +200,7 @@ Deletes the local `.paper_resources` directory and symlinks the template’s ver
 'push:Push local git changes to the remote repository, creating one if necessary.' \
 'web:Open the remote repository’s GitHub site.' \
 'wc:Print word count metrics for the project, stripping out metadata, citations, and footnotes.' \
-'watch:Watches the content directory and emits new wordcount data on each change.' \
+'watch:Watches the content directory and emits new wordcount data on each change, optionally rebuilding.' \
 'fmt:Run an automated formatter on all the local Markdown files.' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
@@ -239,7 +239,7 @@ _paper__help__fmt_commands() {
 (( $+functions[_paper__help_commands] )) ||
 _paper__help_commands() {
     local commands; commands=(
-'new:Create the scaffolding for a new writing/research project.' \
+'new:Create a new directory with the scaffolding for a new writing/research project.' \
 'init:While in an empty directory, set it up for a project.
 (Called as part of the process for `new`.)' \
 'dev:Set up a project for development work on paper itself.
@@ -249,7 +249,7 @@ Deletes the local `.paper_resources` directory and symlinks the template’s ver
 'push:Push local git changes to the remote repository, creating one if necessary.' \
 'web:Open the remote repository’s GitHub site.' \
 'wc:Print word count metrics for the project, stripping out metadata, citations, and footnotes.' \
-'watch:Watches the content directory and emits new wordcount data on each change.' \
+'watch:Watches the content directory and emits new wordcount data on each change, optionally rebuilding.' \
 'fmt:Run an automated formatter on all the local Markdown files.' \
 'help:Print this message or the help of the given subcommand(s)' \
     )

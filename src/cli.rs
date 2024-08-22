@@ -18,7 +18,7 @@ pub fn cli() -> Command {
         .arg(arg!(-v --verbose "Spam the output log").global(true))
         .subcommand(
             Command::new("new")
-                .about("Create the scaffolding for a new writing/research project.")
+                .about("Create a new directory with the scaffolding for a new writing/research project.")
                 .arg(arg!(<PROJECT_NAME> "The name of the directory to create for the project."))
         )
         .subcommand(
@@ -55,7 +55,7 @@ pub fn cli() -> Command {
             )
             .subcommand(
                 Command::new("watch")
-                .about("Watches the content directory and emits new wordcount data on each change.")
+                .about("Watches the content directory and emits new wordcount data on each change, optionally rebuilding.")
                 .args(&wc_args)
                 .arg(arg!(--build "Rebuild the project before showing word count"))
                 .args(&build_args)

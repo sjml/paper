@@ -6,6 +6,7 @@ use crate::build;
 use crate::config::CONFIG;
 use crate::formats::Builder;
 use crate::metadata::PaperMeta;
+use crate::pandoc_wrap;
 use crate::subprocess;
 use crate::subprocess::RunCommandError;
 use crate::util;
@@ -54,7 +55,7 @@ impl Builder for LatexBuilder {
                 }
                 // process any markdown inside the variables (italics in a title, for instance)
                 let marked_up = subprocess::run_command(
-                    "pandoc",
+                    &pandoc_wrap::get_pandoc_exe_path()?,
                     &[
                         "--from".to_string(),
                         CONFIG.get().pandoc_input_format.clone(),

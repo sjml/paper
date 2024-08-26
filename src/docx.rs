@@ -371,13 +371,13 @@ impl Builder for DocxBuilder {
         let outfile = fs::File::create(output_file_path)
             .with_context(|| format!("Could not create file {:?}", &output_file_path))?;
         let mut zipper = zip::ZipWriter::new(outfile);
-        let mut options =
-            zip::write::FileOptions::default().compression_method(zip::CompressionMethod::Deflated);
+        let mut options = zip::write::SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Deflated);
         if let Some(mt) = mod_time {
             let offset = time::OffsetDateTime::from_unix_timestamp(mt.unix_seconds())?;
             let now = time::OffsetDateTime::now_local()?;
             let shifted = offset.to_offset(now.offset());
-            let zip_dt = zip::DateTime::from_time(shifted).unwrap();
+            let zip_dt = zip::DateTime::try_from(shifted).unwrap();
             options = options.last_modified_time(zip_dt);
         }
         let mut buffer = Vec::new();

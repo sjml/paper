@@ -1,7 +1,7 @@
-use state::Storage;
+use state::InitCell;
 use std::path::PathBuf;
 
-pub static CONFIG: Storage<Configuration> = Storage::new();
+pub static CONFIG: InitCell<Configuration> = InitCell::new();
 
 pub struct Configuration {
     // runtime

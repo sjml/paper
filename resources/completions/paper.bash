@@ -441,4 +441,8 @@ _paper() {
     esac
 }
 
-complete -F _paper -o bashdefault -o default paper
+if [[ "${BASH_VERSINFO[0]}" -eq 4 && "${BASH_VERSINFO[1]}" -ge 4 || "${BASH_VERSINFO[0]}" -gt 4 ]]; then
+    complete -F _paper -o nosort -o bashdefault -o default paper
+else
+    complete -F _paper -o bashdefault -o default paper
+fi

@@ -13,16 +13,16 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
-    - name: Install Dependencies
-      if: runner.os == 'macOS'
-      run: |
-        brew install direnv
-        direnv allow .
-        direnv export gha >> "$GITHUB_ENV"
-    - name: Install Dependencies
-      if: runner.os == 'Linux'
-      run: |
-        sudo apt-get install libfontconfig1-dev libgraphite2-dev libharfbuzz-dev libicu-dev libssl-dev zlib1g-dev
+    # - name: Install Dependencies
+    #   if: runner.os == 'macOS'
+    #   run: |
+    #     brew install direnv
+    #     direnv allow .
+    #     direnv export gha >> "$GITHUB_ENV"
+    # - name: Install Dependencies
+    #   if: runner.os == 'Linux'
+    #   run: |
+    #     sudo apt-get install libfontconfig1-dev libgraphite2-dev libharfbuzz-dev libicu-dev libssl-dev zlib1g-dev
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
     - name: Run Tests

@@ -19,6 +19,10 @@ jobs:
         brew install direnv
         direnv allow .
         direnv export gha >> "$GITHUB_ENV"
+    - name: Install Dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get install graphite2
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
     - name: Run Tests

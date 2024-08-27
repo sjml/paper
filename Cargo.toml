@@ -29,6 +29,7 @@ serde_json = "1.0.127"
 state = "0.6.0"
 sxd-document = "0.3.2"
 sxd-xpath = "0.4.2"
+tectonic = { git = "https://github.com/tectonic-typesetting/tectonic", rev = "82484dbbfd698944c9d29cf6c0944c17e95d1e53", version = "0.0.0-dev.0" }
 tempfile = "3.12.0"
 termcolor = "1.4.1"
 time = { version = "0.3.36", features = ["local-offset"] }
